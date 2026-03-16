@@ -11,7 +11,7 @@ from mowen.distance_functions import distance_function_registry
 from mowen.event_cullers import event_culler_registry
 from mowen.event_drivers import event_driver_registry
 from mowen.exceptions import PipelineError
-from mowen.types import Attribution, Document, EventSet, Histogram, PipelineResult
+from mowen.types import Attribution, Document, EventSet, Histogram, NumericEventSet, PipelineResult
 
 
 @dataclass
@@ -54,7 +54,15 @@ ProgressCallback = Callable[[float, str], None]
 
 
 class Pipeline:
-    """Executes the full canonicize → extract → cull → analyze pipeline."""
+    """Executes the full canonicize → extract → cull → analyze pipeline.
+
+    Supports two execution paths:
+
+    * **Discrete path** (standard event drivers): text → events → cull →
+      histograms → distance/analysis.
+    * **Numeric path** (transformer embeddings): text → dense vectors →
+      sklearn classifier directly (cullers, distance functions skipped).
+    """
 
     def __init__(
         self,
@@ -128,13 +136,63 @@ class Pipeline:
 
         # --- 3. Extract events ---
         self._report(0.3, "Extracting events")
-        doc_event_sets: dict[int, EventSet] = {}
-        for idx, doc in enumerate(all_docs):
-            combined = EventSet()
-            for driver in event_drivers:
-                es = driver.create_event_set(canonicized_texts[idx])
-                combined.extend(es)
-            doc_event_sets[idx] = combined
+        doc_features: dict[int, EventSet | NumericEventSet] = {}
+        for idx in range(len(all_docs)):
+            first_result = event_drivers[0].create_event_set(canonicized_texts[idx])
+
+            if isinstance(first_result, NumericEventSet):
+                # Numeric path: concatenate embedding vectors from all drivers
+                combined = list(first_result)
+                for driver in event_drivers[1:]:
+                    es = driver.create_event_set(canonicized_texts[idx])
+                    combined.extend(es)
+                doc_features[idx] = NumericEventSet(combined)
+            else:
+                # Discrete path: concatenate event sets
+                combined_events = EventSet(first_result)
+                for driver in event_drivers[1:]:
+                    es = driver.create_event_set(canonicized_texts[idx])
+                    if isinstance(es, NumericEventSet):
+                        raise PipelineError(
+                            "Cannot mix numeric and discrete event drivers. "
+                            "Use transformer_embeddings alone or with other embedding drivers."
+                        )
+                    combined_events.extend(es)
+                doc_features[idx] = combined_events
+
+        # Detect which path we're on
+        numeric_mode = isinstance(doc_features[0], NumericEventSet)
+        n_known = len(known_documents)
+
+        if numeric_mode:
+            # --- Numeric path: skip cullers and histograms ---
+            self._report(0.6, "Preparing feature vectors")
+
+            # Pass NumericEventSets directly as "histograms" — the sklearn
+            # analysis methods detect this and use them as raw feature vectors.
+            known_data: list[tuple[Document, Histogram]] = [
+                (all_docs[i], doc_features[i])  # type: ignore[misc]
+                for i in range(n_known)
+            ]
+
+            self._report(0.7, "Training analysis method")
+            analysis_method.train(known_data)
+
+            self._report(0.8, "Analyzing unknown documents")
+            results: list[PipelineResult] = []
+            for i, doc in enumerate(unknown_documents):
+                idx = n_known + i
+                rankings = analysis_method.analyze(doc_features[idx])  # type: ignore[arg-type]
+                results.append(PipelineResult(unknown_document=doc, rankings=rankings))
+                progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
+                self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")
+
+            return results
+
+        # --- Discrete path: cull → histogram → analyze ---
+
+        # Narrow type for discrete path
+        doc_event_sets: dict[int, EventSet] = doc_features  # type: ignore[assignment]
 
         # --- 4. Cull events ---
         self._report(0.5, "Culling events")
@@ -154,13 +212,12 @@ class Pipeline:
 
         # --- 6. Train analysis method ---
         self._report(0.7, "Training analysis method")
-        n_known = len(known_documents)
-        known_data = [(all_docs[i], doc_histograms[i]) for i in range(n_known)]
-        analysis_method.train(known_data)
+        known_data_discrete = [(all_docs[i], doc_histograms[i]) for i in range(n_known)]
+        analysis_method.train(known_data_discrete)
 
         # --- 7. Analyze unknown documents ---
         self._report(0.8, "Analyzing unknown documents")
-        results: list[PipelineResult] = []
+        results = []
         for i, doc in enumerate(unknown_documents):
             idx = n_known + i
             rankings: list[Attribution] = analysis_method.analyze(doc_histograms[idx])

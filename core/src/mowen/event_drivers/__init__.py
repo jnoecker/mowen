@@ -16,4 +16,9 @@ from mowen.event_drivers import word_events as word_events  # noqa: F401
 from mowen.event_drivers import word_length as word_length  # noqa: F401
 from mowen.event_drivers import word_ngram as word_ngram  # noqa: F401
 
+try:
+    from mowen.event_drivers import transformer_embeddings as transformer_embeddings  # noqa: F401
+except ImportError:
+    pass  # transformers/torch not installed
+
 __all__ = ["EventDriver", "event_driver_registry"]

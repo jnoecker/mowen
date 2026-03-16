@@ -70,6 +70,16 @@ class Histogram:
         return f"Histogram({len(self._counts)} events, {self._total} total)"
 
 
+class NumericEventSet(list[float]):
+    """A dense numeric feature vector (e.g. from transformer embeddings).
+
+    Unlike :class:`EventSet`, this cannot be converted to a :class:`Histogram`.
+    Analysis methods that accept numeric vectors (sklearn-based) use these directly.
+    """
+
+    pass
+
+
 @dataclass
 class Document:
     """A text document with optional author attribution."""
