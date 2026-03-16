@@ -22,6 +22,10 @@ from mowen.event_drivers import sentence_features as sentence_features  # noqa: 
 from mowen.event_drivers import porter_stemmer as porter_stemmer  # noqa: F401
 from mowen.event_drivers import pos_features as pos_features  # noqa: F401
 from mowen.event_drivers import mw_function_words as mw_function_words  # noqa: F401
+from mowen.event_drivers import syllables as syllables  # noqa: F401
+from mowen.event_drivers import line_features as line_features  # noqa: F401
+from mowen.event_drivers import punctuation_ngram as punctuation_ngram  # noqa: F401
+from mowen.event_drivers import vowel_mn_letter_words as vowel_mn_letter_words  # noqa: F401
 
 try:
     from mowen.event_drivers import transformer_embeddings as transformer_embeddings  # noqa: F401

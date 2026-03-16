@@ -11,11 +11,11 @@ full-stack web application.
 ## Features
 
 - Pluggable pipeline: canonicizers, event drivers, event cullers, distance functions, analysis methods
-- 9 canonicizers (case folding, whitespace normalization, punctuation handling, ...)
-- 24 event drivers (character/word n-grams, skip-grams, POS tags, Porter stemmer, function words, transformer embeddings, ...)
-- 12 event cullers (most/least common, IQR, information gain, MAD, index of dispersion, ...)
-- 20 distance functions (cosine, Manhattan, KL divergence, chi-square, Keselj weighted, cross-entropy, ...)
-- 13 analysis methods (nearest neighbor, SVM, Random Forest, Naive Bayes, Burrows' Delta, MLP, ...)
+- 10 canonicizers (case folding, whitespace normalization, punctuation handling, Smash I, ...)
+- 31 event drivers (character/word n-grams, skip-grams, POS tags, Porter stemmer, syllables, function words, transformer embeddings, ...)
+- 14 event cullers (most/least common, IQR, information gain, MAD, index of dispersion, weighted variance, ...)
+- 22 distance functions (cosine, Manhattan, KL divergence, chi-square, Keselj weighted, cross-entropy, WED, ...)
+- 15 analysis methods (nearest neighbor, SVM, Random Forest, Bagging NN, Thin Cross-Entropy, Burrows' Delta, MLP, ...)
 - 4 document loaders (plain text, PDF, DOCX, HTML)
 - Leave-one-out and k-fold cross-validation with precision/recall/F1 metrics
 - JGAAP CSV compatibility for existing experiment files

@@ -23,5 +23,7 @@ from mowen.distance_functions import keselj_weighted as keselj_weighted
 from mowen.distance_functions import matusita as matusita
 from mowen.distance_functions import soergel as soergel
 from mowen.distance_functions import wave_hedges as wave_hedges
+from mowen.distance_functions import wed as wed
+from mowen.distance_functions import nominal_ks as nominal_ks
 
 __all__ = ["DistanceFunction", "distance_function_registry"]

@@ -15,5 +15,7 @@ from mowen.event_cullers import variance as variance
 from mowen.event_cullers import extreme as extreme
 from mowen.event_cullers import index_of_dispersion as index_of_dispersion
 from mowen.event_cullers import mean_absolute_deviation as mean_absolute_deviation
+from mowen.event_cullers import set_culler as set_culler
+from mowen.event_cullers import weighted_variance as weighted_variance
 
 __all__ = ["EventCuller", "event_culler_registry"]

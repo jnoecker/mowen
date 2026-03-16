@@ -22,6 +22,8 @@ from mowen.analysis_methods import svm as svm
 from mowen.analysis_methods import random_forest as random_forest
 from mowen.analysis_methods import logistic_regression as logistic_regression
 from mowen.analysis_methods import mlp as mlp
+from mowen.analysis_methods import bagging_nn as bagging_nn
+from mowen.analysis_methods import thin_xent as thin_xent
 
 __all__ = [
     "AnalysisMethod",

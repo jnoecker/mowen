@@ -12,5 +12,6 @@ from mowen.canonicizers import strip_null_chars as strip_null_chars
 from mowen.canonicizers import strip_numbers as strip_numbers
 from mowen.canonicizers import strip_punctuation as strip_punctuation
 from mowen.canonicizers import unify_case as unify_case
+from mowen.canonicizers import smash_i as smash_i
 
 __all__ = ["Canonicizer", "canonicizer_registry"]
