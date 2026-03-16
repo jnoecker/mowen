@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mowen-cli"
+version = "0.1.0"
+description = "CLI for mowen authorship attribution toolkit"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "mowen>=0.1.0",
+    "typer>=0.9",
+]
+
+[project.scripts]
+mowen = "mowen_cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mowen_cli"]
