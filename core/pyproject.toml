@@ -15,10 +15,11 @@ dependencies = []
 nlp = ["spacy>=3.7"]
 transformers = ["transformers>=4.36", "torch>=2.1"]
 chinese = ["jieba>=0.42"]
+wordnet = ["nltk>=3.8"]
 pdf = ["pdfplumber>=0.10"]
 docx = ["python-docx>=1.1"]
 html = ["beautifulsoup4>=4.12"]
-all = ["mowen[nlp,transformers,chinese,pdf,docx,html]"]
+all = ["mowen[nlp,transformers,chinese,wordnet,pdf,docx,html]"]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",

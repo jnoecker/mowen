@@ -26,6 +26,8 @@ from mowen.event_drivers import syllables as syllables  # noqa: F401
 from mowen.event_drivers import line_features as line_features  # noqa: F401
 from mowen.event_drivers import punctuation_ngram as punctuation_ngram  # noqa: F401
 from mowen.event_drivers import vowel_mn_letter_words as vowel_mn_letter_words  # noqa: F401
+from mowen.event_drivers import ner as ner  # noqa: F401
+from mowen.event_drivers import definitions as definitions  # noqa: F401
 
 try:
     from mowen.event_drivers import transformer_embeddings as transformer_embeddings  # noqa: F401

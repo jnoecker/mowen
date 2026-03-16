@@ -12,7 +12,7 @@ full-stack web application.
 
 - Pluggable pipeline: canonicizers, event drivers, event cullers, distance functions, analysis methods
 - 10 canonicizers (case folding, whitespace normalization, punctuation handling, Smash I, ...)
-- 31 event drivers (character/word n-grams, skip-grams, POS tags, Porter stemmer, syllables, function words, transformer embeddings, ...)
+- 35 event drivers (character/word n-grams, skip-grams, POS tags, NER, Porter stemmer, syllables, function words, WordNet definitions, transformer embeddings, ...)
 - 14 event cullers (most/least common, IQR, information gain, MAD, index of dispersion, weighted variance, ...)
 - 22 distance functions (cosine, Manhattan, KL divergence, chi-square, Keselj weighted, cross-entropy, WED, ...)
 - 15 analysis methods (nearest neighbor, SVM, Random Forest, Bagging NN, Thin Cross-Entropy, Burrows' Delta, MLP, ...)
