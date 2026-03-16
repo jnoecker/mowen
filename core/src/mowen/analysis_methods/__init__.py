@@ -19,6 +19,9 @@ from mowen.analysis_methods import markov_chain as markov_chain
 from mowen.analysis_methods import naive_bayes as naive_bayes
 from mowen.analysis_methods import nearest_neighbor as nearest_neighbor
 from mowen.analysis_methods import svm as svm
+from mowen.analysis_methods import random_forest as random_forest
+from mowen.analysis_methods import logistic_regression as logistic_regression
+from mowen.analysis_methods import mlp as mlp
 
 __all__ = [
     "AnalysisMethod",
