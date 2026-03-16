@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 
@@ -171,9 +173,14 @@ class PorterStemmer(EventDriver):
     display_name = "Porter Stemmer"
     description = "Word stems via the Porter stemming algorithm (English)."
 
+    @classmethod
+    def param_defs(cls) -> list[ParamDef]:
+        return [TOKENIZER_PARAM]
+
     def create_event_set(self, text: str) -> EventSet:
+        tok: str = self.get_param("tokenizer")
         events = EventSet()
-        for word in text.split():
+        for word in tokenize_text(text, tok):
             stemmed = _stem(word.lower())
             if stemmed:
                 events.append(Event(data=stemmed))

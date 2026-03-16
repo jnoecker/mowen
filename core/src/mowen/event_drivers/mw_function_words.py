@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 
@@ -42,9 +44,14 @@ class MWFunctionWords(EventDriver):
     display_name = "Mosteller-Wallace Function Words"
     description = "The 70 function words from the Federalist Papers study."
 
+    @classmethod
+    def param_defs(cls) -> list[ParamDef]:
+        return [TOKENIZER_PARAM]
+
     def create_event_set(self, text: str) -> EventSet:
+        tok: str = self.get_param("tokenizer")
         events = EventSet()
-        for word in text.split():
+        for word in tokenize_text(text, tok):
             lower = word.lower()
             if lower in _MW_WORDS:
                 events.append(Event(data=lower))

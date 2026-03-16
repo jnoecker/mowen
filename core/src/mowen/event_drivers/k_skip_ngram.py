@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from itertools import combinations
-
 from mowen.event_drivers.base import EventDriver, event_driver_registry
 from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 
@@ -51,12 +50,14 @@ class KSkipWordNGram(EventDriver):
         return [
             ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
             ParamDef(name="k", description="Words to skip.", param_type=int, default=1, min_value=0, max_value=10),
+            TOKENIZER_PARAM,
         ]
 
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
         k: int = self.get_param("k")
-        words = text.split()
+        tok: str = self.get_param("tokenizer")
+        words = tokenize_text(text, tok)
         events = EventSet()
         step = k + 1
         for start in range(len(words)):

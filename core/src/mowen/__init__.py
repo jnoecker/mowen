@@ -10,6 +10,7 @@ except PackageNotFoundError:
 from mowen.pipeline import Pipeline, PipelineConfig, ComponentSpec
 from mowen.types import Attribution, Document, Event, EventSet, Histogram, NumericEventSet, PipelineResult
 from mowen.document_loaders import load_document
+from mowen.tokenizers import Tokenizer, tokenizer_registry
 from mowen.evaluation import (
     AuthorMetrics,
     EvaluationResult,
@@ -38,5 +39,7 @@ __all__ = [
     "k_fold",
     "leave_one_out",
     "load_document",
+    "Tokenizer",
+    "tokenizer_registry",
     "write_results_csv",
 ]

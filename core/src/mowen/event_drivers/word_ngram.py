@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
@@ -12,9 +13,8 @@ from mowen.event_drivers.base import EventDriver, event_driver_registry
 class WordNGram(EventDriver):
     """Extract overlapping word n-grams from text.
 
-    The text is split on whitespace and a sliding window of size *n* moves
-    one word at a time, producing one :class:`~mowen.types.Event` per
-    position.  The n-gram words are joined with a single space.
+    The text is split using the configured tokenizer and a sliding
+    window of size *n* moves one word at a time.
     """
 
     display_name = "Word N-Gram"
@@ -31,11 +31,13 @@ class WordNGram(EventDriver):
                 min_value=1,
                 max_value=10,
             ),
+            TOKENIZER_PARAM,
         ]
 
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
-        words = text.split()
+        tok: str = self.get_param("tokenizer")
+        words = tokenize_text(text, tok)
         events = EventSet()
         for i in range(len(words) - n + 1):
             events.append(Event(data=" ".join(words[i : i + n])))

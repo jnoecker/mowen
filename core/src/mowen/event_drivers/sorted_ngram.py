@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
 from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 
@@ -46,11 +47,13 @@ class SortedWordNGram(EventDriver):
     def param_defs(cls) -> list[ParamDef]:
         return [
             ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
+            TOKENIZER_PARAM,
         ]
 
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
-        words = text.split()
+        tok: str = self.get_param("tokenizer")
+        words = tokenize_text(text, tok)
         events = EventSet()
         for i in range(len(words) - n + 1):
             gram = " ".join(sorted(words[i:i + n]))

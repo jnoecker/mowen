@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 
+from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
@@ -21,11 +23,16 @@ class SentenceLength(EventDriver):
     display_name = "Sentence Length"
     description = "Word count per sentence as events."
 
+    @classmethod
+    def param_defs(cls) -> list[ParamDef]:
+        return [TOKENIZER_PARAM]
+
     def create_event_set(self, text: str) -> EventSet:
+        tok: str = self.get_param("tokenizer")
         sentences = re.split(r"[.!?]+", text)
         events = EventSet()
         for sentence in sentences:
-            words = sentence.split()
+            words = tokenize_text(sentence, tok)
             if words:
                 events.append(Event(data=str(len(words))))
         return events

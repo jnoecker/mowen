@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 
@@ -19,11 +21,16 @@ class FirstWordInSentence(EventDriver):
     display_name = "First Word in Sentence"
     description = "First word of each sentence."
 
+    @classmethod
+    def param_defs(cls) -> list[ParamDef]:
+        return [TOKENIZER_PARAM]
+
     def create_event_set(self, text: str) -> EventSet:
+        tok: str = self.get_param("tokenizer")
         events = EventSet()
         sentences = re.split(r"[.!?]+", text)
         for sentence in sentences:
-            words = sentence.split()
+            words = tokenize_text(sentence, tok)
             if words:
                 events.append(Event(data=words[0]))
         return events
