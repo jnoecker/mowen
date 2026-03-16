@@ -12,11 +12,12 @@ full-stack web application.
 
 - Pluggable pipeline: canonicizers, event drivers, event cullers, distance functions, analysis methods
 - 9 canonicizers (case folding, whitespace normalization, punctuation handling, ...)
-- 12 event drivers (character/word n-grams, POS tags, function words, ...)
-- 9 event cullers (most/least common, IQR, information gain, ...)
-- 15 distance functions (cosine, Manhattan, KL divergence, chi-square, ...)
-- 10 analysis methods (nearest neighbor, SVM, Naive Bayes, Burrows' Delta, ...)
+- 24 event drivers (character/word n-grams, skip-grams, POS tags, Porter stemmer, function words, transformer embeddings, ...)
+- 12 event cullers (most/least common, IQR, information gain, MAD, index of dispersion, ...)
+- 20 distance functions (cosine, Manhattan, KL divergence, chi-square, Keselj weighted, cross-entropy, ...)
+- 13 analysis methods (nearest neighbor, SVM, Random Forest, Naive Bayes, Burrows' Delta, MLP, ...)
 - 4 document loaders (plain text, PDF, DOCX, HTML)
+- Leave-one-out and k-fold cross-validation with precision/recall/F1 metrics
 - JGAAP CSV compatibility for existing experiment files
 - React-based web UI with experiment management
 - REST API with OpenAPI docs
@@ -59,6 +60,9 @@ pip install mowen-cli
 ```bash
 # Run an attribution experiment
 mowen run -d docs.csv -e word_ngram -e character_ngram:n=3 --distance cosine
+
+# Evaluate accuracy via leave-one-out cross-validation
+mowen evaluate -d corpus.csv -e character_ngram:n=3 --distance cosine --mode loo
 
 # List available components
 mowen list-components
