@@ -2,6 +2,7 @@
 
 from collections.abc import Generator
 
+from fastapi import HTTPException
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
@@ -43,3 +44,11 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+def get_or_404(db: Session, model: type, id: int, label: str = "Resource"):
+    """Fetch a row by primary key or raise a 404 HTTPException."""
+    obj = db.query(model).filter(model.id == id).first()
+    if obj is None:
+        raise HTTPException(status_code=404, detail=f"{label} not found")
+    return obj

@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.distance_functions.base import DistanceFunction, distance_function_registry
+from mowen.distance_functions.base import (
+    DistanceFunction,
+    _iter_relative_frequencies,
+    distance_function_registry,
+)
 from mowen.types import Histogram
 
 
@@ -25,13 +29,9 @@ class BrayCurtisDistance(DistanceFunction):
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Bray-Curtis dissimilarity between *h1* and *h2*."""
-        all_events = h1.unique_events() | h2.unique_events()
-
         numerator = 0.0
         denominator = 0.0
-        for event in all_events:
-            p = h1.relative_frequency(event)
-            q = h2.relative_frequency(event)
+        for p, q in _iter_relative_frequencies(h1, h2):
             numerator += abs(p - q)
             denominator += p + q
 

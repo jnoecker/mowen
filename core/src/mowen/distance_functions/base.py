@@ -4,11 +4,20 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
 
 from mowen.parameters import Configurable
 from mowen.registry import Registry
 from mowen.types import Histogram
+
+
+def _iter_relative_frequencies(
+    h1: Histogram, h2: Histogram
+) -> Iterator[tuple[float, float]]:
+    """Yield (freq1, freq2) pairs over the union of events in both histograms."""
+    for event in h1.unique_events() | h2.unique_events():
+        yield h1.relative_frequency(event), h2.relative_frequency(event)
 
 
 def _cosine_similarity(h1: Histogram, h2: Histogram) -> float | None:
@@ -18,15 +27,11 @@ def _cosine_similarity(h1: Histogram, h2: Histogram) -> float | None:
     between the two relative-frequency vectors, or ``None`` if either
     histogram has zero magnitude (i.e. is a zero vector).
     """
-    all_events = h1.unique_events() | h2.unique_events()
-
     dot_product = 0.0
     magnitude_h1 = 0.0
     magnitude_h2 = 0.0
 
-    for event in all_events:
-        freq1 = h1.relative_frequency(event)
-        freq2 = h2.relative_frequency(event)
+    for freq1, freq2 in _iter_relative_frequencies(h1, h2):
         dot_product += freq1 * freq2
         magnitude_h1 += freq1 * freq1
         magnitude_h2 += freq2 * freq2

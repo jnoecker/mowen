@@ -37,6 +37,31 @@ def _make_session(db_url: str) -> tuple[Session, Callable[[], None]]:
     return session, cleanup
 
 
+def _load_corpus_docs(
+    session: Session, corpus_ids: list[int]
+) -> tuple[list[MowenDocument], list[int]]:
+    """Load documents from corpora, returning (mowen_docs, db_doc_ids)."""
+    docs: list[MowenDocument] = []
+    doc_ids: list[int] = []
+    seen: set[int] = set()
+    for cd in (
+        session.query(CorpusDocument)
+        .filter(CorpusDocument.corpus_id.in_(corpus_ids))
+        .all()
+    ):
+        if cd.document_id in seen:
+            continue
+        seen.add(cd.document_id)
+        db_doc = session.get(DBDocument, cd.document_id)
+        if db_doc is None:
+            continue
+        docs.append(
+            load_document(db_doc.file_path, author=db_doc.author_name, title=db_doc.title)
+        )
+        doc_ids.append(db_doc.id)
+    return docs, doc_ids
+
+
 def execute_experiment(experiment_id: int, session: Session) -> None:
     """Run the experiment pipeline within the given session.
 
@@ -63,42 +88,8 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
     ]
 
     # Load documents
-    known_docs: list[MowenDocument] = []
-    unknown_docs: list[MowenDocument] = []
-    unknown_doc_id_map: list[int] = []
-
-    seen_known: set[int] = set()
-    for cd in (
-        session.query(CorpusDocument)
-        .filter(CorpusDocument.corpus_id.in_(known_corpus_ids))
-        .all()
-    ):
-        if cd.document_id in seen_known:
-            continue
-        seen_known.add(cd.document_id)
-        db_doc = session.get(DBDocument, cd.document_id)
-        if db_doc is None:
-            continue
-        known_docs.append(
-            load_document(db_doc.file_path, author=db_doc.author_name, title=db_doc.title)
-        )
-
-    seen_unknown: set[int] = set()
-    for cd in (
-        session.query(CorpusDocument)
-        .filter(CorpusDocument.corpus_id.in_(unknown_corpus_ids))
-        .all()
-    ):
-        if cd.document_id in seen_unknown:
-            continue
-        seen_unknown.add(cd.document_id)
-        db_doc = session.get(DBDocument, cd.document_id)
-        if db_doc is None:
-            continue
-        unknown_docs.append(
-            load_document(db_doc.file_path, author=db_doc.author_name, title=db_doc.title)
-        )
-        unknown_doc_id_map.append(db_doc.id)
+    known_docs, _ = _load_corpus_docs(session, known_corpus_ids)
+    unknown_docs, unknown_doc_id_map = _load_corpus_docs(session, unknown_corpus_ids)
 
     # Build pipeline
     pipeline_config = PipelineConfig(**config_dict)

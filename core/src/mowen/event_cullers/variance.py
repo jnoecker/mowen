@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, event_culler_registry
+from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
 from mowen.parameters import ParamDef
 from mowen.types import Event, EventSet
 
@@ -39,13 +39,7 @@ class Variance(EventCuller):
 
     def init(self, event_sets: list[EventSet]) -> None:
         """Compute cross-document variance for each event and select those above threshold."""
-        # Collect per-document counts for each event.
-        all_events: set[Event] = set()
-        doc_histograms: list[dict[Event, int]] = []
-        for event_set in event_sets:
-            counts = event_set.to_histogram().counts
-            doc_histograms.append(counts)
-            all_events.update(counts.keys())
+        all_events, doc_histograms = _per_document_histograms(event_sets)
 
         if not all_events or not doc_histograms:
             self._kept_events = set()

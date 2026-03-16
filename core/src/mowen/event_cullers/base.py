@@ -10,6 +10,24 @@ from mowen.registry import Registry
 from mowen.types import Event, EventSet
 
 
+def _per_document_histograms(
+    event_sets: list[EventSet],
+) -> tuple[set[Event], list[dict[Event, int]]]:
+    """Build per-document frequency maps and collect the union of all events.
+
+    Returns a tuple of ``(all_events, doc_histograms)`` where *all_events* is
+    the set of every :class:`Event` seen in any event set and
+    *doc_histograms* is a list of ``{event: count}`` dicts, one per event set.
+    """
+    all_events: set[Event] = set()
+    doc_histograms: list[dict[Event, int]] = []
+    for event_set in event_sets:
+        counts = dict(event_set.to_histogram().counts)
+        doc_histograms.append(counts)
+        all_events.update(counts.keys())
+    return all_events, doc_histograms
+
+
 def _aggregate_counts(event_sets: list[EventSet]) -> dict[Event, int]:
     """Build a combined frequency map across all event sets.
 

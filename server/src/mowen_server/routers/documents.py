@@ -2,14 +2,14 @@
 
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, Form, status
+from fastapi import APIRouter, Depends, UploadFile, Form, status
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
 from mowen.document_loaders import load_document
 
 from ..config import Settings, get_settings
-from ..db import get_db
+from ..db import get_db, get_or_404
 from ..models import Document
 from ..schemas import DocumentResponse, DocumentUpdate
 from ..storage import DocumentStorage
@@ -60,10 +60,7 @@ def list_documents(db: Session = Depends(get_db)) -> list[Document]:
 @router.get("/{document_id}", response_model=DocumentResponse)
 def get_document(document_id: int, db: Session = Depends(get_db)) -> Document:
     """Return a single document by ID."""
-    document = db.query(Document).filter(Document.id == document_id).first()
-    if document is None:
-        raise HTTPException(status_code=404, detail="Document not found")
-    return document
+    return get_or_404(db, Document, document_id, "Document")
 
 
 @router.patch("/{document_id}", response_model=DocumentResponse)
@@ -73,9 +70,7 @@ def update_document(
     db: Session = Depends(get_db),
 ) -> Document:
     """Update document metadata."""
-    document = db.query(Document).filter(Document.id == document_id).first()
-    if document is None:
-        raise HTTPException(status_code=404, detail="Document not found")
+    document = get_or_404(db, Document, document_id, "Document")
 
     updates = body.model_dump(exclude_unset=True)
     for field, value in updates.items():
@@ -93,9 +88,7 @@ def delete_document(
     settings: Settings = Depends(get_settings),
 ) -> None:
     """Delete a document and its backing file."""
-    document = db.query(Document).filter(Document.id == document_id).first()
-    if document is None:
-        raise HTTPException(status_code=404, detail="Document not found")
+    document = get_or_404(db, Document, document_id, "Document")
 
     storage = DocumentStorage(settings.upload_dir)
     storage.delete(Path(document.file_path))
@@ -110,9 +103,7 @@ def get_document_text(
     db: Session = Depends(get_db),
 ) -> PlainTextResponse:
     """Return the plain-text content extracted from the stored file."""
-    document = db.query(Document).filter(Document.id == document_id).first()
-    if document is None:
-        raise HTTPException(status_code=404, detail="Document not found")
+    document = get_or_404(db, Document, document_id, "Document")
 
     doc = load_document(
         document.file_path,

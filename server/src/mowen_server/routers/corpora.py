@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from ..db import get_db
+from ..db import get_db, get_or_404
 from ..models import Corpus, CorpusDocument, Document
 from ..schemas import (
     CorpusCreate,
@@ -61,9 +61,7 @@ def get_corpus(
     db: Session = Depends(get_db),
 ) -> CorpusResponse:
     """Return a single corpus by ID."""
-    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
-    if corpus is None:
-        raise HTTPException(status_code=404, detail="Corpus not found")
+    corpus = get_or_404(db, Corpus, corpus_id, "Corpus")
     return _corpus_response(db, corpus)
 
 
@@ -74,9 +72,7 @@ def update_corpus(
     db: Session = Depends(get_db),
 ) -> CorpusResponse:
     """Update corpus metadata."""
-    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
-    if corpus is None:
-        raise HTTPException(status_code=404, detail="Corpus not found")
+    corpus = get_or_404(db, Corpus, corpus_id, "Corpus")
 
     updates = body.model_dump(exclude_unset=True)
     for field, value in updates.items():
@@ -93,9 +89,7 @@ def delete_corpus(
     db: Session = Depends(get_db),
 ) -> None:
     """Delete a corpus (documents are not removed)."""
-    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
-    if corpus is None:
-        raise HTTPException(status_code=404, detail="Corpus not found")
+    corpus = get_or_404(db, Corpus, corpus_id, "Corpus")
 
     db.delete(corpus)
     db.commit()
@@ -107,9 +101,7 @@ def list_corpus_documents(
     db: Session = Depends(get_db),
 ) -> list[DocumentResponse]:
     """Return all documents belonging to a corpus."""
-    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
-    if corpus is None:
-        raise HTTPException(status_code=404, detail="Corpus not found")
+    get_or_404(db, Corpus, corpus_id, "Corpus")
 
     docs = (
         db.query(Document)
@@ -127,9 +119,7 @@ def add_documents_to_corpus(
     db: Session = Depends(get_db),
 ) -> CorpusResponse:
     """Add documents to a corpus."""
-    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
-    if corpus is None:
-        raise HTTPException(status_code=404, detail="Corpus not found")
+    corpus = get_or_404(db, Corpus, corpus_id, "Corpus")
 
     # Verify all document IDs exist
     existing_ids = {
@@ -172,9 +162,7 @@ def remove_documents_from_corpus(
     db: Session = Depends(get_db),
 ) -> CorpusResponse:
     """Remove documents from a corpus."""
-    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
-    if corpus is None:
-        raise HTTPException(status_code=404, detail="Corpus not found")
+    corpus = get_or_404(db, Corpus, corpus_id, "Corpus")
 
     db.query(CorpusDocument).filter(
         CorpusDocument.corpus_id == corpus_id,

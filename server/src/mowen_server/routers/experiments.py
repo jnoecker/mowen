@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
 from ..config import Settings, get_settings
-from ..db import get_db
+from ..db import get_db, get_or_404
 from ..models import Experiment, ExperimentCorpus, ExperimentResult
 from ..runner import experiment_runner
 from ..schemas import (
@@ -94,9 +94,7 @@ def get_experiment(
     db: Session = Depends(get_db),
 ) -> ExperimentResponse:
     """Return a single experiment by ID."""
-    experiment = db.query(Experiment).filter(Experiment.id == experiment_id).first()
-    if experiment is None:
-        raise HTTPException(status_code=404, detail="Experiment not found")
+    experiment = get_or_404(db, Experiment, experiment_id, "Experiment")
     return _experiment_to_response(experiment)
 
 
@@ -106,9 +104,7 @@ def delete_experiment(
     db: Session = Depends(get_db),
 ) -> None:
     """Delete an experiment and its results."""
-    experiment = db.query(Experiment).filter(Experiment.id == experiment_id).first()
-    if experiment is None:
-        raise HTTPException(status_code=404, detail="Experiment not found")
+    experiment = get_or_404(db, Experiment, experiment_id, "Experiment")
 
     db.delete(experiment)
     db.commit()
@@ -120,9 +116,7 @@ def get_experiment_results(
     db: Session = Depends(get_db),
 ) -> list[ExperimentResultResponse]:
     """Return results for a completed experiment."""
-    experiment = db.query(Experiment).filter(Experiment.id == experiment_id).first()
-    if experiment is None:
-        raise HTTPException(status_code=404, detail="Experiment not found")
+    experiment = get_or_404(db, Experiment, experiment_id, "Experiment")
     if experiment.status != "completed":
         raise HTTPException(
             status_code=409,
@@ -158,9 +152,7 @@ def get_experiment_progress(
 ) -> StreamingResponse:
     """SSE endpoint for real-time experiment progress updates."""
     # Verify the experiment exists before opening the stream
-    experiment = db.query(Experiment).filter(Experiment.id == experiment_id).first()
-    if experiment is None:
-        raise HTTPException(status_code=404, detail="Experiment not found")
+    get_or_404(db, Experiment, experiment_id, "Experiment")
 
     return StreamingResponse(
         _progress_stream(experiment_id, settings.database_url),

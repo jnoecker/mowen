@@ -5,7 +5,11 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from mowen.distance_functions.base import DistanceFunction, distance_function_registry
+from mowen.distance_functions.base import (
+    DistanceFunction,
+    _iter_relative_frequencies,
+    distance_function_registry,
+)
 from mowen.types import Histogram
 
 
@@ -26,11 +30,9 @@ class EuclideanDistance(DistanceFunction):
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Euclidean distance between *h1* and *h2*."""
-        all_events = h1.unique_events() | h2.unique_events()
-
         total = 0.0
-        for event in all_events:
-            diff = h1.relative_frequency(event) - h2.relative_frequency(event)
+        for freq1, freq2 in _iter_relative_frequencies(h1, h2):
+            diff = freq1 - freq2
             total += diff * diff
 
         return math.sqrt(total)
