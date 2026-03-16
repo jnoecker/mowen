@@ -1,6 +1,6 @@
 """SQLAlchemy ORM models for the mowen database."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column,
@@ -26,9 +26,9 @@ class Document(Base):
     file_path = Column(String, nullable=False)
     original_filename = Column(String, nullable=False)
     char_count = Column(Integer, nullable=False, default=0)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
-        DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)
     )
 
     corpora = relationship(
@@ -42,9 +42,9 @@ class Corpus(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False, default="")
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
-        DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc)
     )
 
     documents = relationship(
@@ -75,7 +75,8 @@ class Experiment(Base):
     config = Column(Text, nullable=False)  # JSON stored as Text
     progress = Column(Float, nullable=False, default=0.0)
     error_message = Column(String, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    lower_is_better = Column(Integer, nullable=False, default=1)  # boolean as int
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
 
@@ -113,7 +114,7 @@ class ExperimentResult(Base):
         Integer, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False
     )
     rankings = Column(Text, nullable=False)  # JSON stored as Text
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     experiment = relationship("Experiment", back_populates="results")
     unknown_document = relationship("Document")

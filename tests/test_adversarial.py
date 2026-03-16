@@ -244,3 +244,131 @@ class TestConfigTildeHandling:
         )
         assert "{home}" not in settings.database_url
         assert str(Path.home()) in settings.database_url
+
+
+# -----------------------------------------------------------------------
+# Finding 7: Culler data leakage — unknown docs must not influence culling
+# -----------------------------------------------------------------------
+
+
+class TestCullerDataLeakage:
+    def test_unknown_only_events_not_in_culler_statistics(self):
+        """Events exclusive to unknown docs should not affect culler selection."""
+        # Known docs have events a, b, c (a is most common)
+        known = [
+            Document(text="a a a b c", author="A"),
+            Document(text="a a b b c", author="B"),
+        ]
+        # Unknown doc has a unique event 'z' that appears many times
+        unknown = [Document(text="z z z z z z z z z z a")]
+
+        config = PipelineConfig(
+            event_drivers=[{"name": "word_events"}],
+            event_cullers=[{"name": "most_common", "params": {"n": 2}}],
+            distance_function={"name": "cosine"},
+            analysis_method={"name": "nearest_neighbor"},
+        )
+        results = Pipeline(config).execute(known, unknown)
+        # Should complete without error; 'z' should not be in the kept events
+        # since the culler only sees known docs
+        assert len(results) == 1
+        assert results[0].top_author is not None
+
+
+# -----------------------------------------------------------------------
+# Finding 8: Angular separation zero-vector semantics
+# -----------------------------------------------------------------------
+
+
+class TestAngularSeparationZeroVector:
+    def test_zero_vector_returns_max_distance(self):
+        """Empty histograms should return 1.0 (maximally dissimilar)."""
+        d = distance_function_registry.create("angular_separation")
+        h_empty = Histogram()
+        h_real = Histogram({Event("a"): 1})
+        assert d.distance(h_empty, h_real) == 1.0
+        assert d.distance(h_real, h_empty) == 1.0
+        assert d.distance(h_empty, h_empty) == 1.0
+
+
+# -----------------------------------------------------------------------
+# Finding 9: Burrows' Delta zero-variance feature handling
+# -----------------------------------------------------------------------
+
+
+class TestBurrowsDeltaZeroVariance:
+    def test_zero_variance_features_skipped(self):
+        """Features with identical frequency across all docs should be skipped."""
+        method = analysis_method_registry.create("burrows_delta", {"n_features": 100})
+
+        # Event 'c' has identical frequency in all docs → zero variance
+        data = [
+            (Document(text="", author="A"), Histogram({Event("a"): 5, Event("b"): 1, Event("c"): 3})),
+            (Document(text="", author="A"), Histogram({Event("a"): 4, Event("b"): 2, Event("c"): 3})),
+            (Document(text="", author="B"), Histogram({Event("a"): 1, Event("b"): 5, Event("c"): 3})),
+            (Document(text="", author="B"), Histogram({Event("a"): 2, Event("b"): 4, Event("c"): 3})),
+        ]
+        method.train(data)
+
+        # Event 'c' should be excluded from features (zero variance)
+        assert Event("c") not in method._features
+        # Events a and b should remain
+        assert Event("a") in method._features
+        assert Event("b") in method._features
+
+    def test_no_extreme_scores_from_zero_variance(self):
+        """Scores should remain reasonable even with uniform features."""
+        method = analysis_method_registry.create("burrows_delta", {"n_features": 100})
+
+        data = [
+            (Document(text="", author="A"), Histogram({Event("a"): 5, Event("c"): 10})),
+            (Document(text="", author="A"), Histogram({Event("a"): 4, Event("c"): 10})),
+            (Document(text="", author="B"), Histogram({Event("a"): 1, Event("c"): 10})),
+            (Document(text="", author="B"), Histogram({Event("a"): 2, Event("c"): 10})),
+        ]
+        method.train(data)
+
+        unknown = Histogram({Event("a"): 6, Event("c"): 10})
+        results = method.analyze(unknown)
+        # Scores should be finite and reasonable (no 1e+10 blow-ups)
+        assert all(abs(r.score) < 100 for r in results)
+        assert results[0].author == "A"
+
+
+# -----------------------------------------------------------------------
+# Finding 10: Score semantics lower_is_better propagation
+# -----------------------------------------------------------------------
+
+
+class TestScoreSemantics:
+    def test_distance_method_lower_is_better(self):
+        """Distance-based methods should set lower_is_better=True."""
+        known = [
+            Document(text="a a a b", author="A"),
+            Document(text="b b b a", author="B"),
+        ]
+        unknown = [Document(text="a a a")]
+        config = PipelineConfig(
+            event_drivers=[{"name": "word_events"}],
+            distance_function={"name": "cosine"},
+            analysis_method={"name": "nearest_neighbor"},
+        )
+        results = Pipeline(config).execute(known, unknown)
+        assert results[0].lower_is_better is True
+
+    def test_sklearn_method_higher_is_better(self):
+        """Probability-based methods should set lower_is_better=False."""
+        pytest.importorskip("sklearn")
+        known = [
+            Document(text="a a a b", author="A"),
+            Document(text="a a b b", author="A"),
+            Document(text="b b b a", author="B"),
+            Document(text="b b a a", author="B"),
+        ]
+        unknown = [Document(text="a a a")]
+        config = PipelineConfig(
+            event_drivers=[{"name": "word_events"}],
+            analysis_method={"name": "svm"},
+        )
+        results = Pipeline(config).execute(known, unknown)
+        assert results[0].lower_is_better is False

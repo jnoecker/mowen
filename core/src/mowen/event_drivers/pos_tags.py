@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from mowen.parameters import ParamDef
 from mowen.types import Event, EventSet
 
@@ -9,6 +11,7 @@ from mowen.event_drivers.base import EventDriver, event_driver_registry
 
 
 @event_driver_registry.register("pos_tags")
+@dataclass
 class POSTags(EventDriver):
     """Extract part-of-speech tags for each token using spaCy.
 
@@ -30,8 +33,8 @@ class POSTags(EventDriver):
             ),
         ]
 
-    _nlp: object = None
-    _nlp_model_name: str = ""
+    _nlp: object = field(default=None, init=False, repr=False)
+    _nlp_model_name: str = field(default="", init=False, repr=False)
 
     def create_event_set(self, text: str) -> EventSet:
         try:

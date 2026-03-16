@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable
+
+logger = logging.getLogger("mowen.pipeline")
 
 from mowen.analysis_methods import AnalysisMethod, NeighborAnalysisMethod, analysis_method_registry
 from mowen.canonicizers import canonicizer_registry
@@ -133,6 +136,11 @@ class Pipeline:
             for canon in canonicizers:
                 text = canon.process(text)
             canonicized_texts[idx] = text
+            if not text.strip():
+                logger.warning(
+                    "Document %r has empty text after canonicization",
+                    all_docs[idx].title,
+                )
 
         # --- 3. Extract events ---
         self._report(0.3, "Extracting events")
@@ -188,7 +196,11 @@ class Pipeline:
             for i, doc in enumerate(unknown_documents):
                 idx = n_known + i
                 rankings = analysis_method.analyze(doc_features[idx])  # type: ignore[arg-type]
-                results.append(PipelineResult(unknown_document=doc, rankings=rankings))
+                results.append(PipelineResult(
+                    unknown_document=doc,
+                    rankings=rankings,
+                    lower_is_better=analysis_method.lower_is_better,
+                ))
                 progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
                 self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")
 
@@ -202,9 +214,10 @@ class Pipeline:
         # --- 4. Cull events ---
         self._report(0.5, "Culling events")
         if event_cullers:
-            all_event_sets = list(doc_event_sets.values())
+            # Only derive statistics from known documents to prevent data leakage.
+            known_event_sets = [doc_event_sets[i] for i in range(n_known)]
             for culler in event_cullers:
-                culler.init(all_event_sets)
+                culler.init(known_event_sets)
                 doc_event_sets = {
                     idx: culler.cull(es) for idx, es in doc_event_sets.items()
                 }
@@ -226,7 +239,11 @@ class Pipeline:
         for i, doc in enumerate(unknown_documents):
             idx = n_known + i
             rankings: list[Attribution] = analysis_method.analyze(doc_histograms[idx])
-            results.append(PipelineResult(unknown_document=doc, rankings=rankings))
+            results.append(PipelineResult(
+                unknown_document=doc,
+                rankings=rankings,
+                lower_is_better=analysis_method.lower_is_better,
+            ))
             progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
             self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")
 

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from mowen.document_loaders.base import DocumentLoader
 from mowen.exceptions import DocumentLoadError
 from mowen.types import Document
+
+logger = logging.getLogger("mowen.document_loaders")
 
 
 class PlainTextLoader(DocumentLoader):
@@ -25,6 +28,10 @@ class PlainTextLoader(DocumentLoader):
         except UnicodeDecodeError:
             try:
                 text = path.read_text(encoding="latin-1")
+                logger.warning(
+                    "UTF-8 decode failed for %s; falling back to Latin-1",
+                    path,
+                )
             except Exception as e:
                 raise DocumentLoadError(f"Cannot decode {path}: {e}") from e
         return Document(

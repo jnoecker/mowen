@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
 from mowen.parameters import ParamDef
@@ -26,9 +26,9 @@ class TransformerEmbeddingDriver(EventDriver):
         "Compatible with sklearn-based analysis methods (SVM, LDA, etc.)."
     )
 
-    _tokenizer: object = None
-    _model: object = None
-    _model_name_cache: str = ""
+    _tokenizer: object = field(default=None, init=False, repr=False)
+    _model: object = field(default=None, init=False, repr=False)
+    _model_name_cache: str = field(default="", init=False, repr=False)
 
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
@@ -76,12 +76,8 @@ class TransformerEmbeddingDriver(EventDriver):
         self._model.eval()
         self._model_name_cache = model_name
 
-    def create_event_set(self, text: str) -> EventSet:
-        """Return a NumericEventSet containing the mean-pooled embedding.
-
-        The return type is declared as EventSet for interface compatibility,
-        but the actual object is a NumericEventSet (list[float]).
-        """
+    def create_event_set(self, text: str) -> NumericEventSet:
+        """Return a NumericEventSet containing the mean-pooled embedding."""
         import torch
 
         self._ensure_model()
@@ -106,4 +102,4 @@ class TransformerEmbeddingDriver(EventDriver):
         sum_mask = mask_expanded.sum(dim=1).clamp(min=1e-9)
         embedding = (sum_embeddings / sum_mask).squeeze(0)
 
-        return NumericEventSet(embedding.tolist())  # type: ignore[return-value]
+        return NumericEventSet(embedding.tolist())

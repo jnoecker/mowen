@@ -28,6 +28,8 @@ class SklearnAnalysisMethod(AnalysisMethod):
     Score semantics: higher = better match (probability-based).
     """
 
+    lower_is_better: bool = False
+
     _vocabulary: list[Event] = field(
         default_factory=list, init=False, repr=False,
     )

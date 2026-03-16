@@ -28,6 +28,8 @@ class MarkovChain(AnalysisMethod):
     Score semantics: higher = better match (log-likelihood-based).
     """
 
+    lower_is_better: bool = False
+
     display_name: str = "Markov Chain"
     description: str = (
         "Assigns authorship by computing the log-likelihood of the "

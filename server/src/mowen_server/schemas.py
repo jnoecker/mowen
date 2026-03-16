@@ -146,5 +146,6 @@ class RankingEntry(BaseModel):
 class ExperimentResultResponse(BaseModel):
     unknown_document: DocumentResponse
     rankings: list[RankingEntry]
+    lower_is_better: bool = True
 
     model_config = ConfigDict(from_attributes=True)

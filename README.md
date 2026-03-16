@@ -34,10 +34,10 @@ pip install mowen
 from mowen import Pipeline, PipelineConfig, Document
 
 known = [
-    Document("sample_a.txt", text="...", author="Alice"),
-    Document("sample_b.txt", text="...", author="Bob"),
+    Document(text="...", author="Alice", title="sample_a.txt"),
+    Document(text="...", author="Bob", title="sample_b.txt"),
 ]
-unknown = [Document("mystery.txt", text="...")]
+unknown = [Document(text="...", title="mystery.txt")]
 
 config = PipelineConfig(
     event_drivers=[{"name": "word_ngram", "params": {"n": 2}}],

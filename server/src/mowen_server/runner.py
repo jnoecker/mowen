@@ -1,10 +1,13 @@
 """In-process experiment runner using background threads."""
 
 import json
+import logging
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
+
+logger = logging.getLogger("mowen_server.runner")
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -73,7 +76,7 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
         return
 
     experiment.status = "running"
-    experiment.started_at = datetime.utcnow()
+    experiment.started_at = datetime.now(timezone.utc)
     session.commit()
 
     # Load config
@@ -120,8 +123,10 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
             )
         )
 
+    if results:
+        experiment.lower_is_better = int(results[0].lower_is_better)
     experiment.status = "completed"
-    experiment.completed_at = datetime.utcnow()
+    experiment.completed_at = datetime.now(timezone.utc)
     experiment.progress = 1.0
     session.commit()
 
@@ -155,16 +160,20 @@ class ExperimentRunner:
         try:
             execute_experiment(experiment_id, session)
         except Exception as e:
+            logger.exception("Experiment %d failed", experiment_id)
             try:
                 session.rollback()
                 experiment = session.get(Experiment, experiment_id)
                 if experiment:
                     experiment.status = "failed"
                     experiment.error_message = str(e)
-                    experiment.completed_at = datetime.utcnow()
+                    experiment.completed_at = datetime.now(timezone.utc)
                     session.commit()
             except Exception:
-                pass
+                logger.exception(
+                    "Failed to record error status for experiment %d",
+                    experiment_id,
+                )
         finally:
             cleanup()
 

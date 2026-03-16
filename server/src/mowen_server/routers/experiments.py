@@ -3,7 +3,7 @@
 import asyncio
 import json
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
@@ -110,10 +110,16 @@ def create_experiment(
 
 
 @router.get("/", response_model=list[ExperimentResponse])
-def list_experiments(db: Session = Depends(get_db)) -> list[ExperimentResponse]:
-    """Return all experiments."""
-    experiments = db.query(Experiment).all()
-    return [_experiment_to_response(e) for e in experiments]
+def list_experiments(
+    db: Session = Depends(get_db),
+    limit: int | None = Query(None, ge=1, le=10000),
+    offset: int = Query(0, ge=0),
+) -> list[ExperimentResponse]:
+    """Return experiments with optional pagination."""
+    q = db.query(Experiment).offset(offset)
+    if limit is not None:
+        q = q.limit(limit)
+    return [_experiment_to_response(e) for e in q.all()]
 
 
 @router.get("/{experiment_id}", response_model=ExperimentResponse)
@@ -157,6 +163,8 @@ def get_experiment_results(
         .all()
     )
 
+    lower_is_better = bool(experiment.lower_is_better)
+
     response: list[ExperimentResultResponse] = []
     for result in results:
         rankings_data = json.loads(result.rankings)
@@ -166,6 +174,7 @@ def get_experiment_results(
                     result.unknown_document, from_attributes=True
                 ),
                 rankings=[RankingEntry(**r) for r in rankings_data],
+                lower_is_better=lower_is_better,
             )
         )
 

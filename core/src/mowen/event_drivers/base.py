@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from mowen.parameters import Configurable
 from mowen.registry import Registry
-from mowen.types import EventSet
+from mowen.types import EventSet, NumericEventSet
 
 
 @dataclass
@@ -25,7 +25,7 @@ class EventDriver(ABC, Configurable):
     description: str = ""
 
     @abstractmethod
-    def create_event_set(self, text: str) -> EventSet:
+    def create_event_set(self, text: str) -> EventSet | NumericEventSet:
         """Transform *text* into an ordered sequence of events.
 
         Parameters
@@ -35,8 +35,10 @@ class EventDriver(ABC, Configurable):
 
         Returns
         -------
-        EventSet
-            The events extracted from *text*.
+        EventSet | NumericEventSet
+            The events extracted from *text*.  Most drivers return a
+            discrete :class:`EventSet`; embedding drivers return a
+            :class:`NumericEventSet`.
         """
 
 

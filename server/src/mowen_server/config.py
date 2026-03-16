@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     upload_dir: Path = Path("~/.mowen/documents")
     host: str = "127.0.0.1"
     port: int = 8000
+    max_upload_bytes: int = 50 * 1024 * 1024  # 50 MB
+    cors_origins: list[str] = ["*"]
 
     model_config = SettingsConfigDict(env_prefix="MOWEN_")
 

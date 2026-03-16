@@ -30,6 +30,7 @@ class AnalysisMethod(ABC, Configurable):
 
     display_name: str = ""
     description: str = ""
+    lower_is_better: bool = True
 
     _known_docs: list[tuple[Document, Histogram]] = field(
         default_factory=list, init=False, repr=False,

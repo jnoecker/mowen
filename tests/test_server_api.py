@@ -32,7 +32,7 @@ def client(tmp_path_factory):
     def override_settings():
         return settings
 
-    app = create_app()
+    app = create_app(settings=settings)
     app.dependency_overrides[get_settings] = override_settings
 
     # Initialize the database before running tests
@@ -54,10 +54,10 @@ def client(tmp_path_factory):
             from mowen_server.models import Experiment
             exp = session.get(Experiment, experiment_id)
             if exp:
-                from datetime import datetime
+                from datetime import datetime, timezone
                 exp.status = "failed"
                 exp.error_message = str(e)
-                exp.completed_at = datetime.utcnow()
+                exp.completed_at = datetime.now(timezone.utc)
                 session.commit()
         finally:
             session.close()

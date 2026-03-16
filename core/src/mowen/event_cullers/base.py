@@ -51,11 +51,11 @@ class EventCuller(ABC, Configurable):
 
     The two-phase interface works as follows:
 
-    1. :meth:`init` is called once with every event set in the corpus
-       (both known and unknown documents) so the culler can compute
-       corpus-wide statistics.
-    2. :meth:`cull` is called once per event set to produce a filtered
-       version.
+    1. :meth:`init` is called once with the event sets from **known
+       documents only** so the culler can compute corpus-wide statistics
+       without leaking information from unknown documents.
+    2. :meth:`cull` is called once per event set (known and unknown) to
+       produce a filtered version.
 
     Subclasses should populate :attr:`_kept_events` in their :meth:`init`
     method.  The default :meth:`cull` implementation filters based on that
@@ -77,7 +77,7 @@ class EventCuller(ABC, Configurable):
         Parameters
         ----------
         event_sets:
-            Every event set in the corpus (known and unknown documents).
+            Event sets from the known documents in the corpus.
         """
 
     def cull(self, event_set: EventSet) -> EventSet:

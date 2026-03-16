@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, UploadFile, Form, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, Form, status
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 
@@ -28,6 +28,14 @@ def upload_document(
     """Upload a document file and create a database record."""
     storage = DocumentStorage(settings.upload_dir)
     content = file.file.read()
+    if len(content) > settings.max_upload_bytes:
+        raise HTTPException(
+            status_code=413,
+            detail=(
+                f"File too large ({len(content)} bytes). "
+                f"Maximum is {settings.max_upload_bytes} bytes."
+            ),
+        )
     original_filename = file.filename or "untitled"
     saved_path = storage.save(original_filename, content)
 
@@ -52,9 +60,16 @@ def upload_document(
 
 
 @router.get("/", response_model=list[DocumentResponse])
-def list_documents(db: Session = Depends(get_db)) -> list[Document]:
-    """Return all documents."""
-    return db.query(Document).all()
+def list_documents(
+    db: Session = Depends(get_db),
+    limit: int | None = Query(None, ge=1, le=10000),
+    offset: int = Query(0, ge=0),
+) -> list[Document]:
+    """Return documents with optional pagination."""
+    q = db.query(Document).offset(offset)
+    if limit is not None:
+        q = q.limit(limit)
+    return q.all()
 
 
 @router.get("/{document_id}", response_model=DocumentResponse)

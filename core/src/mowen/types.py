@@ -100,10 +100,22 @@ class Attribution:
 
 @dataclass
 class PipelineResult:
-    """Result of running the pipeline on one unknown document."""
+    """Result of running the pipeline on one unknown document.
+
+    ``lower_is_better`` indicates the score semantics of the analysis
+    method that produced these rankings:
+
+    * ``True`` — distance-based methods (nearest_neighbor, centroid,
+      burrows_delta): lower score = better match.
+    * ``False`` — probability-based methods (svm, naive_bayes,
+      markov_chain): higher score = better match.
+
+    Rankings are always sorted best-first regardless of direction.
+    """
 
     unknown_document: Document
     rankings: list[Attribution]
+    lower_is_better: bool = True
 
     @property
     def top_author(self) -> str | None:

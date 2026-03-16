@@ -20,7 +20,7 @@ class AngularSeparationDistance(DistanceFunction):
 
     Computes arccos(cosine_similarity) / pi.  The result is 0 when the
     vectors point in the same direction and 1 when they are anti-parallel.
-    Returns 0.0 for zero vectors.
+    Returns 1.0 for zero vectors (maximally dissimilar).
     """
 
     display_name: str = "Angular Separation Distance"
@@ -32,5 +32,5 @@ class AngularSeparationDistance(DistanceFunction):
         """Return the angular separation distance between *h1* and *h2*."""
         sim = _cosine_similarity(h1, h2)
         if sim is None:
-            return 0.0
+            return 1.0
         return math.acos(sim) / math.pi

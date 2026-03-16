@@ -92,16 +92,21 @@ class BurrowsDelta(AnalysisMethod):
         sorted_events = sorted(all_events, key=lambda e: all_events[e], reverse=True)
         self._features = sorted_events[:n_features]
 
-        # Compute mean and std for selected features.
+        # Compute mean and std for selected features, dropping zero-variance
+        # features (they carry no discriminative information).
         self._event_mean = {}
         self._event_std = {}
+        kept: list[Event] = []
         for event in self._features:
             freqs = event_freqs[event]
             mean = sum(freqs) / len(freqs)
             variance = sum((f - mean) ** 2 for f in freqs) / len(freqs)
             std = math.sqrt(variance)
-            self._event_mean[event] = mean
-            self._event_std[event] = std if std > 0 else 1e-10  # avoid division by zero
+            if std > 0:
+                self._event_mean[event] = mean
+                self._event_std[event] = std
+                kept.append(event)
+        self._features = kept
 
         # Build per-author profiles: average relative frequency across author's docs.
         author_freq_sums: dict[str, dict[Event, float]] = defaultdict(

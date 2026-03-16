@@ -1,6 +1,6 @@
 """Corpus management endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -49,10 +49,16 @@ def create_corpus(
 
 
 @router.get("/", response_model=list[CorpusResponse])
-def list_corpora(db: Session = Depends(get_db)) -> list[CorpusResponse]:
-    """Return all corpora with document counts."""
-    corpora = db.query(Corpus).all()
-    return [_corpus_response(db, c) for c in corpora]
+def list_corpora(
+    db: Session = Depends(get_db),
+    limit: int | None = Query(None, ge=1, le=10000),
+    offset: int = Query(0, ge=0),
+) -> list[CorpusResponse]:
+    """Return corpora with document counts and optional pagination."""
+    q = db.query(Corpus).offset(offset)
+    if limit is not None:
+        q = q.limit(limit)
+    return [_corpus_response(db, c) for c in q.all()]
 
 
 @router.get("/{corpus_id}", response_model=CorpusResponse)

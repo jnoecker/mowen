@@ -1,6 +1,11 @@
 """mowen — authorship attribution toolkit."""
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("mowen")
+except PackageNotFoundError:
+    __version__ = "0.1.0"  # fallback for editable installs
 
 from mowen.pipeline import Pipeline, PipelineConfig, ComponentSpec
 from mowen.types import Attribution, Document, Event, EventSet, Histogram, NumericEventSet, PipelineResult
