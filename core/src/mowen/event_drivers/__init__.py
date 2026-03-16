@@ -15,6 +15,13 @@ from mowen.event_drivers import vowel_initial_words as vowel_initial_words  # no
 from mowen.event_drivers import word_events as word_events  # noqa: F401
 from mowen.event_drivers import word_length as word_length  # noqa: F401
 from mowen.event_drivers import word_ngram as word_ngram  # noqa: F401
+from mowen.event_drivers import k_skip_ngram as k_skip_ngram  # noqa: F401
+from mowen.event_drivers import sorted_ngram as sorted_ngram  # noqa: F401
+from mowen.event_drivers import mn_letter_words as mn_letter_words  # noqa: F401
+from mowen.event_drivers import sentence_features as sentence_features  # noqa: F401
+from mowen.event_drivers import porter_stemmer as porter_stemmer  # noqa: F401
+from mowen.event_drivers import pos_features as pos_features  # noqa: F401
+from mowen.event_drivers import mw_function_words as mw_function_words  # noqa: F401
 
 try:
     from mowen.event_drivers import transformer_embeddings as transformer_embeddings  # noqa: F401
