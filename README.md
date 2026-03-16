@@ -1,1 +1,96 @@
-# mowen
+# mowen (墨紋)
+
+**Authorship attribution toolkit**
+
+mowen is a modular authorship attribution framework for identifying who wrote a
+document based on stylometric analysis. It provides a configurable pipeline of
+text canonicization, feature extraction, event culling, distance measurement,
+and machine-learning classification -- usable as a Python library, CLI, or
+full-stack web application.
+
+## Features
+
+- Pluggable pipeline: canonicizers, event drivers, event cullers, distance functions, analysis methods
+- 9 canonicizers (case folding, whitespace normalization, punctuation handling, ...)
+- 12 event drivers (character/word n-grams, POS tags, function words, ...)
+- 9 event cullers (most/least common, IQR, information gain, ...)
+- 15 distance functions (cosine, Manhattan, KL divergence, chi-square, ...)
+- 10 analysis methods (nearest neighbor, SVM, Naive Bayes, Burrows' Delta, ...)
+- 4 document loaders (plain text, PDF, DOCX, HTML)
+- JGAAP CSV compatibility for existing experiment files
+- React-based web UI with experiment management
+- REST API with OpenAPI docs
+- Single-binary Docker deployment
+
+## Quick start
+
+### Python library
+
+```bash
+pip install mowen
+```
+
+```python
+from mowen import Pipeline, PipelineConfig, Document
+
+known = [
+    Document("sample_a.txt", text="...", author="Alice"),
+    Document("sample_b.txt", text="...", author="Bob"),
+]
+unknown = [Document("mystery.txt", text="...")]
+
+config = PipelineConfig(
+    event_drivers=[{"name": "word_ngram", "params": {"n": 2}}],
+    distance_function={"name": "cosine"},
+    analysis_method={"name": "nearest_neighbor"},
+)
+
+results = Pipeline(config).execute(known, unknown)
+for r in results:
+    print(r.unknown_document.title, "->", r.rankings[0].author)
+```
+
+### CLI
+
+```bash
+pip install mowen-cli
+```
+
+```bash
+# Run an attribution experiment
+mowen run -d docs.csv -e word_ngram -e character_ngram:n=3 --distance cosine
+
+# List available components
+mowen list-components
+mowen list-components event-drivers
+```
+
+### Web UI
+
+```bash
+pip install mowen-server
+mowen-server
+```
+
+Open http://localhost:8000 in your browser.
+
+### Docker
+
+```bash
+docker compose up
+```
+
+The app is served at http://localhost:8000 with data persisted in a Docker volume.
+
+## Project structure
+
+```
+core/       Python library (mowen)
+cli/        Command-line interface (mowen-cli)
+server/     FastAPI backend + static frontend serving (mowen-server)
+web/        React/TypeScript frontend
+```
+
+## License
+
+MIT -- see [LICENSE](LICENSE).

@@ -1,0 +1,13 @@
+services:
+  mowen:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - mowen-data:/data
+    environment:
+      - MOWEN_DATABASE_URL=sqlite:////data/data.db
+      - MOWEN_UPLOAD_DIR=/data/documents
+
+volumes:
+  mowen-data:
