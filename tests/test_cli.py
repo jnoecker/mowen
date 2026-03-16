@@ -164,6 +164,92 @@ class TestConvertJgaap:
         assert result.exit_code == 1
 
 
+class TestEvaluate:
+    def test_evaluate_help(self):
+        result = runner.invoke(app, ["evaluate", "--help"])
+        assert result.exit_code == 0
+        assert "--mode" in result.output
+        assert "--folds" in result.output
+
+    def test_evaluate_loo_text(self, tmp_path):
+        _write_eval_corpus(tmp_path)
+        result = runner.invoke(app, [
+            "evaluate", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "-a", "nearest_neighbor",
+            "--mode", "loo",
+        ])
+        assert result.exit_code == 0, result.output
+        assert "Accuracy" in result.output
+        assert "Confusion matrix" in result.output
+
+    def test_evaluate_kfold_json(self, tmp_path):
+        _write_eval_corpus(tmp_path)
+        result = runner.invoke(app, [
+            "evaluate", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "word_events",
+            "--distance", "manhattan",
+            "-a", "nearest_neighbor",
+            "--mode", "kfold",
+            "-k", "2",
+            "--seed", "42",
+            "--json",
+        ])
+        assert result.exit_code == 0, result.output
+        data = json.loads(result.output)
+        assert "accuracy" in data
+        assert "confusion_matrix" in data
+        assert "per_author" in data
+
+    def test_evaluate_csv_export(self, tmp_path):
+        _write_eval_corpus(tmp_path)
+        csv_path = tmp_path / "results.csv"
+        result = runner.invoke(app, [
+            "evaluate", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "-a", "nearest_neighbor",
+            "--mode", "loo",
+            "-o", str(csv_path),
+        ])
+        assert result.exit_code == 0, result.output
+        assert csv_path.exists()
+        content = csv_path.read_text()
+        assert "accuracy" in content
+
+    def test_evaluate_single_author_error(self, tmp_path):
+        (tmp_path / "a1.txt").write_text("hello world", encoding="utf-8")
+        (tmp_path / "a2.txt").write_text("hello again", encoding="utf-8")
+        (tmp_path / "manifest.csv").write_text(
+            "a1.txt,SameAuthor\na2.txt,SameAuthor\n", encoding="utf-8"
+        )
+        result = runner.invoke(app, [
+            "evaluate", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "word_events",
+            "--mode", "loo",
+        ])
+        assert result.exit_code == 1
+        assert "author" in result.output.lower()
+
+
+def _write_eval_corpus(tmp_path):
+    """Write a corpus where all documents have authors (for evaluation)."""
+    texts = {
+        "ham1.txt": ("The government must be strong and protect liberty.", "Hamilton"),
+        "ham2.txt": ("Federal power requires the authority of taxation.", "Hamilton"),
+        "ham3.txt": ("A strong union ensures national defense and order.", "Hamilton"),
+        "mad1.txt": ("Separation of powers prevents tyranny in republics.", "Madison"),
+        "mad2.txt": ("Factions are controlled by the diversity of interests.", "Madison"),
+        "mad3.txt": ("A large republic guards against the danger of faction.", "Madison"),
+    }
+    lines = []
+    for fname, (text, author) in texts.items():
+        (tmp_path / fname).write_text(text, encoding="utf-8")
+        lines.append(f"{fname},{author}")
+    (tmp_path / "manifest.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _write_corpus(tmp_path):
     """Write a minimal test corpus to tmp_path."""
     (tmp_path / "a1.txt").write_text(

@@ -37,3 +37,7 @@ class PipelineError(MowenError):
 
 class DocumentLoadError(MowenError):
     """Error loading a document from a file."""
+
+
+class EvaluationError(MowenError):
+    """Error during evaluation (e.g., insufficient documents)."""

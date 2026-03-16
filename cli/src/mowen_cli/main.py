@@ -33,6 +33,31 @@ def _parse_param(raw: str) -> tuple[str, str, dict[str, str]]:
     return name, name, params
 
 
+def _spec(raw: str) -> dict:
+    """Turn a CLI component string into a dict for PipelineConfig."""
+    name, _, params = _parse_param(raw)
+    return {"name": name, "params": params} if params else {"name": name}
+
+
+def _build_config(
+    event_driver: list[str],
+    distance: str,
+    analysis: str,
+    canonicizer: list[str] | None,
+    culler: list[str] | None,
+) -> "PipelineConfig":
+    """Build a PipelineConfig from CLI option values."""
+    from mowen.pipeline import PipelineConfig
+
+    return PipelineConfig(
+        canonicizers=[_spec(c) for c in (canonicizer or [])],
+        event_drivers=[_spec(e) for e in event_driver],
+        event_cullers=[_spec(c) for c in (culler or [])],
+        distance_function=_spec(distance),
+        analysis_method=_spec(analysis),
+    )
+
+
 # ---------------------------------------------------------------------------
 # mowen run
 # ---------------------------------------------------------------------------
@@ -92,17 +117,7 @@ def run(
         raise typer.Exit(1)
 
     # Build pipeline config
-    def _spec(raw: str) -> dict:
-        name, _, params = _parse_param(raw)
-        return {"name": name, "params": params} if params else {"name": name}
-
-    config = PipelineConfig(
-        canonicizers=[_spec(c) for c in (canonicizer or [])],
-        event_drivers=[_spec(e) for e in event_driver],
-        event_cullers=[_spec(c) for c in (culler or [])],
-        distance_function=_spec(distance),
-        analysis_method=_spec(analysis),
-    )
+    config = _build_config(event_driver, distance, analysis, canonicizer, culler)
 
     # Progress callback for terminal
     if not output_json and sys.stderr.isatty():
@@ -268,3 +283,174 @@ def convert_jgaap(
         for doc in unknown:
             preview = doc.text[:60].replace("\n", " ")
             typer.echo(f"    {doc.title}: {preview}...")
+
+
+# ---------------------------------------------------------------------------
+# mowen evaluate
+# ---------------------------------------------------------------------------
+
+@app.command()
+def evaluate(
+    documents: Annotated[
+        Path,
+        typer.Option("--documents", "-d", help="CSV manifest: filepath,author. All rows must have authors."),
+    ],
+    event_driver: Annotated[
+        list[str],
+        typer.Option("--event-driver", "-e", help="Event driver (name or name:param=val,...). Repeatable."),
+    ],
+    distance: Annotated[
+        str,
+        typer.Option("--distance", help="Distance function name."),
+    ] = "cosine",
+    analysis: Annotated[
+        str,
+        typer.Option("--analysis", "-a", help="Analysis method (name or name:param=val,...)."),
+    ] = "nearest_neighbor",
+    canonicizer: Annotated[
+        Optional[list[str]],
+        typer.Option("--canonicizer", "-c", help="Canonicizer. Repeatable."),
+    ] = None,
+    culler: Annotated[
+        Optional[list[str]],
+        typer.Option("--culler", help="Event culler. Repeatable."),
+    ] = None,
+    mode: Annotated[
+        str,
+        typer.Option("--mode", "-m", help="Evaluation mode: loo or kfold."),
+    ] = "loo",
+    folds: Annotated[
+        int,
+        typer.Option("--folds", "-k", help="Number of folds for kfold mode."),
+    ] = 10,
+    seed: Annotated[
+        Optional[int],
+        typer.Option("--seed", help="Random seed for kfold shuffle."),
+    ] = None,
+    output_csv: Annotated[
+        Optional[Path],
+        typer.Option("--output-csv", "-o", help="Write results to CSV file."),
+    ] = None,
+    output_json: Annotated[
+        bool,
+        typer.Option("--json", help="Output results as JSON."),
+    ] = False,
+    base_dir: Annotated[
+        Optional[Path],
+        typer.Option("--base-dir", help="Base directory for resolving relative paths in CSV."),
+    ] = None,
+) -> None:
+    """Evaluate pipeline accuracy via cross-validation."""
+    from mowen.compat.jgaap_csv import load_jgaap_csv
+    from mowen.evaluation import leave_one_out as loo_eval, k_fold as kfold_eval, write_results_csv
+    from mowen.exceptions import EvaluationError, MowenError
+
+    # Load documents
+    try:
+        known, unknown = load_jgaap_csv(documents, base_dir=base_dir)
+    except Exception as e:
+        typer.echo(f"Error loading documents: {e}", err=True)
+        raise typer.Exit(1)
+
+    if unknown:
+        typer.echo(
+            f"  Note: {len(unknown)} unknown document(s) ignored in evaluation mode.",
+            err=True,
+        )
+
+    if not known:
+        typer.echo("Error: no known (authored) documents found in CSV.", err=True)
+        raise typer.Exit(1)
+
+    config = _build_config(event_driver, distance, analysis, canonicizer, culler)
+
+    # Progress callback
+    if not output_json and sys.stderr.isatty():
+        def on_progress(frac: float, msg: str) -> None:
+            bar_len = 30
+            filled = int(bar_len * frac)
+            bar = "█" * filled + "░" * (bar_len - filled)
+            typer.echo(f"\r  {bar} {frac:5.0%}  {msg:<40}", err=True, nl=False)
+        progress_cb = on_progress
+    else:
+        progress_cb = None
+
+    # Run evaluation
+    try:
+        if mode == "loo":
+            result = loo_eval(known, config, progress_callback=progress_cb)
+        elif mode == "kfold":
+            result = kfold_eval(
+                known, config, k=folds, random_seed=seed,
+                progress_callback=progress_cb,
+            )
+        else:
+            typer.echo(f"Unknown mode: {mode!r}. Choose 'loo' or 'kfold'.", err=True)
+            raise typer.Exit(1)
+    except (EvaluationError, MowenError) as e:
+        typer.echo(f"\nError: {e}", err=True)
+        raise typer.Exit(1)
+
+    if progress_cb:
+        typer.echo("", err=True)
+
+    # CSV export
+    if output_csv:
+        write_results_csv(result, output_csv)
+        typer.echo(f"  Results written to {output_csv}", err=True)
+
+    # Output
+    if output_json:
+        out = {
+            "accuracy": result.accuracy,
+            "macro_precision": result.macro_precision,
+            "macro_recall": result.macro_recall,
+            "macro_f1": result.macro_f1,
+            "per_author": [
+                {"author": a.author, "precision": a.precision,
+                 "recall": a.recall, "f1": a.f1, "support": a.support}
+                for a in result.per_author
+            ],
+            "confusion_matrix": result.confusion_matrix,
+            "predictions": [
+                {"fold": fr.fold_index, "document": p.document_title,
+                 "true_author": p.true_author, "predicted_author": p.predicted_author}
+                for fr in result.fold_results for p in fr.predictions
+            ],
+        }
+        typer.echo(json.dumps(out, indent=2))
+    else:
+        n_docs = sum(fr.total for fr in result.fold_results)
+        n_correct = sum(fr.correct for fr in result.fold_results)
+        n_authors = len(result.per_author)
+        mode_label = "leave-one-out" if mode == "loo" else f"{folds}-fold"
+
+        typer.echo(f"\n  Cross-validation: {mode_label} ({n_docs} documents, {n_authors} authors)")
+        typer.echo(f"  {'═' * 56}")
+        typer.echo(f"\n  Accuracy: {result.accuracy:.1%} ({n_correct}/{n_docs})")
+
+        typer.echo(f"\n  Per-author metrics:")
+        typer.echo(f"    {'Author':<20} {'Precision':>9} {'Recall':>9} {'F1':>9} {'Support':>8}")
+        typer.echo(f"    {'─' * 20} {'─' * 9} {'─' * 9} {'─' * 9} {'─' * 8}")
+        for a in result.per_author:
+            typer.echo(
+                f"    {a.author:<20} {a.precision:>9.4f} {a.recall:>9.4f} "
+                f"{a.f1:>9.4f} {a.support:>8}"
+            )
+
+        typer.echo(
+            f"\n  Macro avg: P={result.macro_precision:.4f}  "
+            f"R={result.macro_recall:.4f}  F1={result.macro_f1:.4f}"
+        )
+
+        # Confusion matrix
+        authors = sorted(result.confusion_matrix.keys())
+        col_w = max(len(a) for a in authors) + 2
+        col_w = max(col_w, 6)
+        typer.echo(f"\n  Confusion matrix:")
+        header = "    " + " " * col_w + "".join(f"{a:>{col_w}}" for a in authors)
+        typer.echo(header)
+        for true_a in authors:
+            row = result.confusion_matrix[true_a]
+            cells = "".join(f"{row.get(a, 0):>{col_w}}" for a in authors)
+            typer.echo(f"    {true_a:<{col_w}}{cells}")
