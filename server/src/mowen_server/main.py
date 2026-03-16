@@ -63,3 +63,7 @@ def run() -> None:
         host=settings.host,
         port=settings.port,
     )
+
+
+if __name__ == "__main__":
+    run()
