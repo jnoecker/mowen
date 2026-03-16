@@ -423,3 +423,53 @@ class TestExperiments:
     def test_experiment_not_found(self, client):
         resp = client.get("/api/v1/experiments/99999")
         assert resp.status_code == 404
+
+    def test_reject_overlapping_corpus_ids(self, client):
+        """Same corpus in both known and unknown should be rejected."""
+        known_cid, unknown_cid = self._setup_experiment(client)
+        resp = client.post(
+            "/api/v1/experiments/",
+            json={
+                "name": "Overlap",
+                "config": {
+                    "canonicizers": [],
+                    "event_drivers": [{"name": "word_events"}],
+                    "event_cullers": [],
+                    "distance_function": {"name": "cosine"},
+                    "analysis_method": {"name": "nearest_neighbor"},
+                },
+                "known_corpus_ids": [known_cid],
+                "unknown_corpus_ids": [known_cid],  # same corpus!
+            },
+        )
+        assert resp.status_code == 422
+        assert "known and unknown" in resp.json()["detail"].lower()
+
+    def test_reject_overlapping_documents(self, client, uploaded_doc):
+        """Documents shared across known and unknown corpora should be rejected."""
+        # Create two corpora that share a document
+        resp = client.post("/api/v1/corpora/", json={"name": "Corpus K"})
+        k_id = resp.json()["id"]
+        client.post(f"/api/v1/corpora/{k_id}/documents", json={"document_ids": [uploaded_doc["id"]]})
+
+        resp = client.post("/api/v1/corpora/", json={"name": "Corpus U"})
+        u_id = resp.json()["id"]
+        client.post(f"/api/v1/corpora/{u_id}/documents", json={"document_ids": [uploaded_doc["id"]]})
+
+        resp = client.post(
+            "/api/v1/experiments/",
+            json={
+                "name": "Doc Overlap",
+                "config": {
+                    "canonicizers": [],
+                    "event_drivers": [{"name": "word_events"}],
+                    "event_cullers": [],
+                    "distance_function": {"name": "cosine"},
+                    "analysis_method": {"name": "nearest_neighbor"},
+                },
+                "known_corpus_ids": [k_id],
+                "unknown_corpus_ids": [u_id],
+            },
+        )
+        assert resp.status_code == 422
+        assert "documents" in resp.json()["detail"].lower()

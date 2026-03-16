@@ -37,7 +37,7 @@ class MarkovChain(AnalysisMethod):
     _author_distributions: dict[str, dict[Event, float]] = field(
         default_factory=dict, init=False, repr=False,
     )
-    _author_vocab_sizes: dict[str, int] = field(
+    _author_totals: dict[str, int] = field(
         default_factory=dict, init=False, repr=False,
     )
     _global_vocab: set[Event] = field(
@@ -75,7 +75,8 @@ class MarkovChain(AnalysisMethod):
                 event: (counts.get(event, 0) + 1) / denominator
                 for event in self._global_vocab
             }
-            self._author_vocab_sizes[author] = vocab_size
+            # Store the per-author smoothing denominator for OOV events
+            self._author_totals[author] = total
 
     def analyze(self, unknown_histogram: Histogram) -> list[Attribution]:
         """Return attributions ranked by log-likelihood (highest first)."""
@@ -87,13 +88,13 @@ class MarkovChain(AnalysisMethod):
         attributions: list[Attribution] = []
         for author, dist in self._author_distributions.items():
             log_likelihood = 0.0
+            # OOV smoothing: 1 / (author_total + vocab_size), same formula
+            # as training but with count=0, so author-specific
+            author_total = self._author_totals.get(author, 0)
+            oov_prob = 1.0 / (author_total + vocab_size)
             for event in unknown_histogram.unique_events():
                 count = unknown_histogram.absolute_frequency(event)
-                if event in dist:
-                    prob = dist[event]
-                else:
-                    # Unseen event: use Laplace smoothing probability.
-                    prob = 1.0 / (vocab_size + len(dist))
+                prob = dist.get(event, oov_prob)
                 log_likelihood += count * math.log(prob)
             attributions.append(Attribution(author=author, score=log_likelihood))
 

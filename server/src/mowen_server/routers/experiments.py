@@ -10,7 +10,7 @@ from starlette.responses import StreamingResponse
 
 from ..config import Settings, get_settings
 from ..db import get_db, get_or_404
-from ..models import Experiment, ExperimentCorpus, ExperimentResult
+from ..models import CorpusDocument, Experiment, ExperimentCorpus, ExperimentResult
 from ..runner import experiment_runner
 from ..schemas import (
     ExperimentConfig,
@@ -46,6 +46,34 @@ def create_experiment(
     settings: Settings = Depends(get_settings),
 ) -> ExperimentResponse:
     """Create and submit a new experiment for execution."""
+    # Reject overlapping corpus IDs
+    overlap = set(body.known_corpus_ids) & set(body.unknown_corpus_ids)
+    if overlap:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Corpora cannot be both known and unknown: {sorted(overlap)}",
+        )
+
+    # Check for document-level overlap
+    known_doc_ids = set(
+        row[0]
+        for row in db.query(CorpusDocument.document_id)
+        .filter(CorpusDocument.corpus_id.in_(body.known_corpus_ids))
+        .all()
+    )
+    unknown_doc_ids = set(
+        row[0]
+        for row in db.query(CorpusDocument.document_id)
+        .filter(CorpusDocument.corpus_id.in_(body.unknown_corpus_ids))
+        .all()
+    )
+    doc_overlap = known_doc_ids & unknown_doc_ids
+    if doc_overlap:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Documents appear in both known and unknown corpora: {sorted(doc_overlap)}",
+        )
+
     experiment = Experiment(
         name=body.name,
         status="pending",

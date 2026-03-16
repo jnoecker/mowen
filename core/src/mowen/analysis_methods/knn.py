@@ -61,13 +61,16 @@ class KNearestNeighbors(NeighborAnalysisMethod):
         # Sort by distance ascending and take the k nearest.
         distances.sort(key=lambda pair: pair[1])
         neighbors = distances[:k]
+        actual_k = len(neighbors)
 
         # Count votes per author.
         votes: Counter[str] = Counter(author for author, _ in neighbors)
 
-        # Build attributions scored by vote_count / k, sorted descending.
+        # Build attributions scored by vote_count / actual_k, sorted descending.
+        # Use actual_k (not requested k) so scores always sum to 1.0
+        # even when fewer documents are available than k.
         attributions = [
-            Attribution(author=author, score=count / k)
+            Attribution(author=author, score=count / actual_k)
             for author, count in votes.items()
         ]
         attributions.sort(key=lambda a: a.score, reverse=True)

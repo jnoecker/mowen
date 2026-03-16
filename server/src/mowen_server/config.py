@@ -30,13 +30,13 @@ class Settings(BaseSettings):
         home = str(Path.home())
         if "{home}" in self.database_url:
             self.database_url = self.database_url.replace("{home}", home)
-        elif "~" in self.database_url:
-            # Handle literal ~ in sqlite paths
-            self.database_url = self.database_url.replace("~", home)
+        elif self.database_url.startswith("sqlite:///~/"):
+            # Only expand ~ at the start of the path, not in the middle
+            self.database_url = "sqlite:///" + home + self.database_url[len("sqlite:///~"):]
 
         # Ensure the database parent directory exists
         if self.database_url.startswith("sqlite:///"):
-            db_path = Path(self.database_url.replace("sqlite:///", ""))
+            db_path = Path(self.database_url[len("sqlite:///"):])
             db_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Ensure the upload directory exists

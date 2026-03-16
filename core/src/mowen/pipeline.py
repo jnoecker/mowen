@@ -145,6 +145,11 @@ class Pipeline:
                 combined = list(first_result)
                 for driver in event_drivers[1:]:
                     es = driver.create_event_set(canonicized_texts[idx])
+                    if not isinstance(es, NumericEventSet):
+                        raise PipelineError(
+                            "Cannot mix numeric and discrete event drivers. "
+                            "Use transformer_embeddings alone or with other embedding drivers."
+                        )
                     combined.extend(es)
                 doc_features[idx] = NumericEventSet(combined)
             else:

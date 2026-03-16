@@ -2,8 +2,17 @@
 
 from mowen.document_loaders.base import DocumentLoader
 from mowen.document_loaders.plaintext import PlainTextLoader
+from mowen.exceptions import DocumentLoadError
 
 _LOADERS: dict[str, type[DocumentLoader]] = {}
+
+# Extensions that require optional dependencies
+_OPTIONAL_EXTENSIONS: dict[str, str] = {
+    ".pdf": "pdf",
+    ".docx": "docx",
+    ".html": "html",
+    ".htm": "html",
+}
 
 
 def _register_loader(loader_cls: type[DocumentLoader]) -> None:
@@ -47,7 +56,16 @@ def load_document(
 
     p = Path(path)
     ext = p.suffix.lower()
-    loader_cls = _LOADERS.get(ext, PlainTextLoader)
+    loader_cls = _LOADERS.get(ext)
+    if loader_cls is None:
+        if ext in _OPTIONAL_EXTENSIONS:
+            dep = _OPTIONAL_EXTENSIONS[ext]
+            raise DocumentLoadError(
+                f"No loader registered for {ext!r} files. "
+                f"Install the optional dependency: pip install 'mowen[{dep}]'"
+            )
+        # Truly unknown extension — try plain text
+        loader_cls = PlainTextLoader
     return loader_cls().load(p, author=author, title=title)
 
 
