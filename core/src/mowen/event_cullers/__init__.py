@@ -12,5 +12,8 @@ from mowen.event_cullers import percentage_range as percentage_range
 from mowen.event_cullers import range_culler as range_culler
 from mowen.event_cullers import std_deviation as std_deviation
 from mowen.event_cullers import variance as variance
+from mowen.event_cullers import extreme as extreme
+from mowen.event_cullers import index_of_dispersion as index_of_dispersion
+from mowen.event_cullers import mean_absolute_deviation as mean_absolute_deviation
 
 __all__ = ["EventCuller", "event_culler_registry"]

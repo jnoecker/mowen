@@ -18,5 +18,10 @@ from mowen.distance_functions import kendall_correlation as kendall_correlation
 from mowen.distance_functions import kl_divergence as kl_divergence
 from mowen.distance_functions import manhattan as manhattan
 from mowen.distance_functions import pearson_correlation as pearson_correlation
+from mowen.distance_functions import cross_entropy as cross_entropy
+from mowen.distance_functions import keselj_weighted as keselj_weighted
+from mowen.distance_functions import matusita as matusita
+from mowen.distance_functions import soergel as soergel
+from mowen.distance_functions import wave_hedges as wave_hedges
 
 __all__ = ["DistanceFunction", "distance_function_registry"]
