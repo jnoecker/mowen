@@ -11,6 +11,7 @@ from ..schemas import (
     CorpusDocumentsRequest,
     CorpusResponse,
     CorpusUpdate,
+    DocumentResponse,
 )
 
 router = APIRouter(prefix="/api/v1/corpora", tags=["corpora"])
@@ -98,6 +99,25 @@ def delete_corpus(
 
     db.delete(corpus)
     db.commit()
+
+
+@router.get("/{corpus_id}/documents", response_model=list[DocumentResponse])
+def list_corpus_documents(
+    corpus_id: int,
+    db: Session = Depends(get_db),
+) -> list[DocumentResponse]:
+    """Return all documents belonging to a corpus."""
+    corpus = db.query(Corpus).filter(Corpus.id == corpus_id).first()
+    if corpus is None:
+        raise HTTPException(status_code=404, detail="Corpus not found")
+
+    docs = (
+        db.query(Document)
+        .join(CorpusDocument, CorpusDocument.document_id == Document.id)
+        .filter(CorpusDocument.corpus_id == corpus_id)
+        .all()
+    )
+    return [DocumentResponse.model_validate(d) for d in docs]
 
 
 @router.post("/{corpus_id}/documents", response_model=CorpusResponse)
