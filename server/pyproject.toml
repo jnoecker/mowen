@@ -17,6 +17,21 @@ dependencies = [
     "pydantic-settings>=2.1",
     "python-multipart>=0.0.6",
 ]
+authors = [
+    { name = "John Noecker Jr" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Framework :: FastAPI",
+    "Topic :: Text Processing :: Linguistic",
+]
+
+[project.urls]
+Homepage = "https://github.com/jnoecker/mowen"
+Repository = "https://github.com/jnoecker/mowen"
 
 [project.scripts]
 mowen-server = "mowen_server.main:run"
