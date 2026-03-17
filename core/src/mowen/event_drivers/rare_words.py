@@ -1,4 +1,4 @@
-"""Rare-word (hapax legomena) event driver."""
+"""Rare-word event driver."""
 
 from __future__ import annotations
 
@@ -13,21 +13,40 @@ from mowen.event_drivers.base import EventDriver, event_driver_registry
 
 @event_driver_registry.register("rare_words")
 class RareWords(EventDriver):
-    """Emit words that appear exactly once in the text (hapax legomena).
+    """Emit words whose frequency falls within [min_count, max_count].
 
-    Events are produced in the order the words first appear.
+    By default emits hapax legomena (words appearing exactly once).
+    Set *max_count* to 2 to also include dis legomena.
     """
 
     display_name = "Rare Words"
-    description = "Words that appear exactly once in the text."
+    description = "Words with low frequency in the text."
 
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
-        return [TOKENIZER_PARAM]
+        return [
+            ParamDef(
+                name="min_count",
+                description="Minimum occurrence count (inclusive).",
+                param_type=int,
+                default=1,
+                min_value=1,
+            ),
+            ParamDef(
+                name="max_count",
+                description="Maximum occurrence count (inclusive).",
+                param_type=int,
+                default=1,
+                min_value=1,
+            ),
+            TOKENIZER_PARAM,
+        ]
 
     def create_event_set(self, text: str) -> EventSet:
         tok: str = self.get_param("tokenizer")
+        min_c: int = self.get_param("min_count")
+        max_c: int = self.get_param("max_count")
         words = tokenize_text(text, tok)
         counts = Counter(words)
-        hapaxes = {w for w, c in counts.items() if c == 1}
-        return EventSet(Event(data=w) for w in words if w in hapaxes)
+        rare = {w for w, c in counts.items() if min_c <= c <= max_c}
+        return EventSet(Event(data=w) for w in words if w in rare)
