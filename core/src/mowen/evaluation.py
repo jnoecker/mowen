@@ -486,6 +486,95 @@ def k_fold(
 
 
 # ---------------------------------------------------------------------------
+# Cross-genre evaluation
+# ---------------------------------------------------------------------------
+
+
+def cross_genre_evaluate(
+    documents: list[Document],
+    config: PipelineConfig,
+    train_genre: str,
+    test_genre: str,
+    *,
+    progress_callback: ProgressCallback | None = None,
+) -> EvaluationResult:
+    """Evaluate across genres: train on one genre, test on another.
+
+    Documents must have ``metadata["genre"]`` set.  Authors must appear
+    in both genres.
+
+    Parameters
+    ----------
+    documents:
+        All documents with genre metadata.
+    config:
+        Pipeline configuration.
+    train_genre:
+        Genre to use for training.
+    test_genre:
+        Genre to use for testing.
+    progress_callback:
+        Optional ``(fraction, message)`` callback.
+
+    Returns
+    -------
+    EvaluationResult
+        Single-fold result from cross-genre evaluation.
+    """
+    train_docs = [
+        d for d in documents if d.metadata.get("genre") == train_genre
+    ]
+    test_docs = [
+        d for d in documents if d.metadata.get("genre") == test_genre
+    ]
+
+    if not train_docs:
+        raise EvaluationError(
+            f"No documents found with genre {train_genre!r}"
+        )
+    if not test_docs:
+        raise EvaluationError(
+            f"No documents found with genre {test_genre!r}"
+        )
+
+    # Validate all docs have authors
+    for doc in train_docs + test_docs:
+        if not doc.author:
+            raise EvaluationError(
+                f"Document {doc.title!r} has no author"
+            )
+
+    train_authors = {d.author for d in train_docs}
+    test_authors = {d.author for d in test_docs}
+    shared = train_authors & test_authors
+
+    if len(shared) < 2:
+        raise EvaluationError(
+            f"Need >= 2 shared authors across genres, "
+            f"found {len(shared)}: {shared}"
+        )
+
+    # Filter to shared authors only
+    train_docs = [d for d in train_docs if d.author in shared]
+    test_docs = [d for d in test_docs if d.author in shared]
+
+    if progress_callback:
+        progress_callback(0.0, "Cross-genre evaluation")
+
+    results = Pipeline(config).execute(train_docs, test_docs)
+
+    preds = [
+        _make_prediction(r, test_docs[i].author or "")
+        for i, r in enumerate(results)
+    ]
+
+    if progress_callback:
+        progress_callback(1.0, "Evaluation complete")
+
+    return _compute_metrics([FoldResult(fold_index=0, predictions=preds)])
+
+
+# ---------------------------------------------------------------------------
 # CSV export
 # ---------------------------------------------------------------------------
 
