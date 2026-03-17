@@ -1,0 +1,70 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 3.75rem;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.015) 0%,
+      transparent 100%
+    ),
+    var(--bg-surface);
+  border-bottom: none;
+  box-shadow: 0 1px 0 var(--border);
+  position: relative;
+  z-index: 10;
+}
+
+.brand {
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  transition: color 0.15s;
+}
+
+.brand:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brandCjk {
+  font-family: var(--font-cjk);
+  font-size: 1rem;
+  opacity: 0.5;
+  font-weight: 400;
+  margin-left: 0.15rem;
+}
+
+.links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.25rem;
+}
+
+.link {
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.link:hover {
+  color: var(--text);
+  background-color: var(--bg-hover);
+  text-decoration: none;
+}
+
+.linkActive {
+  color: var(--text);
+  background-color: var(--bg-elevated);
+}

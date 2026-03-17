@@ -4,50 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { experimentsApi } from '../api/experiments';
 import { useExperimentStore } from '../store/experimentStore';
 import type { ExperimentResponse } from '../types';
-
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
-const cardStyle: React.CSSProperties = {
-  background: '#1a1a2e',
-  border: '1px solid #2a2a4a',
-  borderRadius: '8px',
-  padding: '1.25rem',
-  marginBottom: '0.75rem',
-};
-
-// ---------------------------------------------------------------------------
-// Status Badge
-// ---------------------------------------------------------------------------
-
-function StatusBadge({ status }: { status: ExperimentResponse['status'] }) {
-  const colors: Record<string, { bg: string; text: string; border: string }> = {
-    pending: { bg: 'rgba(136, 136, 170, 0.15)', text: '#8888aa', border: '#8888aa' },
-    running: { bg: 'rgba(124, 140, 248, 0.15)', text: '#7c8cf8', border: '#7c8cf8' },
-    completed: { bg: 'rgba(74, 222, 128, 0.15)', text: '#4ade80', border: '#4ade80' },
-    failed: { bg: 'rgba(248, 113, 113, 0.15)', text: '#f87171', border: '#f87171' },
-  };
-  const c = colors[status] ?? colors.pending;
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '0.15rem 0.5rem',
-        borderRadius: '12px',
-        fontSize: '0.75rem',
-        fontWeight: 600,
-        background: c.bg,
-        color: c.text,
-        border: `1px solid ${c.border}`,
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
-      }}
-    >
-      {status}
-    </span>
-  );
-}
+import StatusBadge from '../components/StatusBadge';
+import s from './ExperimentsListPage.module.css';
 
 // ---------------------------------------------------------------------------
 // Experiment Row
@@ -56,7 +14,7 @@ function StatusBadge({ status }: { status: ExperimentResponse['status'] }) {
 function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const loadFromConfig = useExperimentStore((s) => s.loadFromConfig);
+  const loadFromConfig = useExperimentStore((st) => st.loadFromConfig);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const deleteMutation = useMutation({
@@ -92,12 +50,12 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
   }
 
   return (
-    <div style={cardStyle}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+    <div className="card" style={{ marginBottom: '0.75rem' }}>
+      <div className={s.cardRow}>
+        <div className={s.cardContent}>
+          <div className={s.cardTitle}>
             <h2
-              style={{ margin: 0, fontSize: '1.05rem', cursor: 'pointer' }}
+              className={s.cardName}
               onClick={() => navigate(`/experiments/${experiment.id}/results`)}
             >
               {experiment.name}
@@ -105,7 +63,7 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
             <StatusBadge status={experiment.status} />
           </div>
 
-          <div style={{ fontSize: '0.8rem', color: '#8888aa', display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
+          <div className={s.cardMeta}>
             {configParts.length > 0 && <span>{configParts.join(' + ')}</span>}
             <span>Created {new Date(experiment.created_at).toLocaleDateString()}</span>
             {experiment.completed_at && (
@@ -117,29 +75,23 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0, marginLeft: '1rem' }}>
+        <div className={s.cardActions}>
           <button
             onClick={() => navigate(`/experiments/${experiment.id}/results`)}
-            style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
+            className={s.smallBtn}
           >
             View
           </button>
           <button
             onClick={handleClone}
-            style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
+            className={s.smallBtn}
           >
             Clone
           </button>
           <button
             onClick={handleDelete}
             onBlur={() => setConfirmDelete(false)}
-            style={{
-              fontSize: '0.85rem',
-              padding: '0.35rem 0.6rem',
-              ...(confirmDelete
-                ? { background: 'var(--danger)', borderColor: 'var(--danger)', color: '#fff' }
-                : {}),
-            }}
+            className={`${s.smallBtn}${confirmDelete ? ' danger' : ''}`}
           >
             {confirmDelete ? 'Confirm' : 'Delete'}
           </button>
@@ -155,7 +107,7 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
 
 export default function ExperimentsListPage() {
   const navigate = useNavigate();
-  const reset = useExperimentStore((s) => s.reset);
+  const reset = useExperimentStore((st) => st.reset);
 
   const {
     data: experiments = [],
@@ -178,14 +130,14 @@ export default function ExperimentsListPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div className={s.header}>
         <h1 style={{ marginBottom: 0 }}>Experiments</h1>
         <button className="primary" onClick={handleNewExperiment}>
           New Experiment
         </button>
       </div>
 
-      {isLoading && <p style={{ color: '#8888aa' }}>Loading experiments...</p>}
+      {isLoading && <p className="muted">Loading experiments...</p>}
 
       {error && (
         <p style={{ color: 'var(--danger)' }}>
@@ -194,7 +146,7 @@ export default function ExperimentsListPage() {
       )}
 
       {!isLoading && !error && sorted.length === 0 && (
-        <p style={{ color: '#8888aa' }}>
+        <p className="muted">
           No experiments yet. Click "New Experiment" to get started.
         </p>
       )}

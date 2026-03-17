@@ -1,0 +1,261 @@
+.stepIndicatorRow {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.stepBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: default;
+  opacity: 0.5;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.stepBtnClickable {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.stepBtnActive {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.stepBtnCompleted {
+  border-color: var(--success);
+  color: var(--success);
+  opacity: 1;
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: bold;
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.stepNumberActive {
+  background: var(--accent);
+  color: #fff;
+}
+
+.stepNumberCompleted {
+  background: var(--success);
+  color: #fff;
+}
+
+.navRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Component selector grid */
+.componentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.75rem;
+}
+
+.componentCard {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.componentCard:hover {
+  border-color: var(--border-strong);
+}
+
+.componentCardSelected {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.componentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.componentName {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.componentSlug {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.componentDesc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.radio {
+  composes: checkbox;
+  border-radius: 50%;
+}
+
+.checkboxSelected {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.checkmark {
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Step 1: corpora */
+.corporaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.corporaList {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.corpusLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.25rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.corpusCount {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* Parameters */
+.paramFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.paramLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.paramHint {
+  margin-left: 0.5rem;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.paramInput {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+/* Review step */
+.reviewGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.reviewChips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.reviewChip {
+  padding: 0.25rem 0.6rem;
+  background: var(--bg-surface);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+}
+
+.reviewChipParams {
+  color: var(--text-muted);
+  margin-left: 0.4rem;
+  font-size: 0.75rem;
+}
+
+/* Error box */
+.errorBox {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius);
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+.stepDesc {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.nameInput {
+  width: 100%;
+  max-width: 500px;
+}
