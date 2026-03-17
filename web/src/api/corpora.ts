@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { CorpusResponse, DocumentResponse } from '../types';
+import type { CorpusResponse, DocumentResponse, SampleCorpusImportResponse, SampleCorpusInfo } from '../types';
 
 export const corporaApi = {
   list: () => api.get<CorpusResponse[]>('/corpora/'),
@@ -26,4 +26,11 @@ export const corporaApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ document_ids: documentIds }),
     }).then((r) => r.json()) as Promise<CorpusResponse>,
+};
+
+export const sampleCorporaApi = {
+  list: () => api.get<SampleCorpusInfo[]>('/sample-corpora/'),
+
+  import: (corpusId: string) =>
+    api.post<SampleCorpusImportResponse>(`/sample-corpora/${corpusId}/import`),
 };

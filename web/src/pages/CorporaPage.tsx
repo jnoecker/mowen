@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { corporaApi } from '../api/corpora';
+import { corporaApi, sampleCorporaApi } from '../api/corpora';
 import { documentsApi } from '../api/documents';
-import type { CorpusResponse, DocumentResponse } from '../types';
+import type { CorpusResponse, DocumentResponse, SampleCorpusInfo } from '../types';
 
 // ---------------------------------------------------------------------------
 // Shared styles
@@ -304,6 +304,87 @@ function CorpusCard({
 }
 
 // ---------------------------------------------------------------------------
+// Sample corpus importer
+// ---------------------------------------------------------------------------
+
+function SampleCorpusImporter() {
+  const queryClient = useQueryClient();
+  const [selectedId, setSelectedId] = useState('');
+
+  const { data: sampleCorpora = [] } = useQuery({
+    queryKey: ['sample-corpora'],
+    queryFn: sampleCorporaApi.list,
+  });
+
+  const importMutation = useMutation({
+    mutationFn: (corpusId: string) => sampleCorporaApi.import(corpusId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['corpora'] });
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      setSelectedId('');
+    },
+  });
+
+  const selected = sampleCorpora.find((c: SampleCorpusInfo) => c.id === selectedId);
+
+  return (
+    <div style={cardStyle}>
+      <h2 style={{ marginBottom: '0.75rem' }}>Import Sample Corpus</h2>
+      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+        Import a standard AAAC benchmark problem set with pre-labeled training and unknown documents.
+      </p>
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 300px' }}>
+          <label>Sample Corpus</label>
+          <select
+            value={selectedId}
+            onChange={(e) => setSelectedId(e.target.value)}
+            style={inputStyle}
+            disabled={sampleCorpora.length === 0 || importMutation.isPending}
+          >
+            <option value="">
+              {sampleCorpora.length === 0 ? 'Loading...' : 'Select a sample corpus...'}
+            </option>
+            {sampleCorpora.map((c: SampleCorpusInfo) => (
+              <option key={c.id} value={c.id}>
+                {c.name} — {c.num_authors} authors, {c.num_known + c.num_unknown} docs
+              </option>
+            ))}
+          </select>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <button
+            className="primary"
+            onClick={() => importMutation.mutate(selectedId)}
+            disabled={!selectedId || importMutation.isPending}
+          >
+            {importMutation.isPending ? 'Importing...' : 'Import'}
+          </button>
+        </div>
+      </div>
+
+      {selected && !importMutation.isPending && !importMutation.isSuccess && (
+        <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          {selected.description}
+        </p>
+      )}
+
+      {importMutation.isSuccess && (
+        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--success, #4caf50)' }}>
+          Imported successfully! Created "{importMutation.data.known_corpus.name}" ({importMutation.data.known_corpus.document_count} docs) and "{importMutation.data.unknown_corpus.name}" ({importMutation.data.unknown_corpus.document_count} docs).
+        </p>
+      )}
+
+      {importMutation.isError && (
+        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--danger)' }}>
+          {(importMutation.error as Error).message || 'Failed to import corpus.'}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
 
@@ -401,6 +482,9 @@ export default function CorporaPage() {
           </p>
         )}
       </div>
+
+      {/* Import sample corpus section */}
+      <SampleCorpusImporter />
 
       {/* Corpora list */}
       {corporaLoading && <p style={{ color: 'var(--text-muted)' }}>Loading corpora...</p>}

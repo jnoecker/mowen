@@ -158,6 +158,256 @@ function ConfigSummary({ experiment }: { experiment: ExperimentResponse }) {
 }
 
 // ---------------------------------------------------------------------------
+// Metrics computation helpers
+// ---------------------------------------------------------------------------
+
+interface AuthorStats {
+  tp: number;
+  fp: number;
+  fn: number;
+  precision: number;
+  recall: number;
+  f1: number;
+}
+
+function computeAuthorStats(evaluated: ExperimentResultResponse[]): Map<string, AuthorStats> {
+  const stats = new Map<string, { tp: number; fp: number; fn: number }>();
+  for (const r of evaluated) {
+    const trueAuthor = r.unknown_document.author_name!;
+    const predicted = r.rankings.length > 0 ? r.rankings[0].author : '';
+
+    if (!stats.has(trueAuthor)) stats.set(trueAuthor, { tp: 0, fp: 0, fn: 0 });
+    if (predicted && !stats.has(predicted)) stats.set(predicted, { tp: 0, fp: 0, fn: 0 });
+
+    if (predicted === trueAuthor) {
+      stats.get(trueAuthor)!.tp++;
+    } else {
+      stats.get(trueAuthor)!.fn++;
+      if (predicted) stats.get(predicted)!.fp++;
+    }
+  }
+
+  const result = new Map<string, AuthorStats>();
+  for (const [author, s] of stats) {
+    const precision = s.tp + s.fp > 0 ? s.tp / (s.tp + s.fp) : 0;
+    const recall = s.tp + s.fn > 0 ? s.tp / (s.tp + s.fn) : 0;
+    const f1 = precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
+    result.set(author, { ...s, precision, recall, f1 });
+  }
+  return result;
+}
+
+/**
+ * Compute macro-averaged AUROC using the trapezoidal rule.
+ *
+ * For each author (one-vs-rest), we use the ranking scores as a
+ * confidence signal.  For distance-based methods (lower_is_better),
+ * scores are negated so higher = more confident.
+ */
+function computeAUROC(evaluated: ExperimentResultResponse[]): number | null {
+  if (evaluated.length < 2) return null;
+
+  const allAuthors = new Set<string>();
+  for (const r of evaluated) {
+    allAuthors.add(r.unknown_document.author_name!);
+    for (const rank of r.rankings) allAuthors.add(rank.author);
+  }
+  if (allAuthors.size < 2) return null;
+
+  const lowerIsBetter = evaluated[0]?.lower_is_better ?? true;
+  let totalAUC = 0;
+  let counted = 0;
+
+  for (const targetAuthor of allAuthors) {
+    // Build (score, isPositive) pairs for this author
+    const pairs: { score: number; positive: boolean }[] = [];
+    for (const r of evaluated) {
+      const isPositive = r.unknown_document.author_name === targetAuthor;
+      const rankEntry = r.rankings.find((rk) => rk.author === targetAuthor);
+      if (!rankEntry) continue;
+      // Normalize: higher score = more confident attribution to this author
+      const score = lowerIsBetter ? -rankEntry.score : rankEntry.score;
+      pairs.push({ score, positive: isPositive });
+    }
+
+    const positives = pairs.filter((p) => p.positive).length;
+    const negatives = pairs.length - positives;
+    if (positives === 0 || negatives === 0) continue;
+
+    // Sort descending by score
+    pairs.sort((a, b) => b.score - a.score);
+
+    // Trapezoidal AUC
+    let tp = 0;
+    let fp = 0;
+    let auc = 0;
+    let prevTPR = 0;
+    let prevFPR = 0;
+
+    for (const p of pairs) {
+      if (p.positive) tp++;
+      else fp++;
+      const tpr = tp / positives;
+      const fpr = fp / negatives;
+      auc += (fpr - prevFPR) * (tpr + prevTPR) / 2;
+      prevTPR = tpr;
+      prevFPR = fpr;
+    }
+
+    totalAUC += auc;
+    counted++;
+  }
+
+  return counted > 0 ? totalAUC / counted : null;
+}
+
+/**
+ * Mean Reciprocal Rank: average of 1/rank where rank is the position
+ * of the true author in the ranking list.
+ */
+function computeMRR(evaluated: ExperimentResultResponse[]): number | null {
+  if (evaluated.length === 0) return null;
+  let total = 0;
+  for (const r of evaluated) {
+    const trueAuthor = r.unknown_document.author_name!;
+    const rank = r.rankings.findIndex((rk) => rk.author === trueAuthor);
+    if (rank >= 0) {
+      total += 1 / (rank + 1);
+    }
+    // If true author not in rankings, contributes 0
+  }
+  return total / evaluated.length;
+}
+
+// ---------------------------------------------------------------------------
+// Performance Summary (shown when ground truth is available)
+// ---------------------------------------------------------------------------
+
+function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }) {
+  const evaluated = results.filter((r) => r.unknown_document.author_name != null);
+  if (evaluated.length === 0) return null;
+
+  const correct = evaluated.filter((r) => {
+    const predicted = r.rankings.length > 0 ? r.rankings[0].author : null;
+    return predicted === r.unknown_document.author_name;
+  });
+
+  const accuracy = correct.length / evaluated.length;
+  const unevaluated = results.length - evaluated.length;
+
+  const authorStats = computeAuthorStats(evaluated);
+  const sortedAuthors = [...authorStats.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+  // Macro-averaged metrics (equal weight per class)
+  const allStats = [...authorStats.values()];
+  const macroPrecision = allStats.reduce((s, a) => s + a.precision, 0) / allStats.length;
+  const macroRecall = allStats.reduce((s, a) => s + a.recall, 0) / allStats.length;
+  const macroF1 = allStats.reduce((s, a) => s + a.f1, 0) / allStats.length;
+
+  const auroc = computeAUROC(evaluated);
+  const mrr = computeMRR(evaluated);
+
+  const statStyle: React.CSSProperties = {
+    textAlign: 'center',
+    padding: '0.5rem',
+  };
+
+  const statValueStyle: React.CSSProperties = {
+    fontSize: '1.4rem',
+    fontWeight: 700,
+  };
+
+  const statLabelStyle: React.CSSProperties = {
+    fontSize: '0.7rem',
+    color: '#8888aa',
+    textTransform: 'uppercase',
+    letterSpacing: '0.04em',
+    marginTop: '0.15rem',
+  };
+
+  const fmtPct = (v: number) => `${(v * 100).toFixed(1)}%`;
+
+  return (
+    <div style={{ ...cardStyle, marginBottom: '1.5rem' }}>
+      <h2 style={{ marginBottom: '1rem' }}>Performance</h2>
+
+      {/* Top-level metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))', gap: '0.25rem', marginBottom: '1rem' }}>
+        <div style={statStyle}>
+          <div style={{ ...statValueStyle, color: accuracy >= 0.5 ? '#4ade80' : '#f87171' }}>
+            {fmtPct(accuracy)}
+          </div>
+          <div style={statLabelStyle}>Accuracy</div>
+        </div>
+        <div style={statStyle}>
+          <div style={{ ...statValueStyle, color: '#e0e0e0' }}>{fmtPct(macroPrecision)}</div>
+          <div style={statLabelStyle}>Precision</div>
+        </div>
+        <div style={statStyle}>
+          <div style={{ ...statValueStyle, color: '#e0e0e0' }}>{fmtPct(macroRecall)}</div>
+          <div style={statLabelStyle}>Recall</div>
+        </div>
+        <div style={statStyle}>
+          <div style={{ ...statValueStyle, color: '#e0e0e0' }}>{fmtPct(macroF1)}</div>
+          <div style={statLabelStyle}>F1</div>
+        </div>
+        {auroc != null && (
+          <div style={statStyle}>
+            <div style={{ ...statValueStyle, color: '#e0e0e0' }}>{auroc.toFixed(3)}</div>
+            <div style={statLabelStyle}>AUROC</div>
+          </div>
+        )}
+        {mrr != null && (
+          <div style={statStyle}>
+            <div style={{ ...statValueStyle, color: '#e0e0e0' }}>{mrr.toFixed(3)}</div>
+            <div style={statLabelStyle}>MRR</div>
+          </div>
+        )}
+        <div style={statStyle}>
+          <div style={{ ...statValueStyle, color: '#4ade80' }}>{correct.length}/{evaluated.length}</div>
+          <div style={statLabelStyle}>Correct</div>
+        </div>
+      </div>
+
+      <div style={{ fontSize: '0.75rem', color: '#8888aa', marginBottom: '0.75rem' }}>
+        Precision, Recall, and F1 are macro-averaged (equal weight per author).
+        {unevaluated > 0 && (
+          <> {unevaluated} document{unevaluated !== 1 ? 's' : ''} without ground truth excluded.</>
+        )}
+      </div>
+
+      {/* Per-author table */}
+      <table style={{ fontSize: '0.85rem' }}>
+        <thead>
+          <tr>
+            <th>Author</th>
+            <th style={{ textAlign: 'center', width: '50px' }}>TP</th>
+            <th style={{ textAlign: 'center', width: '50px' }}>FP</th>
+            <th style={{ textAlign: 'center', width: '50px' }}>FN</th>
+            <th style={{ textAlign: 'right', width: '80px' }}>Precision</th>
+            <th style={{ textAlign: 'right', width: '80px' }}>Recall</th>
+            <th style={{ textAlign: 'right', width: '80px' }}>F1</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedAuthors.map(([author, stats]) => (
+            <tr key={author}>
+              <td>{author}</td>
+              <td style={{ textAlign: 'center', color: '#4ade80' }}>{stats.tp}</td>
+              <td style={{ textAlign: 'center', color: stats.fp > 0 ? '#f87171' : '#8888aa' }}>{stats.fp}</td>
+              <td style={{ textAlign: 'center', color: stats.fn > 0 ? '#f87171' : '#8888aa' }}>{stats.fn}</td>
+              <td style={{ textAlign: 'right', fontFamily: 'monospace' }}>{fmtPct(stats.precision)}</td>
+              <td style={{ textAlign: 'right', fontFamily: 'monospace' }}>{fmtPct(stats.recall)}</td>
+              <td style={{ textAlign: 'right', fontFamily: 'monospace' }}>{fmtPct(stats.f1)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Attribution Table for a single unknown document
 // ---------------------------------------------------------------------------
 
@@ -167,15 +417,29 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
   // Find the maximum score to scale bars
   const maxScore = rankings.length > 0 ? Math.max(...rankings.map((r) => Math.abs(r.score))) : 1;
   const topAuthor = rankings.length > 0 ? rankings[0].author : null;
+  const trueAuthor = unknown_document.author_name;
+  const isCorrect = trueAuthor != null && topAuthor === trueAuthor;
+  const isIncorrect = trueAuthor != null && topAuthor !== trueAuthor;
 
   return (
-    <div style={cardStyle}>
-      <h3 style={{ marginBottom: '0.75rem', color: '#e0e0e0' }}>
-        {unknown_document.title}
-        {unknown_document.author_name && (
-          <span style={{ fontSize: '0.8rem', color: '#8888aa', fontWeight: 'normal', marginLeft: '0.5rem' }}>
-            (actual: {unknown_document.author_name})
+    <div
+      style={{
+        ...cardStyle,
+        borderColor: isCorrect ? '#4ade8040' : isIncorrect ? '#f8717140' : '#2a2a4a',
+      }}
+    >
+      <h3 style={{ marginBottom: '0.75rem', color: '#e0e0e0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span>{unknown_document.title}</span>
+        {trueAuthor && (
+          <span style={{ fontSize: '0.8rem', color: '#8888aa', fontWeight: 'normal' }}>
+            (actual: {trueAuthor})
           </span>
+        )}
+        {isCorrect && (
+          <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 600 }}>CORRECT</span>
+        )}
+        {isIncorrect && (
+          <span style={{ fontSize: '0.75rem', color: '#f87171', fontWeight: 600 }}>INCORRECT</span>
         )}
       </h3>
 
@@ -194,38 +458,60 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
           <tbody>
             {rankings.map((entry, idx) => {
               const isTop = entry.author === topAuthor;
+              const isTrue = trueAuthor != null && entry.author === trueAuthor;
               const barWidth = maxScore > 0 ? (Math.abs(entry.score) / maxScore) * 100 : 0;
 
+              // Color: green if this is the true author, blue if top pick (no truth), default otherwise
+              let rowColor = '#e0e0e0';
+              let rowBg: string | undefined;
+              if (isTrue && isTop) {
+                rowColor = '#4ade80';
+                rowBg = 'rgba(74, 222, 128, 0.08)';
+              } else if (isTop && !trueAuthor) {
+                rowColor = '#7c8cf8';
+                rowBg = 'rgba(124, 140, 248, 0.08)';
+              } else if (isTop) {
+                rowColor = '#f87171';
+                rowBg = 'rgba(248, 113, 113, 0.08)';
+              } else if (isTrue) {
+                rowColor = '#4ade80';
+                rowBg = 'rgba(74, 222, 128, 0.05)';
+              }
+
+              let barGradient = 'linear-gradient(90deg, #3a3a5a, #4a4a6a)';
+              if (isTrue) {
+                barGradient = 'linear-gradient(90deg, #4ade80, #6ee7a0)';
+              } else if (isTop && !trueAuthor) {
+                barGradient = 'linear-gradient(90deg, #7c8cf8, #9ba6ff)';
+              } else if (isTop) {
+                barGradient = 'linear-gradient(90deg, #f87171, #fca5a5)';
+              }
+
               return (
-                <tr
-                  key={entry.author}
-                  style={{
-                    background: isTop ? 'rgba(124, 140, 248, 0.08)' : undefined,
-                  }}
-                >
+                <tr key={entry.author} style={{ background: rowBg }}>
                   <td
                     style={{
-                      fontWeight: isTop ? 700 : 400,
-                      color: isTop ? '#7c8cf8' : '#e0e0e0',
+                      fontWeight: isTop || isTrue ? 700 : 400,
+                      color: rowColor,
                       textAlign: 'center',
                     }}
                   >
                     {idx + 1}
                   </td>
-                  <td
-                    style={{
-                      fontWeight: isTop ? 600 : 400,
-                      color: isTop ? '#7c8cf8' : '#e0e0e0',
-                    }}
-                  >
+                  <td style={{ fontWeight: isTop || isTrue ? 600 : 400, color: rowColor }}>
                     {entry.author}
+                    {isTrue && !isTop && (
+                      <span style={{ fontSize: '0.7rem', marginLeft: '0.4rem', opacity: 0.8 }}>
+                        (true author)
+                      </span>
+                    )}
                   </td>
                   <td
                     style={{
                       textAlign: 'right',
                       fontFamily: 'monospace',
                       fontSize: '0.85rem',
-                      color: isTop ? '#7c8cf8' : '#e0e0e0',
+                      color: rowColor,
                     }}
                   >
                     {entry.score.toFixed(4)}
@@ -244,9 +530,7 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
                         style={{
                           height: '100%',
                           width: `${barWidth}%`,
-                          background: isTop
-                            ? 'linear-gradient(90deg, #7c8cf8, #9ba6ff)'
-                            : 'linear-gradient(90deg, #3a3a5a, #4a4a6a)',
+                          background: barGradient,
                           borderRadius: '3px',
                           transition: 'width 0.3s ease',
                           minWidth: barWidth > 0 ? '2px' : '0',
@@ -444,6 +728,11 @@ export default function ResultsPage() {
           )}
         </div>
       </div>
+
+      {/* Performance summary (when ground truth is available) */}
+      {!resultsLoading && results.length > 0 && (
+        <PerformanceSummary results={results} />
+      )}
 
       {/* Results */}
       <h2 style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>

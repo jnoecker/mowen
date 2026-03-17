@@ -22,9 +22,10 @@ interface ExperimentStore {
   setDistanceFunction: (spec: ComponentSpec | null) => void;
   setAnalysisMethod: (spec: ComponentSpec) => void;
 
-  // Derived
+  // Derived / bulk
   getConfig: () => ExperimentConfig;
   reset: () => void;
+  loadFromConfig: (name: string, config: ExperimentConfig, knownCorpusIds: number[], unknownCorpusIds: number[]) => void;
 }
 
 const initialState = {
@@ -62,4 +63,16 @@ export const useExperimentStore = create<ExperimentStore>((set, get) => ({
   },
 
   reset: () => set({ ...initialState }),
+
+  loadFromConfig: (name, config, knownCorpusIds, unknownCorpusIds) =>
+    set({
+      name,
+      knownCorpusIds,
+      unknownCorpusIds,
+      canonicizers: config.canonicizers,
+      eventDrivers: config.event_drivers,
+      eventCullers: config.event_cullers,
+      distanceFunction: config.distance_function,
+      analysisMethod: config.analysis_method,
+    }),
 }));

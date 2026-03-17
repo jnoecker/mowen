@@ -25,6 +25,8 @@ router = APIRouter(prefix="/api/v1/experiments", tags=["experiments"])
 
 def _experiment_to_response(experiment: Experiment) -> ExperimentResponse:
     """Convert an Experiment ORM model to an ExperimentResponse schema."""
+    known_ids = [ec.corpus_id for ec in experiment.corpora if ec.role == "known"]
+    unknown_ids = [ec.corpus_id for ec in experiment.corpora if ec.role == "unknown"]
     return ExperimentResponse(
         id=experiment.id,
         name=experiment.name,
@@ -32,6 +34,8 @@ def _experiment_to_response(experiment: Experiment) -> ExperimentResponse:
         config=ExperimentConfig.model_validate_json(experiment.config),
         progress=experiment.progress,
         error_message=experiment.error_message,
+        known_corpus_ids=known_ids,
+        unknown_corpus_ids=unknown_ids,
         created_at=experiment.created_at,
         started_at=experiment.started_at,
         completed_at=experiment.completed_at,

@@ -441,6 +441,7 @@ function StepReview({
   allEventCullers,
   allDistanceFunctions,
   allAnalysisMethods,
+  numericMode,
 }: {
   corpora: CorpusResponse[];
   allCanonicizers: ComponentInfo[];
@@ -448,6 +449,7 @@ function StepReview({
   allEventCullers: ComponentInfo[];
   allDistanceFunctions: ComponentInfo[];
   allAnalysisMethods: ComponentInfo[];
+  numericMode: boolean;
 }) {
   const store = useExperimentStore();
   const corporaMap = new Map(corpora.map((c) => [c.id, c]));
@@ -567,7 +569,9 @@ function StepReview({
 
       <div style={sectionStyle}>
         <div style={labelStyle}>Event Cullers</div>
-        {store.eventCullers.length === 0 ? (
+        {numericMode ? (
+          <span style={{ color: '#8888aa' }}>N/A (embedding mode)</span>
+        ) : store.eventCullers.length === 0 ? (
           <span style={{ color: '#8888aa' }}>None</span>
         ) : (
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -597,15 +601,21 @@ function StepReview({
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
         <div style={sectionStyle}>
           <div style={labelStyle}>Distance Function</div>
-          <span style={{ fontSize: '0.9rem' }}>
-            {store.distanceFunction
-              ? findDisplayName(allDistanceFunctions, store.distanceFunction.name)
-              : 'None'}
-          </span>
-          {store.distanceFunction && Object.keys(store.distanceFunction.params).length > 0 && (
-            <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
-              ({Object.entries(store.distanceFunction.params).map(([k, v]) => `${k}=${v}`).join(', ')})
-            </span>
+          {numericMode ? (
+            <span style={{ color: '#8888aa', fontSize: '0.9rem' }}>N/A (embedding mode)</span>
+          ) : (
+            <>
+              <span style={{ fontSize: '0.9rem' }}>
+                {store.distanceFunction
+                  ? findDisplayName(allDistanceFunctions, store.distanceFunction.name)
+                  : 'None'}
+              </span>
+              {store.distanceFunction && Object.keys(store.distanceFunction.params).length > 0 && (
+                <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
+                  ({Object.entries(store.distanceFunction.params).map(([k, v]) => `${k}=${v}`).join(', ')})
+                </span>
+              )}
+            </>
           )}
         </div>
         <div style={sectionStyle}>
@@ -668,6 +678,16 @@ export default function ExperimentBuilderPage() {
     queryFn: pipelineApi.getAnalysisMethods,
   });
 
+  // ----- numeric mode detection ---------------------------------------------
+
+  // Numeric mode is active when any selected event driver is a numeric
+  // (embedding) driver. In this mode, cullers and distance functions are
+  // not applicable and analysis methods must be sklearn-based.
+  const numericMode = store.eventDrivers.some((d) => {
+    const info = eventDrivers.find((ed) => ed.name === d.name);
+    return info?.numeric === true;
+  });
+
   // ----- validation --------------------------------------------------------
 
   const canProceed = (): boolean => {
@@ -683,9 +703,9 @@ export default function ExperimentBuilderPage() {
       case 2:
         return store.eventDrivers.length > 0;
       case 3:
-        return true; // optional
+        return true; // optional (or skipped in numeric mode)
       case 4:
-        return store.distanceFunction !== null;
+        return numericMode || store.distanceFunction !== null;
       case 5:
         return store.analysisMethod.name.length > 0;
       case 6:
@@ -699,10 +719,16 @@ export default function ExperimentBuilderPage() {
 
   const handleSubmit = () => {
     setSubmitError(null);
+    const config = store.getConfig();
+    // In numeric mode, clear incompatible selections
+    if (numericMode) {
+      config.event_cullers = [];
+      config.distance_function = null;
+    }
     createExperiment.mutate(
       {
         name: store.name,
-        config: store.getConfig(),
+        config,
         known_corpus_ids: store.knownCorpusIds,
         unknown_corpus_ids: store.unknownCorpusIds,
       },
@@ -759,43 +785,66 @@ export default function ExperimentBuilderPage() {
         return (
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Event Cullers</h2>
-            <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
-              Filter extracted events. Optional.
-            </p>
-            <ComponentSelector
-              components={eventCullers}
-              selected={store.eventCullers}
-              onChange={store.setEventCullers}
-              isLoading={eventCullersLoading}
-              multiSelect
-            />
+            {numericMode ? (
+              <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                Event cullers are not applicable with embedding-based event drivers.
+                This step will be skipped.
+              </p>
+            ) : (
+              <>
+                <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  Filter extracted events. Optional.
+                </p>
+                <ComponentSelector
+                  components={eventCullers}
+                  selected={store.eventCullers}
+                  onChange={store.setEventCullers}
+                  isLoading={eventCullersLoading}
+                  multiSelect
+                />
+              </>
+            )}
           </div>
         );
       case 4:
         return (
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Distance Function</h2>
-            <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
-              How to measure distance between event distributions. Select one.
-            </p>
-            <ComponentSelector
-              components={distanceFunctions}
-              selected={store.distanceFunction ? [store.distanceFunction] : []}
-              onChange={(specs) => store.setDistanceFunction(specs[0] ?? null)}
-              isLoading={distanceFunctionsLoading}
-              multiSelect={false}
-            />
+            {numericMode ? (
+              <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                Distance functions are not applicable with embedding-based event drivers.
+                The sklearn analysis method handles similarity internally. This step will be skipped.
+              </p>
+            ) : (
+              <>
+                <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  How to measure distance between event distributions. Select one.
+                </p>
+                <ComponentSelector
+                  components={distanceFunctions}
+                  selected={store.distanceFunction ? [store.distanceFunction] : []}
+                  onChange={(specs) => store.setDistanceFunction(specs[0] ?? null)}
+                  isLoading={distanceFunctionsLoading}
+                  multiSelect={false}
+                />
+              </>
+            )}
           </div>
         );
-      case 5:
+      case 5: {
+        const filteredMethods = numericMode
+          ? analysisMethods.filter((m) => m.numeric === true)
+          : analysisMethods;
         return (
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Analysis Method</h2>
             <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
-              The method used to determine authorship attribution. Select one.
+              {numericMode
+                ? 'Select a classifier for the embedding vectors. Only sklearn-based methods are compatible with embeddings.'
+                : 'The method used to determine authorship attribution. Select one.'}
             </p>
             <ComponentSelector
-              components={analysisMethods}
+              components={filteredMethods}
               selected={[store.analysisMethod]}
               onChange={(specs) => {
                 if (specs.length > 0) store.setAnalysisMethod(specs[0]);
@@ -805,6 +854,7 @@ export default function ExperimentBuilderPage() {
             />
           </div>
         );
+      }
       case 6:
         return (
           <div>
@@ -816,6 +866,7 @@ export default function ExperimentBuilderPage() {
               allEventCullers={eventCullers}
               allDistanceFunctions={distanceFunctions}
               allAnalysisMethods={analysisMethods}
+              numericMode={numericMode}
             />
             {submitError && (
               <div

@@ -1,0 +1,1567 @@
+[
+  {
+    "id": "aaac_problem_a",
+    "name": "AAAC Problem A",
+    "description": "13-author attribution, 38 training + 13 unknown documents",
+    "known": [
+      {
+        "file": "problemA/Atrain01-1.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemA/Atrain01-2.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemA/Atrain01-3.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemA/Atrain02-2.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemA/Atrain02-3.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemA/Atrain03-1.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemA/Atrain03-2.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemA/Atrain03-3.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemA/Atrain04-1.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemA/Atrain04-2.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemA/Atrain04-3.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemA/Atrain05-1.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemA/Atrain05-2.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemA/Atrain05-3.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemA/Atrain06-1.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemA/Atrain06-2.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemA/Atrain06-3.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemA/Atrain07-1.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemA/Atrain07-2.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemA/Atrain07-3.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemA/Atrain08-1.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemA/Atrain08-2.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemA/Atrain08-3.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemA/Atrain09-1.txt",
+        "author": "Author09"
+      },
+      {
+        "file": "problemA/Atrain09-2.txt",
+        "author": "Author09"
+      },
+      {
+        "file": "problemA/Atrain09-3.txt",
+        "author": "Author09"
+      },
+      {
+        "file": "problemA/Atrain10-1.txt",
+        "author": "Author10"
+      },
+      {
+        "file": "problemA/Atrain10-2.txt",
+        "author": "Author10"
+      },
+      {
+        "file": "problemA/Atrain10-3.txt",
+        "author": "Author10"
+      },
+      {
+        "file": "problemA/Atrain11-1.txt",
+        "author": "Author11"
+      },
+      {
+        "file": "problemA/Atrain11-2.txt",
+        "author": "Author11"
+      },
+      {
+        "file": "problemA/Atrain11-3.txt",
+        "author": "Author11"
+      },
+      {
+        "file": "problemA/Atrain12-1.txt",
+        "author": "Author12"
+      },
+      {
+        "file": "problemA/Atrain12-2.txt",
+        "author": "Author12"
+      },
+      {
+        "file": "problemA/Atrain12-3.txt",
+        "author": "Author12"
+      },
+      {
+        "file": "problemA/Atrain13-1.txt",
+        "author": "Author13"
+      },
+      {
+        "file": "problemA/Atrain13-2.txt",
+        "author": "Author13"
+      },
+      {
+        "file": "problemA/Atrain13-3.txt",
+        "author": "Author13"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemA/Asample01.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemA/Asample02.txt",
+        "true_author": "Author13"
+      },
+      {
+        "file": "problemA/Asample03.txt",
+        "true_author": "Author11"
+      },
+      {
+        "file": "problemA/Asample04.txt",
+        "true_author": "Author07"
+      },
+      {
+        "file": "problemA/Asample05.txt",
+        "true_author": "Author10"
+      },
+      {
+        "file": "problemA/Asample06.txt",
+        "true_author": "Author12"
+      },
+      {
+        "file": "problemA/Asample07.txt",
+        "true_author": "Author08"
+      },
+      {
+        "file": "problemA/Asample08.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemA/Asample09.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemA/Asample10.txt",
+        "true_author": "Author04"
+      },
+      {
+        "file": "problemA/Asample11.txt",
+        "true_author": "Author06"
+      },
+      {
+        "file": "problemA/Asample12.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemA/Asample13.txt",
+        "true_author": "Author09"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_b",
+    "name": "AAAC Problem B",
+    "description": "13-author attribution, 38 training + 13 unknown documents",
+    "known": [
+      {
+        "file": "problemB/Btrain01-1.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemB/Btrain01-2.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemB/Btrain01-3.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemB/Btrain02-2.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemB/Btrain02-3.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemB/Btrain03-1.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemB/Btrain03-2.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemB/Btrain03-3.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemB/Btrain04-1.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemB/Btrain04-2.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemB/Btrain04-3.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemB/Btrain05-1.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemB/Btrain05-2.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemB/Btrain05-3.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemB/Btrain06-1.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemB/Btrain06-2.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemB/Btrain06-3.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemB/Btrain07-1.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemB/Btrain07-2.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemB/Btrain07-3.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemB/Btrain08-1.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemB/Btrain08-2.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemB/Btrain08-3.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemB/Btrain09-1.txt",
+        "author": "Author09"
+      },
+      {
+        "file": "problemB/Btrain09-2.txt",
+        "author": "Author09"
+      },
+      {
+        "file": "problemB/Btrain09-3.txt",
+        "author": "Author09"
+      },
+      {
+        "file": "problemB/Btrain10-1.txt",
+        "author": "Author10"
+      },
+      {
+        "file": "problemB/Btrain10-2.txt",
+        "author": "Author10"
+      },
+      {
+        "file": "problemB/Btrain10-3.txt",
+        "author": "Author10"
+      },
+      {
+        "file": "problemB/Btrain11-1.txt",
+        "author": "Author11"
+      },
+      {
+        "file": "problemB/Btrain11-2.txt",
+        "author": "Author11"
+      },
+      {
+        "file": "problemB/Btrain11-3.txt",
+        "author": "Author11"
+      },
+      {
+        "file": "problemB/Btrain12-1.txt",
+        "author": "Author12"
+      },
+      {
+        "file": "problemB/Btrain12-2.txt",
+        "author": "Author12"
+      },
+      {
+        "file": "problemB/Btrain12-3.txt",
+        "author": "Author12"
+      },
+      {
+        "file": "problemB/Btrain13-1.txt",
+        "author": "Author13"
+      },
+      {
+        "file": "problemB/Btrain13-2.txt",
+        "author": "Author13"
+      },
+      {
+        "file": "problemB/Btrain13-3.txt",
+        "author": "Author13"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemB/Bsample01.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemB/Bsample02.txt",
+        "true_author": "Author09"
+      },
+      {
+        "file": "problemB/Bsample03.txt",
+        "true_author": "Author13"
+      },
+      {
+        "file": "problemB/Bsample04.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemB/Bsample05.txt",
+        "true_author": "Author10"
+      },
+      {
+        "file": "problemB/Bsample06.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemB/Bsample07.txt",
+        "true_author": "Author07"
+      },
+      {
+        "file": "problemB/Bsample08.txt",
+        "true_author": "Author08"
+      },
+      {
+        "file": "problemB/Bsample09.txt",
+        "true_author": "Author11"
+      },
+      {
+        "file": "problemB/Bsample10.txt",
+        "true_author": "Author12"
+      },
+      {
+        "file": "problemB/Bsample11.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemB/Bsample12.txt",
+        "true_author": "Author06"
+      },
+      {
+        "file": "problemB/Bsample13.txt",
+        "true_author": "Author04"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_c",
+    "name": "AAAC Problem C",
+    "description": "5-author attribution, 17 training + 9 unknown documents",
+    "known": [
+      {
+        "file": "problemC/Ctrain01-1.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemC/Ctrain01-2.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemC/Ctrain01-3.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemC/Ctrain01-4.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemC/Ctrain02-1.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemC/Ctrain02-2.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemC/Ctrain02-3.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemC/Ctrain02-4.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemC/Ctrain03-1.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemC/Ctrain03-2.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemC/Ctrain03-3.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemC/Ctrain04-1.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemC/Ctrain04-2.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemC/Ctrain04-3.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemC/Ctrain04-4.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemC/Ctrain05-1.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemC/Ctrain05-2.txt",
+        "author": "Author05"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemC/Csample01.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemC/Csample02.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemC/Csample03.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemC/Csample04.txt",
+        "true_author": "Author04"
+      },
+      {
+        "file": "problemC/Csample05.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemC/Csample06.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemC/Csample07.txt",
+        "true_author": "Author04"
+      },
+      {
+        "file": "problemC/Csample08.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemC/Csample09.txt",
+        "true_author": "Author02"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_d",
+    "name": "AAAC Problem D",
+    "description": "3-author attribution, 12 training + 4 unknown documents",
+    "known": [
+      {
+        "file": "problemD/Dtrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemD/Dtrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemD/Dtrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemD/Dtrain01-04.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemD/Dtrain01-05.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemD/Dtrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemD/Dtrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemD/Dtrain02-03.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemD/Dtrain03-01.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemD/Dtrain03-02.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemD/Dtrain03-03.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemD/Dtrain03-04.txt",
+        "author": "Author03"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemD/Dsample01.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemD/Dsample02.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemD/Dsample03.txt",
+        "true_author": "NONE"
+      },
+      {
+        "file": "problemD/Dsample04.txt",
+        "true_author": "Author03"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_e",
+    "name": "AAAC Problem E",
+    "description": "3-author attribution, 12 training + 4 unknown documents",
+    "known": [
+      {
+        "file": "problemE/Etrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemE/Etrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemE/Etrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemE/Etrain01-04.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemE/Etrain01-05.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemE/Etrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemE/Etrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemE/Etrain02-03.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemE/Etrain03-01.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemE/Etrain03-02.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemE/Etrain03-03.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemE/Etrain03-04.txt",
+        "author": "Author03"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemE/Esample01.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemE/Esample02.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemE/Esample03.txt",
+        "true_author": "NONE"
+      },
+      {
+        "file": "problemE/Esample04.txt",
+        "true_author": "Author02"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_f",
+    "name": "AAAC Problem F",
+    "description": "3-author attribution, 60 training + 10 unknown documents",
+    "known": [
+      {
+        "file": "problemF/Ftrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-04.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-05.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-06.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-07.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-08.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-09.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-10.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-11.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-12.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-13.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-14.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-15.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-16.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-17.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-18.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-19.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain01-20.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemF/Ftrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-03.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-04.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-05.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-06.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-07.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-08.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-09.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-10.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-11.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-12.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-13.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-14.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-15.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-16.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-17.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-18.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-19.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain02-20.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemF/Ftrain03-01.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-02.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-03.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-04.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-05.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-06.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-07.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-08.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-09.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-10.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-11.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-12.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-13.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-14.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-15.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-16.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-17.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-18.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-19.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemF/Ftrain03-20.txt",
+        "author": "Author03"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemF/Fsample01.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemF/Fsample02.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemF/Fsample03.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemF/Fsample04.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemF/Fsample05.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemF/Fsample06.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemF/Fsample07.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemF/Fsample08.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemF/Fsample09.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemF/Fsample10.txt",
+        "true_author": "NONE"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_g",
+    "name": "AAAC Problem G",
+    "description": "2-author attribution, 6 training + 4 unknown documents",
+    "known": [
+      {
+        "file": "problemG/Gtrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemG/Gtrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemG/Gtrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemG/Gtrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemG/Gtrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemG/Gtrain02-03.txt",
+        "author": "Author02"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemG/Gsample01.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemG/Gsample02.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemG/Gsample03.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemG/Gsample04.txt",
+        "true_author": "Author01"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_h",
+    "name": "AAAC Problem H",
+    "description": "3-author attribution, 3 training + 3 unknown documents",
+    "known": [
+      {
+        "file": "problemH/Htrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemH/Htrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemH/Htrain03-01.txt",
+        "author": "Author03"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemH/Hsample01.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemH/Hsample02.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemH/Hsample03.txt",
+        "true_author": "Author02"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_i",
+    "name": "AAAC Problem I",
+    "description": "2-author attribution, 5 training + 4 unknown documents",
+    "known": [
+      {
+        "file": "problemI/Itrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemI/Itrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemI/Itrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemI/Itrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemI/Itrain02-02.txt",
+        "author": "Author02"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemI/Isample01.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemI/Isample02.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemI/Isample03.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemI/Isample04.txt",
+        "true_author": "Author02"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_j",
+    "name": "AAAC Problem J",
+    "description": "2-author attribution, 5 training + 2 unknown documents",
+    "known": [
+      {
+        "file": "problemJ/Jtrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemJ/Jtrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemJ/Jtrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemJ/Jtrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemJ/Jtrain02-02.txt",
+        "author": "Author02"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemJ/Jsample01.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemJ/Jsample02.txt",
+        "true_author": "Author01"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_k",
+    "name": "AAAC Problem K",
+    "description": "3-author attribution, 14 training + 4 unknown documents",
+    "known": [
+      {
+        "file": "problemK/Ktrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemK/Ktrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemK/Ktrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemK/Ktrain01-04.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemK/Ktrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemK/Ktrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemK/Ktrain03-01.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-02.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-03.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-04.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-05.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-06.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-07.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemK/Ktrain03-08.txt",
+        "author": "Author03"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemK/Ksample01.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemK/Ksample02.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemK/Ksample03.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemK/Ksample04.txt",
+        "true_author": "Author03"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_l",
+    "name": "AAAC Problem L",
+    "description": "4-author attribution, 6 training + 4 unknown documents",
+    "known": [
+      {
+        "file": "problemL/Ltrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemL/Ltrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemL/Ltrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemL/Ltrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemL/Ltrain03-01.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemL/Ltrain04-01.txt",
+        "author": "Author04"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemL/Lsample01.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemL/Lsample02.txt",
+        "true_author": "Author04"
+      },
+      {
+        "file": "problemL/Lsample03.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemL/Lsample04.txt",
+        "true_author": "Author03"
+      }
+    ]
+  },
+  {
+    "id": "aaac_problem_m",
+    "name": "AAAC Problem M",
+    "description": "8-author attribution, 48 training + 24 unknown documents",
+    "known": [
+      {
+        "file": "problemM/Mtrain01-01.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemM/Mtrain01-02.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemM/Mtrain01-03.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemM/Mtrain01-04.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemM/Mtrain01-05.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemM/Mtrain01-06.txt",
+        "author": "Author01"
+      },
+      {
+        "file": "problemM/Mtrain02-01.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemM/Mtrain02-02.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemM/Mtrain02-03.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemM/Mtrain02-04.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemM/Mtrain02-05.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemM/Mtrain02-06.txt",
+        "author": "Author02"
+      },
+      {
+        "file": "problemM/Mtrain03-01.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemM/Mtrain03-02.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemM/Mtrain03-03.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemM/Mtrain03-04.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemM/Mtrain03-05.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemM/Mtrain03-06.txt",
+        "author": "Author03"
+      },
+      {
+        "file": "problemM/Mtrain04-01.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemM/Mtrain04-02.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemM/Mtrain04-03.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemM/Mtrain04-04.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemM/Mtrain04-05.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemM/Mtrain04-06.txt",
+        "author": "Author04"
+      },
+      {
+        "file": "problemM/Mtrain05-01.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemM/Mtrain05-02.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemM/Mtrain05-03.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemM/Mtrain05-04.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemM/Mtrain05-05.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemM/Mtrain05-06.txt",
+        "author": "Author05"
+      },
+      {
+        "file": "problemM/Mtrain06-01.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemM/Mtrain06-02.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemM/Mtrain06-03.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemM/Mtrain06-04.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemM/Mtrain06-05.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemM/Mtrain06-06.txt",
+        "author": "Author06"
+      },
+      {
+        "file": "problemM/Mtrain07-01.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemM/Mtrain07-02.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemM/Mtrain07-03.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemM/Mtrain07-04.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemM/Mtrain07-05.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemM/Mtrain07-06.txt",
+        "author": "Author07"
+      },
+      {
+        "file": "problemM/Mtrain08-01.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemM/Mtrain08-02.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemM/Mtrain08-03.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemM/Mtrain08-04.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemM/Mtrain08-05.txt",
+        "author": "Author08"
+      },
+      {
+        "file": "problemM/Mtrain08-06.txt",
+        "author": "Author08"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "problemM/Msample01.txt",
+        "true_author": "Author06"
+      },
+      {
+        "file": "problemM/Msample02.txt",
+        "true_author": "Author07"
+      },
+      {
+        "file": "problemM/Msample03.txt",
+        "true_author": "Author04"
+      },
+      {
+        "file": "problemM/Msample04.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemM/Msample05.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemM/Msample06.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemM/Msample07.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemM/Msample08.txt",
+        "true_author": "Author07"
+      },
+      {
+        "file": "problemM/Msample09.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemM/Msample10.txt",
+        "true_author": "Author08"
+      },
+      {
+        "file": "problemM/Msample11.txt",
+        "true_author": "Author07"
+      },
+      {
+        "file": "problemM/Msample12.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemM/Msample13.txt",
+        "true_author": "Author05"
+      },
+      {
+        "file": "problemM/Msample14.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemM/Msample15.txt",
+        "true_author": "Author04"
+      },
+      {
+        "file": "problemM/Msample16.txt",
+        "true_author": "Author08"
+      },
+      {
+        "file": "problemM/Msample17.txt",
+        "true_author": "Author06"
+      },
+      {
+        "file": "problemM/Msample18.txt",
+        "true_author": "Author06"
+      },
+      {
+        "file": "problemM/Msample19.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemM/Msample20.txt",
+        "true_author": "Author02"
+      },
+      {
+        "file": "problemM/Msample21.txt",
+        "true_author": "Author01"
+      },
+      {
+        "file": "problemM/Msample22.txt",
+        "true_author": "Author08"
+      },
+      {
+        "file": "problemM/Msample23.txt",
+        "true_author": "Author03"
+      },
+      {
+        "file": "problemM/Msample24.txt",
+        "true_author": "Author04"
+      }
+    ]
+  }
+]

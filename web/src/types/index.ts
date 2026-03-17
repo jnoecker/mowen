@@ -10,6 +10,21 @@ export interface DocumentResponse {
   updated_at: string;
 }
 
+// Sample corpora
+export interface SampleCorpusInfo {
+  id: string;
+  name: string;
+  description: string;
+  num_known: number;
+  num_unknown: number;
+  num_authors: number;
+}
+
+export interface SampleCorpusImportResponse {
+  known_corpus: CorpusResponse;
+  unknown_corpus: CorpusResponse;
+}
+
 // Corpora
 export interface CorpusResponse {
   id: number;
@@ -36,6 +51,7 @@ export interface ComponentInfo {
   display_name: string;
   description: string;
   params: ParamInfo[] | null;
+  numeric: boolean | null;
 }
 
 // Experiments
@@ -66,6 +82,8 @@ export interface ExperimentResponse {
   config: ExperimentConfig;
   progress: number;
   error_message: string | null;
+  known_corpus_ids: number[];
+  unknown_corpus_ids: number[];
   created_at: string;
   started_at: string | null;
   completed_at: string | null;
@@ -79,4 +97,5 @@ export interface RankingEntry {
 export interface ExperimentResultResponse {
   unknown_document: DocumentResponse;
   rankings: RankingEntry[];
+  lower_is_better: boolean;
 }

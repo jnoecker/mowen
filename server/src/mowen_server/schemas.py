@@ -70,6 +70,28 @@ class CorpusDocumentsRequest(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Sample corpora
+# ---------------------------------------------------------------------------
+
+class SampleCorpusInfo(BaseModel):
+    """Metadata for a bundled sample corpus."""
+
+    id: str
+    name: str
+    description: str
+    num_known: int
+    num_unknown: int
+    num_authors: int
+
+
+class SampleCorpusImportResponse(BaseModel):
+    """Result of importing a sample corpus."""
+
+    known_corpus: CorpusResponse
+    unknown_corpus: CorpusResponse
+
+
+# ---------------------------------------------------------------------------
 # Pipeline components
 # ---------------------------------------------------------------------------
 
@@ -92,6 +114,7 @@ class ComponentInfo(BaseModel):
     display_name: str
     description: str
     params: list[ParamInfo] | None = None
+    numeric: bool | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -129,6 +152,8 @@ class ExperimentResponse(BaseModel):
     config: ExperimentConfig
     progress: float
     error_message: str | None
+    known_corpus_ids: list[int] = []
+    unknown_corpus_ids: list[int] = []
     created_at: datetime
     started_at: datetime | None
     completed_at: datetime | None

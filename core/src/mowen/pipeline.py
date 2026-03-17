@@ -179,6 +179,13 @@ class Pipeline:
 
         if numeric_mode:
             # --- Numeric path: skip cullers and histograms ---
+            if isinstance(analysis_method, NeighborAnalysisMethod):
+                raise PipelineError(
+                    f"Analysis method {am_spec.name!r} uses a distance function and "
+                    f"is not compatible with transformer embeddings. "
+                    f"Use an sklearn-based method instead "
+                    f"(e.g. 'svm', 'knn', 'lda', 'logistic_regression', 'random_forest')."
+                )
             self._report(0.6, "Preparing feature vectors")
 
             # Pass NumericEventSets directly as "histograms" — the sklearn
