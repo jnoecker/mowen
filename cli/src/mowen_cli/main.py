@@ -155,7 +155,11 @@ def run(
             if r.verification_threshold is not None:
                 entry["verification_threshold"] = r.verification_threshold
                 if r.rankings:
-                    entry["verified"] = r.rankings[0].score >= r.verification_threshold
+                    top_score = r.rankings[0].score
+                    if top_score == 0.5:
+                        entry["inconclusive"] = True
+                    else:
+                        entry["verified"] = top_score >= r.verification_threshold
             out.append(entry)
         typer.echo(json.dumps(out, indent=2))
     else:
@@ -167,11 +171,12 @@ def run(
                 # Show VERIFIED/REJECTED badge for verification methods
                 badge = ""
                 if r.verification_threshold is not None and i == 0:
-                    badge = (
-                        "  VERIFIED"
-                        if a.score >= r.verification_threshold
-                        else "  REJECTED"
-                    )
+                    if a.score == 0.5:
+                        badge = "  INCONCLUSIVE"
+                    elif a.score >= r.verification_threshold:
+                        badge = "  VERIFIED"
+                    else:
+                        badge = "  REJECTED"
                 typer.echo(f"  {marker}{a.author:<25} {a.score:.4f}{badge}")
 
 

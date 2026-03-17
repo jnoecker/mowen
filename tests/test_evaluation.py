@@ -211,6 +211,20 @@ class TestCAt1:
         assert result.c_at_1 is not None
         assert result.c_at_1 == 1.0
 
+    def test_c_at_1_with_nonanswers(self):
+        """Non-answers (score=0.5) should boost c@1 vs pure accuracy."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9), ("B", 0.1))),
+            Prediction("d2", "B", "A", (("A", 0.5), ("B", 0.3))),  # non-answer
+            Prediction("d3", "B", "B", (("B", 0.8), ("A", 0.2))),
+            Prediction("d4", "A", "B", (("B", 0.7), ("A", 0.3))),
+        ]
+        c1 = _compute_c_at_1(preds)
+        assert c1 is not None
+        # nc=2, n=4, nu=1 (d2 has top score 0.5)
+        # c@1 = (2 + 1 * 2/4) / 4 = (2 + 0.5) / 4 = 0.625
+        assert c1 == pytest.approx(0.625)
+
 
 # ---------------------------------------------------------------------------
 # F_0.5u metric

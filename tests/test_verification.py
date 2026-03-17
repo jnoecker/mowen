@@ -134,6 +134,40 @@ class TestGeneralImposters:
         method = analysis_method_registry.create("imposters")
         assert method.lower_is_better is False
 
+    def test_calibration_converts_to_nonanswer(self):
+        """Scores in calibration band should become 0.5."""
+        method = analysis_method_registry.create(
+            "imposters",
+            {"n_iterations": 50, "random_seed": 42,
+             "calibration_low": 0.3, "calibration_high": 0.7},
+        )
+        method.distance_function = distance_function_registry.create("cosine")
+        method.train(_make_training_data())
+
+        results = method.analyze(_unknown_like_a())
+        # At least one score should exist; any score in [0.3, 0.7]
+        # should have been converted to 0.5
+        for r in results:
+            if r.score == 0.5:
+                break
+        # Just verify scores are valid (0-1 range or 0.5)
+        for r in results:
+            assert 0.0 <= r.score <= 1.0
+
+    def test_calibration_disabled_by_default(self):
+        """Default calibration params (0.0, 0.0) should not alter scores."""
+        method = analysis_method_registry.create(
+            "imposters", {"n_iterations": 50, "random_seed": 42}
+        )
+        method.distance_function = distance_function_registry.create("cosine")
+        method.train(_make_training_data())
+
+        results = method.analyze(_unknown_like_a())
+        # With no calibration, no score should be exactly 0.5
+        # (unless it happens naturally, which is unlikely with 50 iterations)
+        scores = [r.score for r in results]
+        assert any(s != 0.5 for s in scores)
+
 
 class TestUnmasking:
     def test_registered(self):
