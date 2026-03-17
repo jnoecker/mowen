@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e core/ -e cli/ -e server/
+      - run: pip install -e 'core/[dev]' -e cli/ -e server/
       - run: python -m pytest tests/ --ignore=tests/validate_against_jgaap.py -x -q
 
   publish:
