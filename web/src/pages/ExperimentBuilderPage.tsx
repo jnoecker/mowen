@@ -6,6 +6,8 @@ import { corporaApi } from '../api/corpora';
 import { useExperimentStore } from '../store/experimentStore';
 import { useCreateExperiment } from '../hooks/useExperiment';
 import type { ComponentInfo, ComponentSpec, ParamInfo, CorpusResponse } from '../types';
+import { PRESETS } from '../presets';
+import type { Preset } from '../presets';
 import s from './ExperimentBuilderPage.module.css';
 
 // Re-export the value type from ComponentSpec to avoid explicit `any` in signatures
@@ -226,13 +228,23 @@ function ComponentSelector({
 // Step 1: Name & Corpora
 // ---------------------------------------------------------------------------
 
-function StepNameCorpora({ corpora, isLoading }: { corpora: CorpusResponse[]; isLoading: boolean }) {
-  const name = useExperimentStore((s) => s.name);
-  const setName = useExperimentStore((s) => s.setName);
-  const knownCorpusIds = useExperimentStore((s) => s.knownCorpusIds);
-  const setKnownCorpusIds = useExperimentStore((s) => s.setKnownCorpusIds);
-  const unknownCorpusIds = useExperimentStore((s) => s.unknownCorpusIds);
-  const setUnknownCorpusIds = useExperimentStore((s) => s.setUnknownCorpusIds);
+function StepNameCorpora({
+  corpora,
+  isLoading,
+  onApplyPreset,
+  activePresetId,
+}: {
+  corpora: CorpusResponse[];
+  isLoading: boolean;
+  onApplyPreset: (preset: Preset) => void;
+  activePresetId: string | null;
+}) {
+  const name = useExperimentStore((st) => st.name);
+  const setName = useExperimentStore((st) => st.setName);
+  const knownCorpusIds = useExperimentStore((st) => st.knownCorpusIds);
+  const setKnownCorpusIds = useExperimentStore((st) => st.setKnownCorpusIds);
+  const unknownCorpusIds = useExperimentStore((st) => st.unknownCorpusIds);
+  const setUnknownCorpusIds = useExperimentStore((st) => st.setUnknownCorpusIds);
 
   const toggleCorpus = (ids: number[], setIds: (ids: number[]) => void, id: number) => {
     if (ids.includes(id)) {
@@ -244,6 +256,26 @@ function StepNameCorpora({ corpora, isLoading }: { corpora: CorpusResponse[]; is
 
   return (
     <div>
+      {/* Preset selector */}
+      <div className={s.presetSection}>
+        <div className={s.presetSectionLabel}>Start from a preset</div>
+        <div className={s.presetGrid}>
+          {PRESETS.map((preset) => (
+            <div
+              key={preset.id}
+              className={`${s.presetCard} ${activePresetId === preset.id ? s.presetCardActive : ''}`}
+              onClick={() => onApplyPreset(preset)}
+            >
+              <div className={s.presetName}>{preset.name}</div>
+              <div className={s.presetDesc}>{preset.description}</div>
+              <div className={s.presetCitation}>{preset.citation}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className={s.presetDivider}><span>then configure</span></div>
+
       <div style={{ marginBottom: '1.5rem' }}>
         <label className={s.paramLabel} style={{ display: 'block', fontSize: '0.9rem' }}>
           Experiment Name
@@ -498,9 +530,23 @@ export default function ExperimentBuilderPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
 
   const store = useExperimentStore();
   const createExperiment = useCreateExperiment();
+
+  const handleApplyPreset = (preset: Preset) => {
+    setActivePresetId(preset.id);
+    store.setCanonicizers(preset.config.canonicizers);
+    store.setEventDrivers(preset.config.event_drivers);
+    store.setEventCullers(preset.config.event_cullers);
+    store.setDistanceFunction(preset.config.distance_function);
+    store.setAnalysisMethod(preset.config.analysis_method);
+    // Suggest a name if empty
+    if (!store.name.trim()) {
+      store.setName(preset.name);
+    }
+  };
 
   // ----- data queries ------------------------------------------------------
 
@@ -604,7 +650,14 @@ export default function ExperimentBuilderPage() {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <StepNameCorpora corpora={corpora} isLoading={corporaLoading} />;
+        return (
+          <StepNameCorpora
+            corpora={corpora}
+            isLoading={corporaLoading}
+            onApplyPreset={handleApplyPreset}
+            activePresetId={activePresetId}
+          />
+        );
       case 1:
         return (
           <div>
@@ -615,7 +668,7 @@ export default function ExperimentBuilderPage() {
             <ComponentSelector
               components={canonicizers}
               selected={store.canonicizers}
-              onChange={store.setCanonicizers}
+              onChange={(v) => { setActivePresetId(null); store.setCanonicizers(v); }}
               isLoading={canonicizersLoading}
               multiSelect
             />
@@ -631,7 +684,7 @@ export default function ExperimentBuilderPage() {
             <ComponentSelector
               components={eventDrivers}
               selected={store.eventDrivers}
-              onChange={store.setEventDrivers}
+              onChange={(v) => { setActivePresetId(null); store.setEventDrivers(v); }}
               isLoading={eventDriversLoading}
               multiSelect
             />
@@ -654,7 +707,7 @@ export default function ExperimentBuilderPage() {
                 <ComponentSelector
                   components={eventCullers}
                   selected={store.eventCullers}
-                  onChange={store.setEventCullers}
+                  onChange={(v) => { setActivePresetId(null); store.setEventCullers(v); }}
                   isLoading={eventCullersLoading}
                   multiSelect
                 />
@@ -679,7 +732,7 @@ export default function ExperimentBuilderPage() {
                 <ComponentSelector
                   components={distanceFunctions}
                   selected={store.distanceFunction ? [store.distanceFunction] : []}
-                  onChange={(specs) => store.setDistanceFunction(specs[0] ?? null)}
+                  onChange={(specs) => { setActivePresetId(null); store.setDistanceFunction(specs[0] ?? null); }}
                   isLoading={distanceFunctionsLoading}
                   multiSelect={false}
                 />
@@ -703,7 +756,7 @@ export default function ExperimentBuilderPage() {
               components={filteredMethods}
               selected={[store.analysisMethod]}
               onChange={(specs) => {
-                if (specs.length > 0) store.setAnalysisMethod(specs[0]);
+                if (specs.length > 0) { setActivePresetId(null); store.setAnalysisMethod(specs[0]); }
               }}
               isLoading={analysisMethodsLoading}
               multiSelect={false}
