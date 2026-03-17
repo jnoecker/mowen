@@ -87,6 +87,30 @@ class Unmasking(AnalysisMethod):
                 param_type=int,
                 default=0,
             ),
+            ParamDef(
+                name="calibration_low",
+                description=(
+                    "Lower calibration threshold. Scores in "
+                    "[low, high] are set to 0.5 (non-answer). "
+                    "Set both to 0.0 to disable calibration."
+                ),
+                param_type=float,
+                default=0.0,
+                min_value=0.0,
+                max_value=1.0,
+            ),
+            ParamDef(
+                name="calibration_high",
+                description=(
+                    "Upper calibration threshold. Scores in "
+                    "[low, high] are set to 0.5 (non-answer). "
+                    "Set both to 0.0 to disable calibration."
+                ),
+                param_type=float,
+                default=0.0,
+                min_value=0.0,
+                max_value=1.0,
+            ),
         ]
 
     def train(self, known_docs: list[tuple[Document, Histogram]]) -> None:
@@ -200,6 +224,18 @@ class Unmasking(AnalysisMethod):
                 score = 0.0
 
             attributions.append(Attribution(author=candidate, score=score))
+
+        # Apply dual-threshold calibration (non-answer band)
+        cal_lo: float = self.get_param("calibration_low")
+        cal_hi: float = self.get_param("calibration_high")
+        if cal_lo > 0 or cal_hi > 0:
+            attributions = [
+                Attribution(
+                    author=a.author,
+                    score=0.5 if cal_lo <= a.score <= cal_hi else a.score,
+                )
+                for a in attributions
+            ]
 
         attributions.sort(key=lambda a: a.score, reverse=True)
         return attributions

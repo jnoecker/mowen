@@ -164,8 +164,13 @@ def _compute_c_at_1(predictions: list[Prediction]) -> float | None:
 
     n = len(predictions)
     nc = sum(1 for p in predictions if p.true_author == p.predicted_author)
-    # In closed-set attribution, all predictions are answered
+    # Count non-answers: top score is exactly 0.5 (verification abstention)
     nu = 0
+    if predictions[0].scores:
+        nu = sum(
+            1 for p in predictions
+            if p.scores and p.scores[0][1] == 0.5
+        )
     return (nc + nu * nc / n) / n if n > 0 else None
 
 

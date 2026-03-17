@@ -116,6 +116,16 @@
   letter-spacing: 0.03em;
 }
 
+.attrInconclusive {
+  font-size: 0.7rem;
+  color: var(--bg);
+  background: var(--text-muted);
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 .trueAuthorNote {
   font-size: 0.7rem;
   margin-left: 0.4rem;
