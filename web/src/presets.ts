@@ -136,6 +136,24 @@ export const PRESETS: Preset[] = [
     },
   },
   {
+    id: 'selma',
+    name: 'SELMA Embeddings',
+    description:
+      'Zero-shot instruction-tuned embeddings optimized for stylistic similarity. Uses e5-mistral-7b-instruct with a style-retrieval instruction prefix. Best cross-genre method from the CrossNews benchmark. Requires the transformers extra and significant GPU memory.',
+    citation: 'Ma et al. (2025), Wang et al. (2024)',
+    config: {
+      canonicizers: [
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'selma_embeddings', params: {} },
+      ],
+      event_cullers: [],
+      distance_function: null,
+      analysis_method: { name: 'svm', params: {} },
+    },
+  },
+  {
     id: 'general-imposters',
     name: 'General Imposters Method',
     description:
