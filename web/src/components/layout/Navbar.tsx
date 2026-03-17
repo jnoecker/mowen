@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import sealUrl from '../../assets/seal.svg';
+import logoUrl from '../../assets/logo.png';
 import s from './Navbar.module.css';
 
 const navItems = [
@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <nav className={s.nav}>
       <NavLink to="/dashboard" className={s.brand}>
-        <img src={sealUrl} alt="墨" className={s.seal} />
+        <img src={logoUrl} alt="mowen" className={s.logo} />
         mowen <span className={s.brandCjk}>(墨紋)</span>
       </NavLink>
       <ul className={s.links}>

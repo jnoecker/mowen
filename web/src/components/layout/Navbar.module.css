@@ -35,14 +35,14 @@
   text-decoration: none;
 }
 
-.seal {
-  height: 1.8rem;
+.logo {
+  height: 2.6rem;
   width: auto;
   opacity: 0.9;
   transition: opacity 0.15s;
 }
 
-.brand:hover .seal {
+.brand:hover .logo {
   opacity: 1;
 }
 
