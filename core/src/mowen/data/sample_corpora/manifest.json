@@ -1920,7 +1920,7 @@
   {
     "id": "shakespeare_contemporaries",
     "name": "Shakespeare vs. Contemporaries",
-    "description": "Shakespeare, Marlowe, and Jonson. 11 plays with known authorship, Henry VIII as disputed (Shakespeare/Fletcher collaboration).",
+    "description": "Shakespeare, Marlowe, and Jonson. 8 plays with known authorship, 4 held out (including the disputed Henry VIII).",
     "known": [
       {
         "file": "shakespeare/Shakespeare_Hamlet.txt",
@@ -1943,10 +1943,6 @@
         "author": "Shakespeare"
       },
       {
-        "file": "shakespeare/Shakespeare_A_Midsummer_Night_s_Dream.txt",
-        "author": "Shakespeare"
-      },
-      {
         "file": "shakespeare/Marlowe_Doctor_Faustus.txt",
         "author": "Marlowe"
       },
@@ -1955,19 +1951,23 @@
         "author": "Marlowe"
       },
       {
-        "file": "shakespeare/Marlowe_The_Jew_of_Malta.txt",
-        "author": "Marlowe"
-      },
-      {
         "file": "shakespeare/Jonson_Volpone.txt",
-        "author": "Jonson"
-      },
-      {
-        "file": "shakespeare/Jonson_Every_Man_in_His_Humour.txt",
         "author": "Jonson"
       }
     ],
     "unknown": [
+      {
+        "file": "shakespeare/Shakespeare_A_Midsummer_Night_s_Dream.txt",
+        "true_author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Marlowe_The_Jew_of_Malta.txt",
+        "true_author": "Marlowe"
+      },
+      {
+        "file": "shakespeare/Jonson_Every_Man_in_His_Humour.txt",
+        "true_author": "Jonson"
+      },
       {
         "file": "shakespeare/unknown_Henry_VIII.txt",
         "true_author": "Shakespeare & Fletcher"
@@ -1977,7 +1977,7 @@
   {
     "id": "bronte_sisters",
     "name": "Brontë Sisters",
-    "description": "Charlotte, Emily, and Anne Brontë. 32 chapter excerpts from their novels. Similar upbringing and genre but distinct styles.",
+    "description": "Charlotte, Emily, and Anne Brontë. 26 chapter excerpts with known authorship, 6 held out for attribution. Similar upbringing and genre but distinct styles.",
     "known": [
       {
         "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch01.txt",
@@ -2004,14 +2004,6 @@
         "author": "Charlotte Brontë"
       },
       {
-        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch07.txt",
-        "author": "Charlotte Brontë"
-      },
-      {
-        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch08.txt",
-        "author": "Charlotte Brontë"
-      },
-      {
         "file": "brontes/Emily_Brontë_Wuthering_Heights_ch01.txt",
         "author": "Emily Brontë"
       },
@@ -2033,14 +2025,6 @@
       },
       {
         "file": "brontes/Emily_Brontë_Wuthering_Heights_ch06.txt",
-        "author": "Emily Brontë"
-      },
-      {
-        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch07.txt",
-        "author": "Emily Brontë"
-      },
-      {
-        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch08.txt",
         "author": "Emily Brontë"
       },
       {
@@ -2098,75 +2082,92 @@
       {
         "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch06.txt",
         "author": "Anne Brontë"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch07.txt",
+        "true_author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch08.txt",
+        "true_author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch07.txt",
+        "true_author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch08.txt",
+        "true_author": "Emily Brontë"
       },
       {
         "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch07.txt",
-        "author": "Anne Brontë"
+        "true_author": "Anne Brontë"
       },
       {
         "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch08.txt",
-        "author": "Anne Brontë"
+        "true_author": "Anne Brontë"
       }
-    ],
-    "unknown": []
+    ]
   },
   {
     "id": "pauline_epistles",
     "name": "Pauline Epistles",
-    "description": "Authorship of the Pauline letters (KJV). 6 undisputed letters, 5 disputed/pastoral letters. One of the oldest attribution questions in history.",
+    "description": "Paul vs. Pastoral author (KJV). 8 letters with known attribution (undisputed Paul + pastoral), 3 genuinely disputed letters (Ephesians, Colossians, 2 Thessalonians).",
     "known": [
       {
         "file": "pauline/Romans.txt",
-        "author": "Paul (undisputed)"
+        "author": "Paul"
       },
       {
         "file": "pauline/1_Corinthians.txt",
-        "author": "Paul (undisputed)"
+        "author": "Paul"
       },
       {
         "file": "pauline/2_Corinthians.txt",
-        "author": "Paul (undisputed)"
+        "author": "Paul"
       },
       {
         "file": "pauline/Galatians.txt",
-        "author": "Paul (undisputed)"
+        "author": "Paul"
       },
       {
         "file": "pauline/Philippians.txt",
-        "author": "Paul (undisputed)"
+        "author": "Paul"
       },
       {
         "file": "pauline/1_Thessalonians.txt",
-        "author": "Paul (undisputed)"
+        "author": "Paul"
+      },
+      {
+        "file": "pauline/1_Timothy.txt",
+        "author": "Pastoral"
+      },
+      {
+        "file": "pauline/2_Timothy.txt",
+        "author": "Pastoral"
       }
     ],
     "unknown": [
       {
         "file": "pauline/Ephesians.txt",
-        "true_author": "Disputed"
+        "true_author": "NONE"
       },
       {
         "file": "pauline/Colossians.txt",
-        "true_author": "Disputed"
+        "true_author": "NONE"
       },
       {
         "file": "pauline/2_Thessalonians.txt",
-        "true_author": "Disputed"
-      },
-      {
-        "file": "pauline/1_Timothy.txt",
-        "true_author": "Pastoral (likely not Paul)"
-      },
-      {
-        "file": "pauline/2_Timothy.txt",
-        "true_author": "Pastoral (likely not Paul)"
+        "true_author": "NONE"
       }
     ]
   },
   {
     "id": "state_of_the_union",
     "name": "State of the Union Addresses",
-    "description": "Presidential addresses from Lincoln, T. Roosevelt, and Wilson. 10 speeches with known authorship.",
+    "description": "Lincoln, T. Roosevelt, and Wilson. 7 addresses with known authorship, 3 held out for attribution.",
     "known": [
       {
         "file": "sotu/Abraham_Lincoln_1861_SOTU.txt",
@@ -2181,19 +2182,11 @@
         "author": "Abraham Lincoln"
       },
       {
-        "file": "sotu/Abraham_Lincoln_1864_SOTU.txt",
-        "author": "Abraham Lincoln"
-      },
-      {
         "file": "sotu/Theodore_Roosevelt_1901_SOTU.txt",
         "author": "Theodore Roosevelt"
       },
       {
         "file": "sotu/Theodore_Roosevelt_1902_SOTU.txt",
-        "author": "Theodore Roosevelt"
-      },
-      {
-        "file": "sotu/Theodore_Roosevelt_1903_SOTU.txt",
         "author": "Theodore Roosevelt"
       },
       {
@@ -2203,18 +2196,27 @@
       {
         "file": "sotu/Woodrow_Wilson_1914_SOTU.txt",
         "author": "Woodrow Wilson"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "sotu/Abraham_Lincoln_1864_SOTU.txt",
+        "true_author": "Abraham Lincoln"
+      },
+      {
+        "file": "sotu/Theodore_Roosevelt_1903_SOTU.txt",
+        "true_author": "Theodore Roosevelt"
       },
       {
         "file": "sotu/Woodrow_Wilson_1915_SOTU.txt",
-        "author": "Woodrow Wilson"
+        "true_author": "Woodrow Wilson"
       }
-    ],
-    "unknown": []
+    ]
   },
   {
     "id": "russian_literature",
     "name": "Russian Literature",
-    "description": "Dostoevsky, Tolstoy, Chekhov, and Turgenev in English translation. 31 chapter excerpts. Cross-cultural stylometry on translated works.",
+    "description": "Dostoevsky, Tolstoy, Chekhov, and Turgenev in English translation. 27 chapter excerpts with known authorship, 4 held out for attribution.",
     "known": [
       {
         "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch01.txt",
@@ -2258,10 +2260,6 @@
       },
       {
         "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch05.txt",
-        "author": "Dostoevsky"
-      },
-      {
-        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch06.txt",
         "author": "Dostoevsky"
       },
       {
@@ -2309,14 +2307,6 @@
         "author": "Tolstoy"
       },
       {
-        "file": "russian_lit/Tolstoy_Anna_Karenina_ch06.txt",
-        "author": "Tolstoy"
-      },
-      {
-        "file": "russian_lit/Chekhov_The_Lady_with_the_Dog_and_Other_Stories.txt",
-        "author": "Chekhov"
-      },
-      {
         "file": "russian_lit/Turgenev_Fathers_and_Sons_ch01.txt",
         "author": "Turgenev"
       },
@@ -2335,18 +2325,31 @@
       {
         "file": "russian_lit/Turgenev_Fathers_and_Sons_ch05.txt",
         "author": "Turgenev"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch06.txt",
+        "true_author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch06.txt",
+        "true_author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Chekhov_The_Lady_with_the_Dog_and_Other_Stories.txt",
+        "true_author": "Chekhov"
       },
       {
         "file": "russian_lit/Turgenev_Fathers_and_Sons_ch06.txt",
-        "author": "Turgenev"
+        "true_author": "Turgenev"
       }
-    ],
-    "unknown": []
+    ]
   },
   {
     "id": "homeric_question",
     "name": "The Homeric Question",
-    "description": "Iliad vs. Odyssey (Butler translation), split by book. 49 sections. Tests whether the same author composed both epics — one of the oldest attribution questions. Also suitable for authorship diarization research.",
+    "description": "Iliad vs. Odyssey (Butler translation), split by book. 43 books with known attribution, 6 held out. Tests whether the same author composed both epics — also suitable for authorship diarization research.",
     "known": [
       {
         "file": "homer/Homer_Iliad_book01.txt",
@@ -2374,10 +2377,6 @@
       },
       {
         "file": "homer/Homer_Iliad_book07.txt",
-        "author": "Iliad"
-      },
-      {
-        "file": "homer/Homer_Iliad_book08.txt",
         "author": "Iliad"
       },
       {
@@ -2409,10 +2408,6 @@
         "author": "Iliad"
       },
       {
-        "file": "homer/Homer_Iliad_book16.txt",
-        "author": "Iliad"
-      },
-      {
         "file": "homer/Homer_Iliad_book17.txt",
         "author": "Iliad"
       },
@@ -2438,10 +2433,6 @@
       },
       {
         "file": "homer/Homer_Iliad_book23.txt",
-        "author": "Iliad"
-      },
-      {
-        "file": "homer/Homer_Iliad_book24.txt",
         "author": "Iliad"
       },
       {
@@ -2473,10 +2464,6 @@
         "author": "Odyssey"
       },
       {
-        "file": "homer/Homer_Odyssey_book08.txt",
-        "author": "Odyssey"
-      },
-      {
         "file": "homer/Homer_Odyssey_book09.txt",
         "author": "Odyssey"
       },
@@ -2502,10 +2489,6 @@
       },
       {
         "file": "homer/Homer_Odyssey_book15.txt",
-        "author": "Odyssey"
-      },
-      {
-        "file": "homer/Homer_Odyssey_book16.txt",
         "author": "Odyssey"
       },
       {
@@ -2537,14 +2520,35 @@
         "author": "Odyssey"
       },
       {
-        "file": "homer/Homer_Odyssey_book24.txt",
-        "author": "Odyssey"
-      },
-      {
         "file": "homer/Homer_Odyssey_book25.txt",
         "author": "Odyssey"
       }
     ],
-    "unknown": []
+    "unknown": [
+      {
+        "file": "homer/Homer_Iliad_book08.txt",
+        "true_author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book16.txt",
+        "true_author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book24.txt",
+        "true_author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book08.txt",
+        "true_author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book16.txt",
+        "true_author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book24.txt",
+        "true_author": "Odyssey"
+      }
+    ]
   }
 ]

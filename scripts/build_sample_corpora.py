@@ -174,25 +174,29 @@ def build_federalist():
 def build_shakespeare():
     print("\n=== Shakespeare vs. Contemporaries ===")
 
+    # Last play per author held out as unknown
     plays = {
         "Shakespeare": [
             (1533, "Hamlet"),
             (1524, "Macbeth"),
             (1531, "King Lear"),
             (1532, "Othello"),
-            (1534, "Romeo and Juliet"),
-            (1514, "A Midsummer Night's Dream"),
+            (1534, "Romeo and Juliet"),       # known
+            (1514, "A Midsummer Night's Dream"),  # held out
         ],
         "Marlowe": [
             (811, "Doctor Faustus"),
-            (1094, "Edward the Second"),
-            (1589, "The Jew of Malta"),
+            (1094, "Edward the Second"),      # known
+            (1589, "The Jew of Malta"),        # held out
         ],
         "Jonson": [
-            (5333, "Volpone"),
-            (3694, "Every Man in His Humour"),
+            (5333, "Volpone"),                # known
+            (3694, "Every Man in His Humour"), # held out
         ],
     }
+
+    # Which plays to hold out (last per author)
+    holdout = {"A Midsummer Night's Dream", "The Jew of Malta", "Every Man in His Humour"}
 
     outdir = CORPORA_DIR / "shakespeare"
     known = []
@@ -203,14 +207,15 @@ def build_shakespeare():
             try:
                 text = fetch_gutenberg(pg_id)
                 text = strip_gutenberg(text)
-                # Take the core text, skip dramatis personae etc.
-                # Just use the full play text as one document
                 if len(text.split()) < 500:
                     print(f"  Skipping {title} (too short)")
                     continue
                 fname = f"{sanitize_filename(author)}_{sanitize_filename(title)}.txt"
                 write_doc(outdir, fname, text)
-                known.append({"file": f"shakespeare/{fname}", "author": author})
+                if title in holdout:
+                    unknown.append({"file": f"shakespeare/{fname}", "true_author": author})
+                else:
+                    known.append({"file": f"shakespeare/{fname}", "author": author})
             except Exception as e:
                 print(f"  Failed to fetch {title}: {e}")
 
@@ -228,7 +233,7 @@ def build_shakespeare():
     return {
         "id": "shakespeare_contemporaries",
         "name": "Shakespeare vs. Contemporaries",
-        "description": f"Shakespeare, Marlowe, and Jonson. {len(known)} plays with known authorship, Henry VIII as disputed (Shakespeare/Fletcher collaboration).",
+        "description": f"Shakespeare, Marlowe, and Jonson. {len(known)} plays with known authorship, {len(unknown)} held out (including the disputed Henry VIII).",
         "known": known,
         "unknown": unknown,
     }
@@ -262,36 +267,48 @@ def build_brontes():
 
     outdir = CORPORA_DIR / "brontes"
     known = []
+    unknown = []
+
+    # Collect all chapters per author, then hold out last 2
+    author_chapters: dict[str, list[tuple[str, str, str]]] = {}  # author -> [(fname, body, title)]
 
     for author, novel_list in novels.items():
+        if author not in author_chapters:
+            author_chapters[author] = []
         for pg_id, title in novel_list:
             try:
                 text = fetch_gutenberg(pg_id)
                 text = strip_gutenberg(text)
                 chapters = split_into_chapters(text)
                 if not chapters:
-                    # Fallback: use whole text as one doc
                     fname = f"{sanitize_filename(author)}_{sanitize_filename(title)}.txt"
-                    write_doc(outdir, fname, text)
-                    known.append({"file": f"brontes/{fname}", "author": author})
+                    author_chapters[author].append((fname, text, title))
                 else:
-                    # Take up to 8 chapters per novel to keep balanced
                     step = max(1, len(chapters) // 8)
                     selected = chapters[::step][:8]
                     for j, (heading, body) in enumerate(selected):
                         fname = f"{sanitize_filename(author)}_{sanitize_filename(title)}_ch{j+1:02d}.txt"
-                        write_doc(outdir, fname, body)
-                        known.append({"file": f"brontes/{fname}", "author": author})
+                        author_chapters[author].append((fname, body, title))
             except Exception as e:
                 print(f"  Failed to fetch {title}: {e}")
 
-    print(f"  {len(known)} known documents")
+    for author, chapters in author_chapters.items():
+        # Hold out last 2 chapters as unknowns
+        n_holdout = min(2, max(1, len(chapters) // 4))
+        for i, (fname, body, title) in enumerate(chapters):
+            write_doc(outdir, fname, body)
+            if i >= len(chapters) - n_holdout:
+                unknown.append({"file": f"brontes/{fname}", "true_author": author})
+            else:
+                known.append({"file": f"brontes/{fname}", "author": author})
+
+    print(f"  {len(known)} known, {len(unknown)} unknown documents")
     return {
         "id": "bronte_sisters",
         "name": "Brontë Sisters",
-        "description": f"Charlotte, Emily, and Anne Brontë. {len(known)} chapter excerpts from their novels. Similar upbringing and genre but distinct styles.",
+        "description": f"Charlotte, Emily, and Anne Brontë. {len(known)} chapter excerpts with known authorship, {len(unknown)} held out for attribution. Similar upbringing and genre but distinct styles.",
         "known": known,
-        "unknown": [],
+        "unknown": unknown,
     }
 
 
@@ -311,10 +328,12 @@ PAULINE_EPISTLES = {
     "1 Timothy": 1037, "2 Timothy": 1038, "Titus": 1039,
 }
 
+# Known: undisputed Paul + pastoral (as second author class "Pastoral")
+# Unknown: the 3 disputed letters (Ephesians, Colossians, 2 Thessalonians)
 UNDISPUTED = {"Romans", "1 Corinthians", "2 Corinthians", "Galatians",
               "Philippians", "1 Thessalonians", "Philemon"}
-DISPUTED = {"Ephesians", "Colossians", "2 Thessalonians"}
 PASTORAL = {"1 Timothy", "2 Timothy", "Titus"}
+DISPUTED = {"Ephesians", "Colossians", "2 Thessalonians"}
 
 
 def build_pauline():
@@ -380,17 +399,17 @@ def build_pauline():
         write_doc(outdir, fname, epistle_text)
 
         if epistle in UNDISPUTED:
-            known.append({"file": f"pauline/{fname}", "author": "Paul (undisputed)"})
-        elif epistle in DISPUTED:
-            unknown.append({"file": f"pauline/{fname}", "true_author": "Disputed"})
+            known.append({"file": f"pauline/{fname}", "author": "Paul"})
         elif epistle in PASTORAL:
-            unknown.append({"file": f"pauline/{fname}", "true_author": "Pastoral (likely not Paul)"})
+            known.append({"file": f"pauline/{fname}", "author": "Pastoral"})
+        elif epistle in DISPUTED:
+            unknown.append({"file": f"pauline/{fname}", "true_author": "NONE"})
 
     print(f"  {len(known)} known, {len(unknown)} unknown documents")
     return {
         "id": "pauline_epistles",
         "name": "Pauline Epistles",
-        "description": f"Authorship of the Pauline letters (KJV). {len(known)} undisputed letters, {len(unknown)} disputed/pastoral letters. One of the oldest attribution questions in history.",
+        "description": f"Paul vs. Pastoral author (KJV). {len(known)} letters with known attribution (undisputed Paul + pastoral), {len(unknown)} genuinely disputed letters (Ephesians, Colossians, 2 Thessalonians).",
         "known": known,
         "unknown": unknown,
     }
@@ -402,31 +421,32 @@ def build_pauline():
 
 def build_sotu():
     print("\n=== State of the Union Addresses ===")
-    # Use Project Gutenberg's SOTU collection
-    # PG#5050 has many historical addresses
-    # We'll fetch individual known ones
 
+    # Last address per president held out as unknown
     presidents = {
         "Abraham Lincoln": [
             (34901, "1861 SOTU"),
             (34902, "1862 SOTU"),
             (34903, "1863 SOTU"),
-            (34904, "1864 SOTU"),
+            (34904, "1864 SOTU"),   # held out
         ],
         "Theodore Roosevelt": [
             (5032, "1901 SOTU"),
             (5033, "1902 SOTU"),
-            (5034, "1903 SOTU"),
+            (5034, "1903 SOTU"),    # held out
         ],
         "Woodrow Wilson": [
             (5042, "1913 SOTU"),
             (5043, "1914 SOTU"),
-            (5044, "1915 SOTU"),
+            (5044, "1915 SOTU"),    # held out
         ],
     }
 
+    holdout_titles = {"1864 SOTU", "1903 SOTU", "1915 SOTU"}
+
     outdir = CORPORA_DIR / "sotu"
     known = []
+    unknown = []
 
     for author, addresses in presidents.items():
         for pg_id, title in addresses:
@@ -438,17 +458,20 @@ def build_sotu():
                     continue
                 fname = f"{sanitize_filename(author)}_{sanitize_filename(title)}.txt"
                 write_doc(outdir, fname, text)
-                known.append({"file": f"sotu/{fname}", "author": author})
+                if title in holdout_titles:
+                    unknown.append({"file": f"sotu/{fname}", "true_author": author})
+                else:
+                    known.append({"file": f"sotu/{fname}", "author": author})
             except Exception as e:
                 print(f"  Failed to fetch {title}: {e}")
 
-    print(f"  {len(known)} known documents")
+    print(f"  {len(known)} known, {len(unknown)} unknown documents")
     return {
         "id": "state_of_the_union",
         "name": "State of the Union Addresses",
-        "description": f"Presidential addresses from Lincoln, T. Roosevelt, and Wilson. {len(known)} speeches with known authorship.",
+        "description": f"Lincoln, T. Roosevelt, and Wilson. {len(known)} addresses with known authorship, {len(unknown)} held out for attribution.",
         "known": known,
-        "unknown": [],
+        "unknown": unknown,
     }
 
 
@@ -516,42 +539,50 @@ def build_russian():
     }
 
     outdir = CORPORA_DIR / "russian_lit"
-    known = []
+    # Collect all chapters per author, then hold out last one
+    author_docs: dict[str, list[tuple[str, str]]] = {}  # author -> [(fname, body)]
 
     for author, novel_list in novels.items():
+        if author not in author_docs:
+            author_docs[author] = []
         for pg_id, title in novel_list:
             try:
                 text = fetch_gutenberg(pg_id)
                 text = strip_gutenberg(text)
                 chapters = split_into_chapters(text)
                 if not chapters:
-                    # For short story collections, split by story markers
                     stories = split_by_regex(text, r'\n\n([A-Z][A-Z ]{3,}[A-Z])\n\n', min_words=500)
                     if stories:
                         chapters = stories
                     else:
-                        # Use whole text
                         fname = f"{sanitize_filename(author)}_{sanitize_filename(title)}.txt"
-                        write_doc(outdir, fname, text)
-                        known.append({"file": f"russian_lit/{fname}", "author": author})
+                        author_docs[author].append((fname, text))
                         continue
-                # Take up to 6 chapters per novel
                 step = max(1, len(chapters) // 6)
                 selected = chapters[::step][:6]
                 for j, (heading, body) in enumerate(selected):
                     fname = f"{sanitize_filename(author)}_{sanitize_filename(title)}_ch{j+1:02d}.txt"
-                    write_doc(outdir, fname, body)
-                    known.append({"file": f"russian_lit/{fname}", "author": author})
+                    author_docs[author].append((fname, body))
             except Exception as e:
                 print(f"  Failed to fetch {title}: {e}")
 
-    print(f"  {len(known)} known documents")
+    known = []
+    unknown = []
+    for author, docs in author_docs.items():
+        for i, (fname, body) in enumerate(docs):
+            write_doc(outdir, fname, body)
+            if i == len(docs) - 1:  # hold out last doc per author
+                unknown.append({"file": f"russian_lit/{fname}", "true_author": author})
+            else:
+                known.append({"file": f"russian_lit/{fname}", "author": author})
+
+    print(f"  {len(known)} known, {len(unknown)} unknown documents")
     return {
         "id": "russian_literature",
         "name": "Russian Literature",
-        "description": f"Dostoevsky, Tolstoy, Chekhov, and Turgenev in English translation. {len(known)} chapter excerpts. Cross-cultural stylometry on translated works.",
+        "description": f"Dostoevsky, Tolstoy, Chekhov, and Turgenev in English translation. {len(known)} chapter excerpts with known authorship, {len(unknown)} held out for attribution.",
         "known": known,
-        "unknown": [],
+        "unknown": unknown,
     }
 
 
@@ -595,6 +626,10 @@ def build_homer():
 
     outdir = CORPORA_DIR / "homer"
     known = []
+    unknown = []
+
+    # Hold out books 8, 16, 24 from each epic (evenly spaced through the text)
+    holdout_books = {8, 16, 24}
 
     # Iliad - Samuel Butler translation (PG#2199)
     # Odyssey - Samuel Butler translation (PG#1727)
@@ -602,7 +637,6 @@ def build_homer():
         try:
             text = fetch_gutenberg(pg_id)
             text = strip_gutenberg(text)
-            # Split by BOOK markers
             books = split_by_regex(text, r'(BOOK\s+[IVXLCDM]+[^\n]*)', min_words=300)
             if not books:
                 fname = f"Homer_{sanitize_filename(title)}.txt"
@@ -610,19 +644,23 @@ def build_homer():
                 known.append({"file": f"homer/{fname}", "author": title})
             else:
                 for j, (heading, body) in enumerate(books):
-                    fname = f"Homer_{sanitize_filename(title)}_book{j+1:02d}.txt"
+                    book_num = j + 1
+                    fname = f"Homer_{sanitize_filename(title)}_book{book_num:02d}.txt"
                     write_doc(outdir, fname, body)
-                    known.append({"file": f"homer/{fname}", "author": title})
+                    if book_num in holdout_books:
+                        unknown.append({"file": f"homer/{fname}", "true_author": title})
+                    else:
+                        known.append({"file": f"homer/{fname}", "author": title})
         except Exception as e:
             print(f"  Failed to fetch {title}: {e}")
 
-    print(f"  {len(known)} known documents")
+    print(f"  {len(known)} known, {len(unknown)} unknown documents")
     return {
         "id": "homeric_question",
         "name": "The Homeric Question",
-        "description": f"Iliad vs. Odyssey (Butler translation), split by book. {len(known)} sections. Tests whether the same author composed both epics — one of the oldest attribution questions. Also suitable for authorship diarization research.",
+        "description": f"Iliad vs. Odyssey (Butler translation), split by book. {len(known)} books with known attribution, {len(unknown)} held out. Tests whether the same author composed both epics — also suitable for authorship diarization research.",
         "known": known,
-        "unknown": [],
+        "unknown": unknown,
     }
 
 
