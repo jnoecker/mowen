@@ -167,6 +167,7 @@ def get_experiment_results(
     )
 
     lower_is_better = bool(experiment.lower_is_better)
+    verification_threshold = experiment.verification_threshold
 
     response: list[ExperimentResultResponse] = []
     for result in results:
@@ -178,6 +179,7 @@ def get_experiment_results(
                 ),
                 rankings=[RankingEntry(**r) for r in rankings_data],
                 lower_is_better=lower_is_better,
+                verification_threshold=verification_threshold,
             )
         )
 

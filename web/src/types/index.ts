@@ -98,4 +98,5 @@ export interface ExperimentResultResponse {
   unknown_document: DocumentResponse;
   rankings: RankingEntry[];
   lower_is_better: boolean;
+  verification_threshold: number | null;
 }

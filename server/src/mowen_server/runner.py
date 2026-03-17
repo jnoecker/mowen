@@ -123,6 +123,7 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
 
     if results:
         experiment.lower_is_better = int(results[0].lower_is_better)
+        experiment.verification_threshold = results[0].verification_threshold
     experiment.status = "completed"
     experiment.completed_at = datetime.now(UTC)
     experiment.progress = 1.0

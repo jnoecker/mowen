@@ -146,13 +146,17 @@ def run(
 
     # Output
     if output_json:
-        out = [
-            {
+        out = []
+        for r in results:
+            entry: dict = {
                 "document": r.unknown_document.title,
                 "rankings": [{"author": a.author, "score": a.score} for a in r.rankings],
             }
-            for r in results
-        ]
+            if r.verification_threshold is not None:
+                entry["verification_threshold"] = r.verification_threshold
+                if r.rankings:
+                    entry["verified"] = r.rankings[0].score >= r.verification_threshold
+            out.append(entry)
         typer.echo(json.dumps(out, indent=2))
     else:
         for r in results:
@@ -160,7 +164,15 @@ def run(
             typer.echo(f"  {'─' * 40}")
             for i, a in enumerate(r.rankings):
                 marker = " → " if i == 0 else "   "
-                typer.echo(f"  {marker}{a.author:<25} {a.score:.4f}")
+                # Show VERIFIED/REJECTED badge for verification methods
+                badge = ""
+                if r.verification_threshold is not None and i == 0:
+                    badge = (
+                        "  VERIFIED"
+                        if a.score >= r.verification_threshold
+                        else "  REJECTED"
+                    )
+                typer.echo(f"  {marker}{a.author:<25} {a.score:.4f}{badge}")
 
 
 # ---------------------------------------------------------------------------
@@ -376,7 +388,7 @@ def evaluate(
 
     # Output
     if output_json:
-        out = {
+        out: dict = {
             "accuracy": result.accuracy,
             "macro_precision": result.macro_precision,
             "macro_recall": result.macro_recall,
@@ -393,6 +405,10 @@ def evaluate(
                 for fr in result.fold_results for p in fr.predictions
             ],
         }
+        if result.eer is not None:
+            out["eer"] = result.eer
+        if result.c_at_1 is not None:
+            out["c_at_1"] = result.c_at_1
         typer.echo(json.dumps(out, indent=2))
     else:
         n_docs = sum(fr.total for fr in result.fold_results)
@@ -417,6 +433,15 @@ def evaluate(
             f"\n  Macro avg: P={result.macro_precision:.4f}  "
             f"R={result.macro_recall:.4f}  F1={result.macro_f1:.4f}"
         )
+
+        # Verification-specific metrics
+        if result.eer is not None or result.c_at_1 is not None:
+            parts = []
+            if result.eer is not None:
+                parts.append(f"EER={result.eer:.4f}")
+            if result.c_at_1 is not None:
+                parts.append(f"c@1={result.c_at_1:.4f}")
+            typer.echo(f"  Verification: {'  '.join(parts)}")
 
         # Confusion matrix
         authors = sorted(result.confusion_matrix.keys())

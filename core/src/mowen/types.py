@@ -116,6 +116,7 @@ class PipelineResult:
     unknown_document: Document
     rankings: list[Attribution]
     lower_is_better: bool = True
+    verification_threshold: float | None = None
 
     @property
     def top_author(self) -> str | None:

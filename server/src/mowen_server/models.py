@@ -77,6 +77,7 @@ class Experiment(Base):
     progress = Column(Float, nullable=False, default=0.0)
     error_message = Column(String, nullable=True)
     lower_is_better = Column(Integer, nullable=False, default=1)  # boolean as int
+    verification_threshold = Column(Float, nullable=True)  # null for non-verification methods
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)

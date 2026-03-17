@@ -96,6 +96,26 @@
   font-weight: 600;
 }
 
+.attrVerified {
+  font-size: 0.7rem;
+  color: var(--bg);
+  background: var(--success);
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.attrRejected {
+  font-size: 0.7rem;
+  color: var(--bg);
+  background: var(--danger);
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
 .trueAuthorNote {
   font-size: 0.7rem;
   margin-left: 0.4rem;

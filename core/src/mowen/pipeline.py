@@ -204,10 +204,12 @@ class Pipeline:
             for i, doc in enumerate(unknown_documents):
                 idx = n_known + i
                 rankings = analysis_method.analyze(doc_features[idx])  # type: ignore[arg-type]
+                vt = getattr(analysis_method, 'verification_threshold', None)
                 results.append(PipelineResult(
                     unknown_document=doc,
                     rankings=rankings,
                     lower_is_better=analysis_method.lower_is_better,
+                    verification_threshold=vt,
                 ))
                 progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
                 self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")
@@ -247,10 +249,12 @@ class Pipeline:
         for i, doc in enumerate(unknown_documents):
             idx = n_known + i
             rankings: list[Attribution] = analysis_method.analyze(doc_histograms[idx])
+            vt = getattr(analysis_method, 'verification_threshold', None)
             results.append(PipelineResult(
                 unknown_document=doc,
                 rankings=rankings,
                 lower_is_better=analysis_method.lower_is_better,
+                verification_threshold=vt,
             ))
             progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
             self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")

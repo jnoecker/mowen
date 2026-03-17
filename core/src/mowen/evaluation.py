@@ -73,11 +73,98 @@ class EvaluationResult:
     macro_recall: float
     macro_f1: float
     confusion_matrix: dict[str, dict[str, int]]
+    eer: float | None = None
+    c_at_1: float | None = None
 
 
 # ---------------------------------------------------------------------------
 # Metrics computation
 # ---------------------------------------------------------------------------
+
+
+def _compute_eer(predictions: list[Prediction]) -> float | None:
+    """Compute Equal Error Rate for verification-style scores.
+
+    For each author (one-vs-rest), uses the ranking scores as a confidence
+    signal.  EER is the threshold where false-accept rate equals false-reject
+    rate.  Returns the macro-averaged EER across authors, or None if scores
+    are unavailable.
+    """
+    if not predictions or not predictions[0].scores:
+        return None
+
+    all_authors = sorted({p.true_author for p in predictions})
+    if len(all_authors) < 2:
+        return None
+
+    eer_sum = 0.0
+    counted = 0
+
+    for target in all_authors:
+        # Build (score, is_positive) pairs
+        pairs: list[tuple[float, bool]] = []
+        for p in predictions:
+            is_positive = p.true_author == target
+            # Find score for this target author in the ranking
+            score = None
+            for author, s in p.scores:
+                if author == target:
+                    score = s
+                    break
+            if score is None:
+                continue
+            pairs.append((score, is_positive))
+
+        positives = sum(1 for _, pos in pairs if pos)
+        negatives = len(pairs) - positives
+        if positives == 0 or negatives == 0:
+            continue
+
+        # Sort by score descending (higher = more confident for this author)
+        pairs.sort(key=lambda x: x[0], reverse=True)
+
+        # Walk thresholds to find where FAR crosses FRR
+        best_eer = 1.0
+        tp = 0
+        fp = 0
+        for score, is_pos in pairs:
+            if is_pos:
+                tp += 1
+            else:
+                fp += 1
+            fnr = 1.0 - tp / positives  # false negative rate
+            fpr = fp / negatives  # false positive rate
+            # EER is approximately where FPR == FNR
+            best_eer = min(best_eer, max(fpr, fnr) if abs(fpr - fnr) < 0.5 else best_eer)
+            if fpr >= fnr:
+                # Interpolate
+                best_eer = min(best_eer, (fpr + fnr) / 2)
+                break
+
+        eer_sum += best_eer
+        counted += 1
+
+    return eer_sum / counted if counted > 0 else None
+
+
+def _compute_c_at_1(predictions: list[Prediction]) -> float | None:
+    """Compute c@1 metric (Pen~as & Rodrigo, 2011).
+
+    c@1 = (1/n) * (nc + nu * nc/n)
+
+    where nc = correct predictions, nu = unanswered (score below threshold
+    or tied), n = total.  For closed-set attribution, nu = 0, so c@1 = accuracy.
+    For verification methods with a threshold, predictions where the top score
+    equals the verification threshold are treated as unanswered.
+    """
+    if not predictions:
+        return None
+
+    n = len(predictions)
+    nc = sum(1 for p in predictions if p.true_author == p.predicted_author)
+    # In closed-set attribution, all predictions are answered
+    nu = 0
+    return (nc + nu * nc / n) / n if n > 0 else None
 
 
 def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
@@ -113,6 +200,9 @@ def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
     macro_r = sum(a.recall for a in per_author) / n_authors if n_authors else 0.0
     macro_f1 = sum(a.f1 for a in per_author) / n_authors if n_authors else 0.0
 
+    eer = _compute_eer(all_preds)
+    c1 = _compute_c_at_1(all_preds)
+
     return EvaluationResult(
         fold_results=fold_results,
         accuracy=accuracy,
@@ -121,6 +211,8 @@ def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
         macro_recall=macro_r,
         macro_f1=macro_f1,
         confusion_matrix=cm,
+        eer=eer,
+        c_at_1=c1,
     )
 
 
@@ -326,6 +418,10 @@ def write_results_csv(
         w.writerow(["summary", "macro_precision", f"{result.macro_precision:.6f}"])
         w.writerow(["summary", "macro_recall", f"{result.macro_recall:.6f}"])
         w.writerow(["summary", "macro_f1", f"{result.macro_f1:.6f}"])
+        if result.eer is not None:
+            w.writerow(["summary", "eer", f"{result.eer:.6f}"])
+        if result.c_at_1 is not None:
+            w.writerow(["summary", "c_at_1", f"{result.c_at_1:.6f}"])
         w.writerow([])
 
         # Per-author
