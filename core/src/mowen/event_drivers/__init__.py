@@ -53,4 +53,9 @@ try:
 except ImportError:
     pass  # transformers/torch not installed
 
+try:
+    from mowen.event_drivers import perplexity as perplexity  # noqa: F401
+except ImportError:
+    pass  # transformers/torch not installed
+
 __all__ = ["EventDriver", "event_driver_registry"]
