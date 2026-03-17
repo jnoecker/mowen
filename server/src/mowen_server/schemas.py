@@ -171,5 +171,6 @@ class ExperimentResultResponse(BaseModel):
     unknown_document: DocumentResponse
     rankings: list[RankingEntry]
     lower_is_better: bool = True
+    verification_threshold: float | None = None
 
     model_config = ConfigDict(from_attributes=True)

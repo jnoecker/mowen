@@ -399,6 +399,40 @@ class TestExperiments:
         authors = {r["author"] for r in results[0]["rankings"]}
         assert authors == {"Hamilton", "Madison"}
 
+    def test_verification_experiment_threshold(self, client):
+        """Verification method results should include verification_threshold."""
+        known_cid, unknown_cid = self._setup_experiment(client)
+        resp = client.post(
+            "/api/v1/experiments/",
+            json={
+                "name": "Imposters Test",
+                "config": {
+                    "canonicizers": [{"name": "unify_case"}],
+                    "event_drivers": [{"name": "character_ngram", "params": {"n": 3}}],
+                    "event_cullers": [],
+                    "distance_function": {"name": "cosine"},
+                    "analysis_method": {
+                        "name": "imposters",
+                        "params": {"n_iterations": 10, "random_seed": 42},
+                    },
+                },
+                "known_corpus_ids": [known_cid],
+                "unknown_corpus_ids": [unknown_cid],
+            },
+        )
+        assert resp.status_code == 201
+        exp_id = resp.json()["id"]
+
+        resp = client.get(f"/api/v1/experiments/{exp_id}")
+        assert resp.json()["status"] == "completed"
+
+        resp = client.get(f"/api/v1/experiments/{exp_id}/results")
+        assert resp.status_code == 200
+        results = resp.json()
+        assert len(results) == 1
+        assert results[0]["verification_threshold"] == 0.5
+        assert results[0]["lower_is_better"] is False
+
     def test_delete_experiment(self, client):
         known_cid, unknown_cid = self._setup_experiment(client)
         resp = client.post(

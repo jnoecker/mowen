@@ -142,6 +142,35 @@ class TestRun:
         ])
         assert result.exit_code == 1
 
+    def test_run_verification_badges(self, tmp_path):
+        """Verification methods should show VERIFIED/REJECTED badges."""
+        _write_corpus(tmp_path)
+        result = runner.invoke(app, [
+            "run", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "-a", "imposters:n_iterations=10,random_seed=42",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        output = _strip_ansi(result.output)
+        assert "VERIFIED" in output or "REJECTED" in output
+
+    def test_run_verification_json(self, tmp_path):
+        """JSON output should include verification_threshold and verified flag."""
+        _write_corpus(tmp_path)
+        result = runner.invoke(app, [
+            "run", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "-a", "imposters:n_iterations=10,random_seed=42",
+            "--json",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        data = json.loads(_strip_ansi(result.output))
+        assert "verification_threshold" in data[0]
+        assert "verified" in data[0]
+        assert data[0]["verification_threshold"] == 0.5
+
     def test_run_no_unknowns(self, tmp_path):
         # CSV with only known docs (all have authors)
         (tmp_path / "a.txt").write_text("some text", encoding="utf-8")
@@ -222,6 +251,22 @@ class TestEvaluate:
         assert csv_path.exists()
         content = csv_path.read_text()
         assert "accuracy" in content
+
+    def test_evaluate_json_has_verification_metrics(self, tmp_path):
+        """JSON output should include eer and c_at_1 metrics."""
+        _write_eval_corpus(tmp_path)
+        result = runner.invoke(app, [
+            "evaluate", "-d", str(tmp_path / "manifest.csv"),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "-a", "nearest_neighbor",
+            "--mode", "loo",
+            "--json",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        data = json.loads(_strip_ansi(result.output))
+        assert "eer" in data
+        assert "c_at_1" in data
 
     def test_evaluate_single_author_error(self, tmp_path):
         (tmp_path / "a1.txt").write_text("hello world", encoding="utf-8")

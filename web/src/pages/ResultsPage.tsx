@@ -201,6 +201,17 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
   const auroc = computeAUROC(evaluated);
   const mrr = computeMRR(evaluated);
 
+  // Verification metrics (only when threshold is present)
+  const hasVerification = evaluated.some((r) => r.verification_threshold != null);
+  let verifiedCount: number | null = null;
+  let rejectedCount: number | null = null;
+  if (hasVerification) {
+    verifiedCount = evaluated.filter(
+      (r) => r.verification_threshold != null && r.rankings.length > 0 && r.rankings[0].score >= r.verification_threshold
+    ).length;
+    rejectedCount = evaluated.length - verifiedCount;
+  }
+
   const fmtPct = (v: number) => `${(v * 100).toFixed(1)}%`;
 
   return (
@@ -243,6 +254,18 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
           <div className={s.metricValue} style={{ color: 'var(--success)' }}>{correct.length}/{evaluated.length}</div>
           <div className={s.metricLabel}>Correct</div>
         </div>
+        {verifiedCount != null && (
+          <div className={s.metricCell}>
+            <div className={s.metricValue} style={{ color: 'var(--success)' }}>{verifiedCount}</div>
+            <div className={s.metricLabel}>Verified</div>
+          </div>
+        )}
+        {rejectedCount != null && rejectedCount > 0 && (
+          <div className={s.metricCell}>
+            <div className={s.metricValue} style={{ color: 'var(--danger)' }}>{rejectedCount}</div>
+            <div className={s.metricLabel}>Rejected</div>
+          </div>
+        )}
       </div>
 
       <div className={s.metricsNote}>
@@ -297,6 +320,10 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
   const isCorrect = trueAuthor != null && topAuthor === trueAuthor;
   const isIncorrect = trueAuthor != null && topAuthor !== trueAuthor;
 
+  const threshold = result.verification_threshold;
+  const isVerified = threshold != null && rankings.length > 0 && rankings[0].score >= threshold;
+  const isRejected = threshold != null && rankings.length > 0 && rankings[0].score < threshold;
+
   const cardClass = ['card', isCorrect ? s.attrCardCorrect : isIncorrect ? s.attrCardIncorrect : s.attrCard].join(' ');
 
   return (
@@ -313,6 +340,12 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
         )}
         {isIncorrect && (
           <span className={s.attrIncorrect}>INCORRECT</span>
+        )}
+        {isVerified && (
+          <span className={s.attrVerified}>VERIFIED</span>
+        )}
+        {isRejected && (
+          <span className={s.attrRejected}>REJECTED</span>
         )}
       </h3>
 

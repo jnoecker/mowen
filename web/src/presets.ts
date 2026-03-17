@@ -135,4 +135,44 @@ export const PRESETS: Preset[] = [
       analysis_method: { name: 'svm', params: {} },
     },
   },
+  {
+    id: 'general-imposters',
+    name: 'General Imposters Method',
+    description:
+      'The dominant authorship verification method. Compares the unknown document against both candidate and "imposter" authors across random feature subsets. Score = fraction of iterations where the candidate is closer than any imposter.',
+    citation: 'Koppel & Winter (2014)',
+    config: {
+      canonicizers: [
+        { name: 'unify_case', params: {} },
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'character_ngram', params: { n: 4 } },
+      ],
+      event_cullers: [
+        { name: 'most_common', params: { n: 1000 } },
+      ],
+      distance_function: { name: 'cosine', params: {} },
+      analysis_method: { name: 'imposters', params: { n_iterations: 100, feature_subset_ratio: 0.5, random_seed: 42 } },
+    },
+  },
+  {
+    id: 'unmasking',
+    name: 'Unmasking',
+    description:
+      'Classic authorship verification via iterative feature elimination. Trains linear SVMs, removes the most discriminative features each round, and measures accuracy degradation. A fast drop in accuracy indicates same-author texts. Requires scikit-learn.',
+    citation: 'Koppel & Schler (2004)',
+    config: {
+      canonicizers: [
+        { name: 'unify_case', params: {} },
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'word_events', params: { tokenizer: 'whitespace' } },
+      ],
+      event_cullers: [],
+      distance_function: null,
+      analysis_method: { name: 'unmasking', params: { n_features: 250, n_eliminate: 6, n_iterations: 10, random_seed: 42 } },
+    },
+  },
 ];

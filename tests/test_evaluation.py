@@ -12,6 +12,8 @@ from mowen.evaluation import (
     EvaluationResult,
     FoldResult,
     Prediction,
+    _compute_c_at_1,
+    _compute_eer,
     _compute_metrics,
     k_fold,
     leave_one_out,
@@ -116,6 +118,96 @@ class TestComputeMetrics:
         fold1 = FoldResult(1, [Prediction("d2", "B", "A", ())])
         result = _compute_metrics([fold0, fold1])
         assert result.accuracy == 0.5
+
+
+# ---------------------------------------------------------------------------
+# Verification metrics (EER, c@1)
+# ---------------------------------------------------------------------------
+
+class TestEER:
+    def test_perfect_scores_eer_zero(self):
+        """When scores perfectly separate authors, EER should be near 0."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9), ("B", 0.1))),
+            Prediction("d2", "A", "A", (("A", 0.8), ("B", 0.2))),
+            Prediction("d3", "B", "B", (("A", 0.1), ("B", 0.9))),
+            Prediction("d4", "B", "B", (("A", 0.2), ("B", 0.8))),
+        ]
+        eer = _compute_eer(preds)
+        assert eer is not None
+        assert eer <= 0.5  # should be well-separated
+
+    def test_random_scores_eer_high(self):
+        """When scores don't separate authors, EER should be higher."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.5), ("B", 0.5))),
+            Prediction("d2", "B", "B", (("A", 0.5), ("B", 0.5))),
+        ]
+        eer = _compute_eer(preds)
+        assert eer is not None
+
+    def test_eer_none_for_empty(self):
+        assert _compute_eer([]) is None
+
+    def test_eer_none_for_no_scores(self):
+        preds = [
+            Prediction("d1", "A", "A", ()),
+            Prediction("d2", "B", "B", ()),
+        ]
+        assert _compute_eer(preds) is None
+
+    def test_eer_in_compute_metrics(self):
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9), ("B", 0.1))),
+            Prediction("d2", "B", "B", (("A", 0.1), ("B", 0.9))),
+        ]
+        folds = [FoldResult(fold_index=0, predictions=preds)]
+        result = _compute_metrics(folds)
+        assert result.eer is not None
+
+
+class TestCAt1:
+    def test_perfect_accuracy_c_at_1(self):
+        """With perfect accuracy, c@1 = 1.0."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9),)),
+            Prediction("d2", "B", "B", (("B", 0.9),)),
+        ]
+        c1 = _compute_c_at_1(preds)
+        assert c1 == 1.0
+
+    def test_zero_accuracy_c_at_1(self):
+        """With zero accuracy and no unanswered, c@1 = 0.0."""
+        preds = [
+            Prediction("d1", "A", "B", (("B", 0.9),)),
+            Prediction("d2", "B", "A", (("A", 0.9),)),
+        ]
+        c1 = _compute_c_at_1(preds)
+        assert c1 == 0.0
+
+    def test_partial_accuracy_c_at_1(self):
+        """c@1 should equal accuracy when there are no unanswered predictions."""
+        preds = [
+            Prediction("d1", "A", "A", ()),
+            Prediction("d2", "A", "B", ()),
+            Prediction("d3", "B", "B", ()),
+            Prediction("d4", "B", "B", ()),
+        ]
+        c1 = _compute_c_at_1(preds)
+        assert c1 == pytest.approx(0.75)  # same as accuracy
+
+    def test_c_at_1_none_for_empty(self):
+        assert _compute_c_at_1([]) is None
+
+    def test_c_at_1_in_compute_metrics(self):
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9),)),
+            Prediction("d2", "B", "B", (("B", 0.9),)),
+        ]
+        folds = [FoldResult(fold_index=0, predictions=preds)]
+        result = _compute_metrics(folds)
+        assert result.c_at_1 is not None
+        assert result.c_at_1 == 1.0
 
 
 # ---------------------------------------------------------------------------
