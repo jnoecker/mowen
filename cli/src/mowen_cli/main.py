@@ -418,6 +418,14 @@ def evaluate(
         Path | None,
         typer.Option("--base-dir", help="Base directory for resolving relative paths in CSV."),
     ] = None,
+    train_genre: Annotated[
+        str | None,
+        typer.Option("--train-genre", help="Genre to train on (cross-genre mode). CSV must have genre column."),
+    ] = None,
+    test_genre: Annotated[
+        str | None,
+        typer.Option("--test-genre", help="Genre to test on (cross-genre mode)."),
+    ] = None,
 ) -> None:
     """Evaluate pipeline accuracy via cross-validation."""
     from mowen.compat.jgaap_csv import load_jgaap_csv
@@ -449,7 +457,13 @@ def evaluate(
 
     # Run evaluation
     try:
-        if mode == "loo":
+        if train_genre and test_genre:
+            from mowen.evaluation import cross_genre_evaluate
+            result = cross_genre_evaluate(
+                known, config, train_genre, test_genre,
+                progress_callback=progress_cb,
+            )
+        elif mode == "loo":
             result = loo_eval(known, config, progress_callback=progress_cb)
         elif mode == "kfold":
             result = kfold_eval(

@@ -59,6 +59,11 @@ def load_jgaap_csv(
 
             doc = load_document(str(doc_path), author=author)
 
+            # Optional 3rd column: genre metadata
+            genre = row[2].strip() if len(row) > 2 and row[2].strip() else None
+            if genre:
+                doc.metadata["genre"] = genre
+
             if author:
                 known.append(doc)
             else:
