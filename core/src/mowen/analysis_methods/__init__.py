@@ -24,6 +24,7 @@ from mowen.analysis_methods import mahalanobis as mahalanobis
 from mowen.analysis_methods import eders_delta as eders_delta
 from mowen.analysis_methods import imposters as imposters
 from mowen.analysis_methods import unmasking as unmasking
+from mowen.analysis_methods import contrastive as contrastive
 
 # --- Sklearn classifiers (also work with embeddings) ---
 from mowen.analysis_methods import svm as svm
