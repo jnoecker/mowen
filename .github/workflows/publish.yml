@@ -1,0 +1,55 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e core/ -e cli/ -e server/
+      - run: python -m pytest tests/ --ignore=tests/validate_against_jgaap.py -x -q
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build
+
+      # Build all three packages
+      - name: Build mowen (core)
+        run: python -m build core/
+
+      - name: Build mowen-cli
+        run: python -m build cli/
+
+      - name: Build mowen-server
+        run: python -m build server/
+
+      # Publish core first (CLI and server depend on it)
+      - name: Publish mowen
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: core/dist/
+
+      - name: Publish mowen-cli
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: cli/dist/
+
+      - name: Publish mowen-server
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: server/dist/
