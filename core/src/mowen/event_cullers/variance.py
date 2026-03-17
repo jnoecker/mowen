@@ -4,9 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _compute_event_stats,
+    _per_document_histograms,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
-from mowen.types import Event, EventSet
+from mowen.types import EventSet
 
 
 @event_culler_registry.register("variance")
@@ -45,15 +50,9 @@ class Variance(EventCuller):
             self._kept_events = set()
             return
 
-        n_docs = len(doc_histograms)
         min_variance: float = self.get_param("min_variance")
-        kept: set[Event] = set()
+        stats = _compute_event_stats(all_events, doc_histograms)
 
-        for event in all_events:
-            counts = [h.get(event, 0) for h in doc_histograms]
-            mean = sum(counts) / n_docs
-            var = sum((c - mean) ** 2 for c in counts) / n_docs
-            if var > min_variance:
-                kept.add(event)
-
-        self._kept_events = kept
+        self._kept_events = {
+            event for event, st in stats.items() if st.variance > min_variance
+        }

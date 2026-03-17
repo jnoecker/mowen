@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.event_drivers.base import (
+    SpacyEventDriver,
+    _SPACY_MODEL_PARAM,
+    event_driver_registry,
+    generate_ngrams,
+)
 from mowen.parameters import ParamDef
 from mowen.types import Event, EventSet
 
@@ -33,7 +38,7 @@ _COARSE_MAP: dict[str, str] = {
 
 @event_driver_registry.register("coarse_pos_tags")
 @dataclass
-class CoarsePOSTags(EventDriver):
+class CoarsePOSTags(SpacyEventDriver):
     """Simplify POS tags to broad categories (N, V, J, R, etc.).
 
     Reduces sparsity compared to fine-grained POS tags by grouping
@@ -45,44 +50,16 @@ class CoarsePOSTags(EventDriver):
     display_name = "Coarse POS Tags"
     description = "Broad POS categories (N, V, J, R, ...) via spaCy."
 
-    _nlp: object = field(default=None, init=False, repr=False)
-    _nlp_model_name: str = field(default="", init=False, repr=False)
-
-    @classmethod
-    def param_defs(cls) -> list[ParamDef]:
-        return [
-            ParamDef(
-                name="model",
-                description="spaCy language model to use.",
-                param_type=str,
-                default="en_core_web_sm",
-            ),
-        ]
-
     def create_event_set(self, text: str) -> EventSet:
-        try:
-            import spacy
-        except ImportError as e:
-            raise ImportError(
-                "The 'spacy' package is required for Coarse POS Tags. "
-                "Install with: pip install spacy && python -m spacy download en_core_web_sm"
-            ) from e
-
-        model_name: str = self.get_param("model")
-        if self._nlp is None or self._nlp_model_name != model_name:
-            self._nlp = spacy.load(model_name)
-            self._nlp_model_name = model_name
-        doc = self._nlp(text)
-        events = EventSet()
-        for token in doc:
-            coarse = _COARSE_MAP.get(token.pos_, "X")
-            events.append(Event(data=coarse))
-        return events
+        doc = self._get_nlp()(text)
+        return EventSet(
+            Event(data=_COARSE_MAP.get(token.pos_, "X")) for token in doc
+        )
 
 
 @event_driver_registry.register("pos_ngram")
 @dataclass
-class POSNGram(EventDriver):
+class POSNGram(SpacyEventDriver):
     """N-grams of POS tags — captures syntactic patterns independent of vocabulary.
 
     First tags each token with its POS tag, then extracts sliding-window
@@ -94,40 +71,15 @@ class POSNGram(EventDriver):
     display_name = "POS N-Gram"
     description = "N-grams of part-of-speech tags via spaCy."
 
-    _nlp: object = field(default=None, init=False, repr=False)
-    _nlp_model_name: str = field(default="", init=False, repr=False)
-
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
             ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
-            ParamDef(
-                name="model",
-                description="spaCy language model to use.",
-                param_type=str,
-                default="en_core_web_sm",
-            ),
+            _SPACY_MODEL_PARAM,
         ]
 
     def create_event_set(self, text: str) -> EventSet:
-        try:
-            import spacy
-        except ImportError as e:
-            raise ImportError(
-                "The 'spacy' package is required for POS N-Gram. "
-                "Install with: pip install spacy && python -m spacy download en_core_web_sm"
-            ) from e
-
-        model_name: str = self.get_param("model")
-        if self._nlp is None or self._nlp_model_name != model_name:
-            self._nlp = spacy.load(model_name)
-            self._nlp_model_name = model_name
-
         n: int = self.get_param("n")
-        doc = self._nlp(text)
+        doc = self._get_nlp()(text)
         tags = [token.pos_ for token in doc]
-
-        events = EventSet()
-        for i in range(len(tags) - n + 1):
-            events.append(Event(data=" ".join(tags[i:i + n])))
-        return events
+        return generate_ngrams(tags, n)

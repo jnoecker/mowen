@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.event_drivers.base import EventDriver, event_driver_registry, generate_ngrams
 from mowen.parameters import ParamDef
 from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
@@ -67,7 +67,4 @@ class SyllableTransitions(EventDriver):
         n: int = self.get_param("n")
         tok: str = self.get_param("tokenizer")
         syllables = [str(_count_syllables(w)) for w in tokenize_text(text, tok)]
-        events = EventSet()
-        for i in range(len(syllables) - n + 1):
-            events.append(Event(data=" ".join(syllables[i:i + n])))
-        return events
+        return generate_ngrams(syllables, n)

@@ -4,14 +4,13 @@ import asyncio
 import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
 from ..config import Settings, get_settings
 from ..db import get_db, get_or_404
 from ..models import CorpusDocument, Experiment, ExperimentCorpus, ExperimentResult
-from ..runner import experiment_runner
+from ..runner import _make_session, experiment_runner
 from ..schemas import (
     ExperimentConfig,
     ExperimentCreate,
@@ -199,11 +198,7 @@ def get_experiment_progress(
 
 async def _progress_stream(experiment_id: int, db_url: str):
     """Async generator that yields SSE events with experiment progress."""
-    connect_args = {}
-    if db_url.startswith("sqlite"):
-        connect_args["check_same_thread"] = False
-    engine = create_engine(db_url, connect_args=connect_args)
-    session = Session(engine)
+    session, cleanup = _make_session(db_url)
     try:
         while True:
             exp = session.get(Experiment, experiment_id)
@@ -214,5 +209,4 @@ async def _progress_stream(experiment_id: int, db_url: str):
                 break
             await asyncio.sleep(1)
     finally:
-        session.close()
-        engine.dispose()
+        cleanup()

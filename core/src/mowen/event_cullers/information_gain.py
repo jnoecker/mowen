@@ -5,9 +5,14 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _per_document_histograms,
+    _top_n_events,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
-from mowen.types import Event, EventSet
+from mowen.types import EventSet
 
 
 @event_culler_registry.register("information_gain")
@@ -65,11 +70,10 @@ class InformationGain(EventCuller):
             return
 
         # Compute entropy for each event across documents.
-        event_entropy: dict[Event, float] = {}
-        for event in all_events:
-            per_doc = [h.get(event, 0) for h in doc_histograms]
-            event_entropy[event] = self._entropy(per_doc)
+        event_entropy = {
+            event: self._entropy([h.get(event, 0) for h in doc_histograms])
+            for event in all_events
+        }
 
         n: int = self.get_param("n")
-        ranked = sorted(event_entropy, key=lambda e: event_entropy[e], reverse=True)
-        self._kept_events = set(ranked[:n])
+        self._kept_events = _top_n_events(event_entropy, n)

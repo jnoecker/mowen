@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from collections import defaultdict
 from dataclasses import dataclass
 
 from mowen.analysis_methods.base import CentroidAnalysisMethod, analysis_method_registry
-from mowen.types import Document, Event, Histogram
+from mowen.types import Document, Histogram
 
 
 @analysis_method_registry.register("centroid")
@@ -31,17 +30,9 @@ class Centroid(CentroidAnalysisMethod):
     def train(self, known_docs: list[tuple[Document, Histogram]]) -> None:
         """Compute a centroid histogram per author by summing counts."""
         super().train(known_docs)
-
-        author_counts: dict[str, dict[Event, int]] = defaultdict(dict)
-        for doc, hist in self._known_docs:
-            author = doc.author or ""
-            for event in hist.unique_events():
-                count = hist.absolute_frequency(event)
-                author_counts[author][event] = (
-                    author_counts[author].get(event, 0) + count
-                )
+        author_event_sums, _ = self._accumulate_author_events(self._known_docs)
 
         self._centroids = {
             author: Histogram(counts)
-            for author, counts in author_counts.items()
+            for author, counts in author_event_sums.items()
         }

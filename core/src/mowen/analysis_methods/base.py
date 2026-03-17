@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from dataclasses import dataclass, field
 
 from mowen.distance_functions.base import DistanceFunction
 from mowen.exceptions import PipelineError
 from mowen.parameters import Configurable
 from mowen.registry import Registry
-from mowen.types import Attribution, Document, Histogram
+from mowen.types import Attribution, Document, Event, Histogram
 
 
 @dataclass
@@ -74,6 +75,14 @@ class NeighborAnalysisMethod(AnalysisMethod):
 
     distance_function: DistanceFunction | None = field(default=None, repr=False)
 
+    def _require_distance_function(self) -> DistanceFunction:
+        """Return the distance function, raising if not set."""
+        if self.distance_function is None:
+            raise PipelineError(
+                "distance_function must be set before calling analyze()"
+            )
+        return self.distance_function
+
 
 @dataclass
 class CentroidAnalysisMethod(NeighborAnalysisMethod):
@@ -88,17 +97,31 @@ class CentroidAnalysisMethod(NeighborAnalysisMethod):
         default_factory=dict, init=False, repr=False,
     )
 
+    @staticmethod
+    def _accumulate_author_events(
+        known_docs: list[tuple[Document, Histogram]],
+    ) -> tuple[dict[str, dict[Event, int]], dict[str, int]]:
+        """Accumulate per-author event counts and document counts."""
+        author_event_sums: dict[str, dict[Event, int]] = defaultdict(dict)
+        author_doc_counts: dict[str, int] = defaultdict(int)
+        for doc, hist in known_docs:
+            author = doc.author or ""
+            author_doc_counts[author] += 1
+            for event in hist.unique_events():
+                count = hist.absolute_frequency(event)
+                author_event_sums[author][event] = (
+                    author_event_sums[author].get(event, 0) + count
+                )
+        return author_event_sums, author_doc_counts
+
     def analyze(self, unknown_histogram: Histogram) -> list[Attribution]:
         """Return attributions ranked by distance to each author centroid."""
-        if self.distance_function is None:
-            raise PipelineError(
-                "distance_function must be set before calling analyze()"
-            )
+        df = self._require_distance_function()
 
         attributions = [
             Attribution(
                 author=author,
-                score=self.distance_function.distance(unknown_histogram, centroid),
+                score=df.distance(unknown_histogram, centroid),
             )
             for author, centroid in self._centroids.items()
         ]

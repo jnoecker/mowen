@@ -7,7 +7,6 @@ from mowen.event_drivers import event_driver_registry
 from mowen.event_cullers import event_culler_registry
 from mowen.distance_functions import distance_function_registry
 from mowen.analysis_methods import analysis_method_registry
-from mowen.parameters import Configurable
 from mowen.registry import Registry
 
 from ..schemas import ComponentInfo, ParamInfo
@@ -18,30 +17,27 @@ router = APIRouter(prefix="/api/v1/pipeline", tags=["pipeline"])
 def _list_registry(registry: Registry) -> list[ComponentInfo]:
     """Convert every entry in a registry to a ComponentInfo schema."""
     components: list[ComponentInfo] = []
-    for name, cls in registry.list_all().items():
-        # Build parameter info if the class is Configurable
+    for comp in registry.describe_components():
         params: list[ParamInfo] | None = None
-        if issubclass(cls, Configurable):
-            pdefs = cls.param_defs()
-            if pdefs:
-                params = [
-                    ParamInfo(
-                        name=p.name,
-                        type=p.param_type.__name__,
-                        default=p.default,
-                        description=p.description,
-                        min_value=p.min_value,
-                        max_value=p.max_value,
-                        choices=[str(c) for c in p.choices] if p.choices else None,
-                    )
-                    for p in pdefs
-                ]
-
+        raw_params = comp.get("params")
+        if raw_params:
+            params = [
+                ParamInfo(
+                    name=p["name"],
+                    type=p["type"],
+                    default=p["default"],
+                    description=p["description"],
+                    min_value=p["min_value"],
+                    max_value=p["max_value"],
+                    choices=[str(c) for c in p["choices"]] if p["choices"] else None,
+                )
+                for p in raw_params
+            ]
         components.append(
             ComponentInfo(
-                name=name,
-                display_name=getattr(cls, "display_name", name),
-                description=getattr(cls, "description", ""),
+                name=comp["name"],
+                display_name=comp["display_name"],
+                description=comp["description"],
                 params=params,
             )
         )

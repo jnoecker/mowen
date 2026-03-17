@@ -4,9 +4,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _compute_event_stats,
+    _per_document_histograms,
+    _top_n_events,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
-from mowen.types import Event, EventSet
+from mowen.types import EventSet
 
 
 @event_culler_registry.register("mean_absolute_deviation")
@@ -35,13 +41,11 @@ class MeanAbsoluteDeviation(EventCuller):
             return
 
         n_docs = len(doc_histograms)
-        event_mad: dict[Event, float] = {}
-        for event in all_events:
-            counts = [h.get(event, 0) for h in doc_histograms]
-            mean = sum(counts) / n_docs
-            mad = sum(abs(c - mean) for c in counts) / n_docs
-            event_mad[event] = mad
+        stats = _compute_event_stats(all_events, doc_histograms)
+        event_mad = {
+            event: sum(abs(c - st.mean) for c in st.counts) / n_docs
+            for event, st in stats.items()
+        }
 
         n: int = self.get_param("n")
-        ranked = sorted(event_mad, key=lambda e: event_mad[e], reverse=True)
-        self._kept_events = set(ranked[:n])
+        self._kept_events = _top_n_events(event_mad, n)

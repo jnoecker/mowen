@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import math
 from abc import ABC
 from dataclasses import dataclass, field
+from typing import NamedTuple
 
 from mowen.parameters import Configurable
 from mowen.registry import Registry
@@ -36,9 +38,44 @@ def _aggregate_counts(event_sets: list[EventSet]) -> dict[Event, int]:
     """
     combined: dict[Event, int] = {}
     for es in event_sets:
-        for event, count in es.to_histogram()._counts.items():
+        for event, count in es.to_histogram().counts.items():
             combined[event] = combined.get(event, 0) + count
     return combined
+
+
+# --- Statistical helpers for cullers ---
+
+
+class EventStats(NamedTuple):
+    """Per-event statistics across documents."""
+
+    counts: list[int]
+    mean: float
+    variance: float
+    std_dev: float
+
+
+def _compute_event_stats(
+    all_events: set[Event],
+    doc_histograms: list[dict[Event, int]],
+) -> dict[Event, EventStats]:
+    """Compute mean, variance, and std_dev per event across documents."""
+    n_docs = len(doc_histograms)
+    result: dict[Event, EventStats] = {}
+    for event in all_events:
+        counts = [h.get(event, 0) for h in doc_histograms]
+        mean = sum(counts) / n_docs
+        variance = sum((c - mean) ** 2 for c in counts) / n_docs
+        result[event] = EventStats(counts, mean, variance, math.sqrt(variance))
+    return result
+
+
+def _top_n_events(
+    event_scores: dict[Event, float], n: int,
+) -> set[Event]:
+    """Return the top *n* events ranked by score (descending)."""
+    ranked = sorted(event_scores, key=lambda e: event_scores[e], reverse=True)
+    return set(ranked[:n])
 
 
 @dataclass

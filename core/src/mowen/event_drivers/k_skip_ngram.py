@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.event_drivers.base import (
+    EventDriver,
+    event_driver_registry,
+    generate_skip_ngrams,
+)
 from mowen.parameters import ParamDef
 from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
-from mowen.types import Event, EventSet
+from mowen.types import EventSet
 
 
 @event_driver_registry.register("k_skip_character_ngram")
@@ -29,13 +33,7 @@ class KSkipCharacterNGram(EventDriver):
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
         k: int = self.get_param("k")
-        events = EventSet()
-        step = k + 1
-        for start in range(len(text)):
-            indices = list(range(start, len(text), step))[:n]
-            if len(indices) == n:
-                events.append(Event(data="".join(text[i] for i in indices)))
-        return events
+        return generate_skip_ngrams(text, n, k, joiner="")
 
 
 @event_driver_registry.register("k_skip_word_ngram")
@@ -57,11 +55,4 @@ class KSkipWordNGram(EventDriver):
         n: int = self.get_param("n")
         k: int = self.get_param("k")
         tok: str = self.get_param("tokenizer")
-        words = tokenize_text(text, tok)
-        events = EventSet()
-        step = k + 1
-        for start in range(len(words)):
-            indices = list(range(start, len(words), step))[:n]
-            if len(indices) == n:
-                events.append(Event(data=" ".join(words[i] for i in indices)))
-        return events
+        return generate_skip_ngrams(tokenize_text(text, tok), n, k)

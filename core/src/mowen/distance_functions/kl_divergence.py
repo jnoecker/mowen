@@ -5,10 +5,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from mowen.distance_functions.base import DistanceFunction, distance_function_registry
+from mowen.distance_functions.base import LOG_EPSILON, DistanceFunction, distance_function_registry
 from mowen.types import Histogram
-
-_EPSILON = 1e-10
 
 
 @distance_function_registry.register("kl_divergence")
@@ -39,7 +37,7 @@ class KLDivergence(DistanceFunction):
             q = h2.relative_frequency(event)
             if p > 0.0:
                 if q <= 0.0:
-                    q = _EPSILON
+                    q = LOG_EPSILON
                 total += p * math.log(p / q)
 
         return total

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from mowen.parameters import ParamDef
+from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
@@ -29,12 +30,14 @@ class Suffix(EventDriver):
                 min_value=1,
                 max_value=10,
             ),
+            TOKENIZER_PARAM,
         ]
 
     def create_event_set(self, text: str) -> EventSet:
         length: int = self.get_param("length")
+        tok: str = self.get_param("tokenizer")
         events = EventSet()
-        for word in text.split():
+        for word in tokenize_text(text, tok):
             if len(word) >= length:
                 events.append(Event(data=word[-length:]))
         return events

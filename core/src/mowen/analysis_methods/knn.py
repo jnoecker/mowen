@@ -6,7 +6,6 @@ from collections import Counter
 from dataclasses import dataclass
 
 from mowen.analysis_methods.base import NeighborAnalysisMethod, analysis_method_registry
-from mowen.exceptions import PipelineError
 from mowen.parameters import ParamDef
 from mowen.types import Attribution, Histogram
 
@@ -44,10 +43,7 @@ class KNearestNeighbors(NeighborAnalysisMethod):
 
     def analyze(self, unknown_histogram: Histogram) -> list[Attribution]:
         """Return attributions ranked by vote fraction among k neighbors."""
-        if self.distance_function is None:
-            raise PipelineError(
-                "distance_function must be set before calling analyze()"
-            )
+        df = self._require_distance_function()
 
         k: int = self.get_param("k")
 
@@ -55,7 +51,7 @@ class KNearestNeighbors(NeighborAnalysisMethod):
         distances: list[tuple[str, float]] = []
         for doc, hist in self._known_docs:
             author = doc.author or ""
-            dist = self.distance_function.distance(unknown_histogram, hist)
+            dist = df.distance(unknown_histogram, hist)
             distances.append((author, dist))
 
         # Sort by distance ascending and take the k nearest.
