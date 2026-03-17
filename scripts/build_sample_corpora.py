@@ -78,7 +78,10 @@ def write_doc(directory: Path, filename: str, text: str):
 
 
 def sanitize_filename(s: str) -> str:
-    """Make a string safe for filenames."""
+    """Make a string safe for filenames (ASCII only)."""
+    # Normalize common accented characters
+    import unicodedata
+    s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
     return re.sub(r'[^\w\-]', '_', s).strip('_')[:60]
 
 
@@ -675,7 +678,7 @@ def main():
     # Load existing manifest
     manifest_path = CORPORA_DIR / "manifest.json"
     if manifest_path.exists():
-        with open(manifest_path) as f:
+        with open(manifest_path, encoding="utf-8") as f:
             manifest = json.load(f)
         # Keep existing AAAC entries
         existing_ids = {e["id"] for e in manifest}

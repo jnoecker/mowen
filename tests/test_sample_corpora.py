@@ -103,7 +103,7 @@ class TestSampleCorporaAPI:
         assert resp.status_code == 200
         data = resp.json()
         assert len(data) >= 13
-        assert data[0]["id"] == "aaac_problem_a"
+        assert data[0]["id"] == "federalist_papers"
         assert data[0]["num_authors"] > 0
 
     def test_import_sample_corpus(self, client):
