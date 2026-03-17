@@ -10,6 +10,9 @@ export default function PageLayout() {
       <main className={s.main}>
         <Outlet />
       </main>
+      <footer className={s.footer}>
+        &copy; 2026 John Noecker Jr.
+      </footer>
     </div>
   );
 }

@@ -15,3 +15,11 @@
   position: relative;
   z-index: 1;
 }
+
+.footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  letter-spacing: 0.04em;
+}
