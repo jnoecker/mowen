@@ -8,19 +8,24 @@ from typer.testing import CliRunner
 
 from mowen_cli.main import app
 
+import re
+
 runner = CliRunner()
+
+def _strip_ansi(s: str) -> str:
+    return re.sub(r'\x1b\[[0-9;]*m', '', s)
 
 
 class TestHelp:
     def test_main_help(self):
         result = runner.invoke(app, ["--help"])
         assert result.exit_code == 0
-        assert "attribution" in result.output.lower()
+        assert "attribution" in _strip_ansi(result.output).lower()
 
     def test_run_help(self):
         result = runner.invoke(app, ["run", "--help"])
         assert result.exit_code == 0
-        assert "--documents" in result.output
+        assert "--documents" in _strip_ansi(result.output)
 
     def test_list_components_help(self):
         result = runner.invoke(app, ["list-components", "--help"])
@@ -35,16 +40,16 @@ class TestListComponents:
     def test_list_all(self):
         result = runner.invoke(app, ["list-components"])
         assert result.exit_code == 0
-        assert "canonicizers" in result.output
-        assert "event-drivers" in result.output
-        assert "distance-functions" in result.output
-        assert "analysis-methods" in result.output
+        assert "canonicizers" in _strip_ansi(result.output)
+        assert "event-drivers" in _strip_ansi(result.output)
+        assert "distance-functions" in _strip_ansi(result.output)
+        assert "analysis-methods" in _strip_ansi(result.output)
 
     def test_list_single_category(self):
         result = runner.invoke(app, ["list-components", "canonicizers"])
         assert result.exit_code == 0
-        assert "unify_case" in result.output
-        assert "distance-functions" not in result.output
+        assert "unify_case" in _strip_ansi(result.output)
+        assert "distance-functions" not in _strip_ansi(result.output)
 
     def test_list_unknown_category(self):
         result = runner.invoke(app, ["list-components", "bogus"])
@@ -53,7 +58,7 @@ class TestListComponents:
     def test_list_json(self):
         result = runner.invoke(app, ["list-components", "--json"])
         assert result.exit_code == 0
-        data = json.loads(result.output)
+        data = json.loads(_strip_ansi(result.output))
         assert "canonicizers" in data
         assert "event-drivers" in data
         assert len(data["canonicizers"]) > 0
@@ -64,7 +69,7 @@ class TestListComponents:
     def test_list_single_category_json(self):
         result = runner.invoke(app, ["list-components", "analysis-methods", "--json"])
         assert result.exit_code == 0
-        data = json.loads(result.output)
+        data = json.loads(_strip_ansi(result.output))
         assert "analysis-methods" in data
         names = {c["name"] for c in data["analysis-methods"]}
         assert "knn" in names
@@ -73,7 +78,7 @@ class TestListComponents:
     def test_params_shown(self):
         result = runner.invoke(app, ["list-components", "event-drivers"])
         assert result.exit_code == 0
-        assert "--n" in result.output  # character_ngram has param 'n'
+        assert "--n" in _strip_ansi(result.output)  # character_ngram has param 'n'
 
 
 class TestRun:
@@ -85,8 +90,8 @@ class TestRun:
             "--distance", "cosine",
             "-a", "nearest_neighbor",
         ])
-        assert result.exit_code == 0, result.output
-        assert "Author A" in result.output or "Author B" in result.output
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        assert "Author A" in _strip_ansi(result.output) or "Author B" in _strip_ansi(result.output)
 
     def test_run_json_output(self, tmp_path):
         _write_corpus(tmp_path)
@@ -97,8 +102,8 @@ class TestRun:
             "-a", "knn:k=2",
             "--json",
         ])
-        assert result.exit_code == 0, result.output
-        data = json.loads(result.output)
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        data = json.loads(_strip_ansi(result.output))
         assert len(data) == 1
         assert "rankings" in data[0]
         assert len(data[0]["rankings"]) == 2
@@ -114,7 +119,7 @@ class TestRun:
             "--distance", "cosine",
             "-a", "nearest_neighbor",
         ])
-        assert result.exit_code == 0, result.output
+        assert result.exit_code == 0, _strip_ansi(result.output)
 
     def test_run_multiple_event_drivers(self, tmp_path):
         _write_corpus(tmp_path)
@@ -127,7 +132,7 @@ class TestRun:
             "--json",
         ])
         assert result.exit_code == 0
-        data = json.loads(result.output)
+        data = json.loads(_strip_ansi(result.output))
         assert len(data) == 1
 
     def test_run_missing_csv(self):
@@ -146,7 +151,7 @@ class TestRun:
             "-e", "word_events",
         ])
         assert result.exit_code == 1
-        assert "unknown" in result.output.lower()
+        assert "unknown" in _strip_ansi(result.output).lower()
 
 
 class TestConvertJgaap:
@@ -154,10 +159,10 @@ class TestConvertJgaap:
         _write_corpus(tmp_path)
         result = runner.invoke(app, ["convert-jgaap", str(tmp_path / "manifest.csv")])
         assert result.exit_code == 0
-        assert "2 known" in result.output
-        assert "1 unknown" in result.output
-        assert "Author A" in result.output
-        assert "Author B" in result.output
+        assert "2 known" in _strip_ansi(result.output)
+        assert "1 unknown" in _strip_ansi(result.output)
+        assert "Author A" in _strip_ansi(result.output)
+        assert "Author B" in _strip_ansi(result.output)
 
     def test_convert_missing_file(self):
         result = runner.invoke(app, ["convert-jgaap", "/nonexistent.csv"])
@@ -168,8 +173,8 @@ class TestEvaluate:
     def test_evaluate_help(self):
         result = runner.invoke(app, ["evaluate", "--help"])
         assert result.exit_code == 0
-        assert "--mode" in result.output
-        assert "--folds" in result.output
+        assert "--mode" in _strip_ansi(result.output)
+        assert "--folds" in _strip_ansi(result.output)
 
     def test_evaluate_loo_text(self, tmp_path):
         _write_eval_corpus(tmp_path)
@@ -180,9 +185,9 @@ class TestEvaluate:
             "-a", "nearest_neighbor",
             "--mode", "loo",
         ])
-        assert result.exit_code == 0, result.output
-        assert "Accuracy" in result.output
-        assert "Confusion matrix" in result.output
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        assert "Accuracy" in _strip_ansi(result.output)
+        assert "Confusion matrix" in _strip_ansi(result.output)
 
     def test_evaluate_kfold_json(self, tmp_path):
         _write_eval_corpus(tmp_path)
@@ -196,8 +201,8 @@ class TestEvaluate:
             "--seed", "42",
             "--json",
         ])
-        assert result.exit_code == 0, result.output
-        data = json.loads(result.output)
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        data = json.loads(_strip_ansi(result.output))
         assert "accuracy" in data
         assert "confusion_matrix" in data
         assert "per_author" in data
@@ -213,7 +218,7 @@ class TestEvaluate:
             "--mode", "loo",
             "-o", str(csv_path),
         ])
-        assert result.exit_code == 0, result.output
+        assert result.exit_code == 0, _strip_ansi(result.output)
         assert csv_path.exists()
         content = csv_path.read_text()
         assert "accuracy" in content
@@ -230,7 +235,7 @@ class TestEvaluate:
             "--mode", "loo",
         ])
         assert result.exit_code == 1
-        assert "author" in result.output.lower()
+        assert "author" in _strip_ansi(result.output).lower()
 
 
 def _write_eval_corpus(tmp_path):
