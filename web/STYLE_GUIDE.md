@@ -2,64 +2,78 @@
 
 ## Concept
 
-The visual language is rooted in the product's name — 墨紋 (ink-print/fingerprint). The aesthetic draws from sumi ink (墨), washi paper (和紙), and cinnabar seals (朱印) to evoke a calligraphy studio rather than a generic dark-mode application.
+Surreal Gentle Magic meets scholarly calligraphy. The aesthetic merges the enchanted mist palette from AmbonMUD with mowen's East Asian typographic identity — dreamlike deep-blue surfaces, lavender accents, and soft luminous depth, grounded by Cormorant Garamond serif headings and washi paper texture. Nothing feels industrial. Nothing feels sharp unless intentional.
 
-## Color Palette — Sumi Ink + Cinnabar
+**Key principles:**
+- Enchanted, not explosive — magic feels ambient and inevitable
+- Dreamlike, not chaotic — softness enables focus
+- Softly luminous, never harsh — light is diffused, source-ambiguous
+- Scholarly warmth — calligraphic typography anchors the ethereal palette
 
-### Backgrounds (warm charcoal, not cool blue-black)
+## Color Palette — Surreal Gentle Magic
 
-| Variable | Hex | Role |
-|---|---|---|
-| `--bg` | `#141210` | Deepest ink — page background |
-| `--bg-surface` | `#1e1b18` | Cards, panels |
-| `--bg-elevated` | `#282420` | Inputs, nested panels |
-| `--bg-hover` | `#322d28` | Hover states |
-| `--bg-inset` | `#0f0e0c` | Recessed areas (progress troughs) |
-
-### Text (aged paper tones)
+### Backgrounds (deep mist blues)
 
 | Variable | Hex | Role |
 |---|---|---|
-| `--text` | `#e8e0d4` | Primary — warm off-white |
-| `--text-muted` | `#9c9488` | Secondary — faded ink |
-| `--text-faint` | `#6b6359` | Disabled, placeholders |
+| `--bg` | `#1e2538` | Deepest mist — page background |
+| `--bg-surface` | `#2a3149` | Cards, panels |
+| `--bg-elevated` | `#313a56` | Inputs, nested panels |
+| `--bg-hover` | `#3a4468` | Hover states |
+| `--bg-inset` | `#181e30` | Recessed areas (bar troughs) |
 
-### Accent — Cinnabar/Vermillion (朱)
+### Text (moonlit cloud tones)
 
-Replaces the original periwinkle `#7c8cf8`.
+| Variable | Hex | Role |
+|---|---|---|
+| `--text` | `#dbe3f8` | Primary — moonlit cloud |
+| `--text-muted` | `#aebada` | Secondary — soft fog |
+| `--text-faint` | `#7f89a8` | Disabled, placeholders |
+
+### Accent — Lavender (enchanted)
 
 | Variable | Value | Role |
 |---|---|---|
-| `--accent` | `#c8523c` | Buttons, active states, links |
-| `--accent-hover` | `#b5442f` | Hover |
-| `--accent-subtle` | `rgba(200,82,60,0.12)` | Tinted backgrounds |
-| `--accent-glow` | `rgba(200,82,60,0.25)` | Focus ring glow |
+| `--accent` | `#a897d2` | Buttons, active states, links |
+| `--accent-hover` | `#9585c4` | Hover |
+| `--accent-subtle` | `rgba(168,151,210,0.12)` | Tinted backgrounds |
+| `--accent-glow` | `rgba(168,151,210,0.30)` | Focus ring glow |
 
-### Secondary — Gold (金)
+### Secondary — Soft Gold (luminous warmth)
 
 | Variable | Value |
 |---|---|
-| `--gold` | `#c9a84c` |
-| `--gold-subtle` | `rgba(201,168,76,0.12)` |
+| `--gold` | `#bea873` |
+| `--gold-subtle` | `rgba(190,168,115,0.12)` |
 
-### Status (harmonized warm tones, not neon)
+### Status (gentle magic tones, not neon)
 
 | Status | Color | Variable |
 |---|---|---|
-| Success | `#6b9e5e` (sage) | `--success` |
-| Warning | `#c9a84c` (= gold) | `--warning` |
-| Danger | `#c75050` (cool red, distinct from accent) | `--danger` |
-| Info | `#5e8a9e` (slate) | `--info` |
+| Success | `#8da97b` (moss green) | `--success` |
+| Warning | `#bea873` (= soft gold) | `--warning` |
+| Danger | `#c5a8a8` (desaturated rose) | `--danger` |
+| Info | `#8caec9` (pale blue) | `--info` |
 
 Each status color has `-bg` (12% opacity) and `-border` (40% opacity) variants.
 
+### Rules
+
+- No neon, no saturated primaries
+- No pure black — use deep mist (`#1e2538`) or darker
+- Cool undertones dominate, warm accents (gold, rose) balance
+- Contrast: WCAG AA minimum (4.5:1 for primary text on surfaces)
+
 ### Borders & Shadows
 
-- `--border: #2e2a25`
-- `--border-strong: #3d3732`
-- `--shadow-sm: 0 1px 3px rgba(10,8,6,0.3)`
-- `--shadow-md: 0 4px 12px rgba(10,8,6,0.4)`
-- `--shadow-lg: 0 8px 24px rgba(10,8,6,0.5)`
+Borders use translucent glass edges, not opaque lines:
+- `--border: rgba(151,166,204,0.20)`
+- `--border-strong: rgba(151,166,204,0.36)`
+
+Shadows are cool-tinted mist:
+- `--shadow-sm: 0 1px 3px rgba(20,24,40,0.3)`
+- `--shadow-md: 0 4px 12px rgba(20,24,40,0.4)`
+- `--shadow-lg: 0 8px 24px rgba(20,24,40,0.5)`
 
 ## Typography
 
@@ -80,54 +94,66 @@ Loaded via `<link>` tags in `index.html`.
 - Body: 15px
 - Small labels: 0.7rem, uppercase, letter-spacing 0.08-0.12em
 
+### Radii
+
+Slightly softer than typical dark-mode apps:
+- `--radius: 8px`, `--radius-md: 10px`, `--radius-lg: 12px`
+
 ## Texture & Depth
 
 ### Paper grain
-SVG `feTurbulence` noise filter overlaid on the viewport at ~3.5% opacity with `mix-blend-mode: overlay`. Gives all surfaces a subtle washi paper grain.
+SVG `feTurbulence` noise filter overlaid on the viewport at ~3.5% opacity with `mix-blend-mode: overlay`. Provides subtle tactile grain across all surfaces.
 
-### Ink-wash cards
-Cards use a top-edge highlight gradient (`rgba(255,255,255,0.02)` → transparent) and inner glow to simulate how ink pools lighter at edges. Cards lift on hover with deeper warm shadow.
+### Mist-glow cards
+Cards use a top-edge highlight gradient (`rgba(255,255,255,0.02)` to transparent) and inner glow. Glass-edge top border (`rgba(255,255,255,0.04)`). Cards lift on hover with deeper shadow.
 
 ### Brush-stroke dividers
-Dividers use an SVG `feTurbulence` mask to create irregular, ragged edges like brush strokes, not clean CSS lines.
+Dividers use an SVG `feTurbulence` mask to create irregular, ragged edges — organic, not mechanical.
 
-### Hanko seal buttons
-Primary buttons have a diagonal light-to-dark gradient overlay simulating uneven ink transfer of a stamp, plus a warm cinnabar glow shadow.
+### Enchanted buttons
+Primary buttons have a diagonal light-to-dark gradient overlay with a lavender aura glow shadow. The effect is luminous rather than flat.
 
 ### Seal-cut badges
-Status badges use near-square border-radius (3px) like carved seals, not rounded pills. Smaller text with wider letter-spacing.
+Status badges use near-square border-radius (3px). Running badges emit a faint lavender glow. Compact text with wide letter-spacing.
 
-### Ink ripple watermark
-Dashboard stats row has a concentric-ring radial gradient in faint cinnabar behind it, echoing the favicon's ink-drop motif.
+### Lavender ripple watermark
+Dashboard stats row has a concentric-ring radial gradient in faint lavender behind it, echoing the magical aura motif.
 
-### Negative space (間)
+### Body vignette
+A cool mist glow radiates from the top of the viewport — a blend of lavender and pale blue at very low opacity, creating atmospheric depth.
+
+### Negative space
 Generous padding throughout — cards 1.5rem, tables 0.75rem, main content area 2.5rem, max-width 1100px.
 
 ## Logo & Favicon
 
 ### Logo — Scroll, Brush & Seal
-AI-generated illustration of an aged parchment scroll with ornate purple/gold finials, a turquoise calligraphy brush laid diagonally across it, and a cinnabar wax seal at bottom-left embossed with the character 墨 in seal script (篆書). Black background, transparent PNG.
+AI-generated illustration: aged parchment scroll with ornate purple/gold finials, turquoise calligraphy brush, and a cinnabar wax seal embossed with 墨 in seal script (篆書). Black background, transparent PNG.
 
 ### Favicon — 墨 Seal Character
-SVG with dark charcoal background (`#1e1b18`). The vectorized 墨 character in seal script, rendered in cinnabar (`#c8523c`). Scaled to fit a 32x32 viewport with padding. Source: `web/src/assets/seal.svg` (standalone vectorized character).
+SVG with deep mist background (`#1e2538`). The vectorized 墨 character in seal script, rendered in lavender (`#a897d2`). Source: `web/src/assets/seal.svg`.
 
 ### Navbar brand
 The full scroll logo at 2.6rem height alongside the "mowen (墨紋)" wordmark in Cormorant Garamond + Noto Serif JP.
 
-### AI generation prompts (for future logo work)
+### AI generation prompts
 
-**Logo with embossed seal:**
-> Ornate fantasy scroll with turquoise calligraphy brush, aged parchment texture, purple and gold finials. Red cinnabar wax seal at bottom-left with the Chinese character 墨 (ink) embossed in seal script (篆書). Black background. Square format, transparent PNG. No text besides the seal character.
+**Logo:**
+> Ornate fantasy scroll with turquoise calligraphy brush, aged parchment texture, purple and gold finials. Red cinnabar wax seal at bottom-left with the Chinese character 墨 (ink) embossed in seal script (篆書). Black background. Square format, transparent PNG.
 
 **App icon (512x512):**
-> App icon for 'mowen', an authorship attribution tool. Square with rounded corners. Dark warm charcoal background (#1e1b18). Center: 墨 character in seal script, cinnabar red (#c8523c). Clean, modern, distinctive. Japanese/Chinese ink art aesthetic.
+> App icon for 'mowen', an authorship attribution tool. Square with rounded corners. Deep blue-purple background (#2a3149). Center: 墨 character in seal script, soft lavender (#a897d2). Gentle magical glow. Dreamlike, scholarly aesthetic.
 
 ## Architecture
 
 All styles are implemented as:
 - **`web/src/styles/variables.css`** — Design tokens (CSS custom properties)
-- **`web/src/styles/global.css`** — Reset, base typography, body texture
+- **`web/src/styles/global.css`** — Reset, base typography, body texture, vignette
 - **`web/src/styles/components.css`** — Shared classes (`.card`, `.badge--*`, `.divider`, `.tag`, etc.)
 - **`*.module.css`** — Per-component CSS Modules for scoped styles
 
 No inline React `style={{}}` objects for layout or color — all visual styling lives in CSS.
+
+---
+
+Copyright 2026 John Noecker Jr.
