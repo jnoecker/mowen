@@ -1563,5 +1563,988 @@
         "true_author": "Author04"
       }
     ]
+  },
+  {
+    "id": "federalist_papers",
+    "name": "Federalist Papers",
+    "description": "Hamilton vs. Madison vs. Jay. 74 papers with known authorship, 12 disputed papers (scholarly consensus: Madison). The foundational stylometry problem.",
+    "known": [
+      {
+        "file": "federalist/federalist_01.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_02.txt",
+        "author": "Jay"
+      },
+      {
+        "file": "federalist/federalist_03.txt",
+        "author": "Jay"
+      },
+      {
+        "file": "federalist/federalist_04.txt",
+        "author": "Jay"
+      },
+      {
+        "file": "federalist/federalist_05.txt",
+        "author": "Jay"
+      },
+      {
+        "file": "federalist/federalist_06.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_07.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_08.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_09.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_10.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_11.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_12.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_13.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_14.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_15.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_16.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_17.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_18.txt",
+        "author": "Hamilton & Madison"
+      },
+      {
+        "file": "federalist/federalist_19.txt",
+        "author": "Hamilton & Madison"
+      },
+      {
+        "file": "federalist/federalist_20.txt",
+        "author": "Hamilton & Madison"
+      },
+      {
+        "file": "federalist/federalist_21.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_22.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_23.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_24.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_25.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_26.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_27.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_28.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_29.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_30.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_31.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_32.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_33.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_34.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_35.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_36.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_37.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_38.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_39.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_40.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_41.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_42.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_43.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_44.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_45.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_46.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_47.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_48.txt",
+        "author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_59.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_60.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_61.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_64.txt",
+        "author": "Jay"
+      },
+      {
+        "file": "federalist/federalist_65.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_66.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_67.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_68.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_69.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_70.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_70.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_71.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_72.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_73.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_74.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_75.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_76.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_77.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_78.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_79.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_80.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_81.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_82.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_83.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_84.txt",
+        "author": "Hamilton"
+      },
+      {
+        "file": "federalist/federalist_85.txt",
+        "author": "Hamilton"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "federalist/federalist_49.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_50.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_51.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_52.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_53.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_54.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_55.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_56.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_57.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_58.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_62.txt",
+        "true_author": "Madison"
+      },
+      {
+        "file": "federalist/federalist_63.txt",
+        "true_author": "Madison"
+      }
+    ]
+  },
+  {
+    "id": "shakespeare_contemporaries",
+    "name": "Shakespeare vs. Contemporaries",
+    "description": "Shakespeare, Marlowe, and Jonson. 11 plays with known authorship, Henry VIII as disputed (Shakespeare/Fletcher collaboration).",
+    "known": [
+      {
+        "file": "shakespeare/Shakespeare_Hamlet.txt",
+        "author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Shakespeare_Macbeth.txt",
+        "author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Shakespeare_King_Lear.txt",
+        "author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Shakespeare_Othello.txt",
+        "author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Shakespeare_Romeo_and_Juliet.txt",
+        "author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Shakespeare_A_Midsummer_Night_s_Dream.txt",
+        "author": "Shakespeare"
+      },
+      {
+        "file": "shakespeare/Marlowe_Doctor_Faustus.txt",
+        "author": "Marlowe"
+      },
+      {
+        "file": "shakespeare/Marlowe_Edward_the_Second.txt",
+        "author": "Marlowe"
+      },
+      {
+        "file": "shakespeare/Marlowe_The_Jew_of_Malta.txt",
+        "author": "Marlowe"
+      },
+      {
+        "file": "shakespeare/Jonson_Volpone.txt",
+        "author": "Jonson"
+      },
+      {
+        "file": "shakespeare/Jonson_Every_Man_in_His_Humour.txt",
+        "author": "Jonson"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "shakespeare/unknown_Henry_VIII.txt",
+        "true_author": "Shakespeare & Fletcher"
+      }
+    ]
+  },
+  {
+    "id": "bronte_sisters",
+    "name": "Brontë Sisters",
+    "description": "Charlotte, Emily, and Anne Brontë. 32 chapter excerpts from their novels. Similar upbringing and genre but distinct styles.",
+    "known": [
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch01.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch02.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch03.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch04.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch05.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch06.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch07.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Charlotte_Brontë_Jane_Eyre_ch08.txt",
+        "author": "Charlotte Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch01.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch02.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch03.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch04.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch05.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch06.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch07.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Emily_Brontë_Wuthering_Heights_ch08.txt",
+        "author": "Emily Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch01.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch02.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch03.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch04.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch05.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch06.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch07.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Agnes_Grey_ch08.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch01.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch02.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch03.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch04.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch05.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch06.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch07.txt",
+        "author": "Anne Brontë"
+      },
+      {
+        "file": "brontes/Anne_Brontë_Tenant_of_Wildfell_Hall_ch08.txt",
+        "author": "Anne Brontë"
+      }
+    ],
+    "unknown": []
+  },
+  {
+    "id": "pauline_epistles",
+    "name": "Pauline Epistles",
+    "description": "Authorship of the Pauline letters (KJV). 6 undisputed letters, 5 disputed/pastoral letters. One of the oldest attribution questions in history.",
+    "known": [
+      {
+        "file": "pauline/Romans.txt",
+        "author": "Paul (undisputed)"
+      },
+      {
+        "file": "pauline/1_Corinthians.txt",
+        "author": "Paul (undisputed)"
+      },
+      {
+        "file": "pauline/2_Corinthians.txt",
+        "author": "Paul (undisputed)"
+      },
+      {
+        "file": "pauline/Galatians.txt",
+        "author": "Paul (undisputed)"
+      },
+      {
+        "file": "pauline/Philippians.txt",
+        "author": "Paul (undisputed)"
+      },
+      {
+        "file": "pauline/1_Thessalonians.txt",
+        "author": "Paul (undisputed)"
+      }
+    ],
+    "unknown": [
+      {
+        "file": "pauline/Ephesians.txt",
+        "true_author": "Disputed"
+      },
+      {
+        "file": "pauline/Colossians.txt",
+        "true_author": "Disputed"
+      },
+      {
+        "file": "pauline/2_Thessalonians.txt",
+        "true_author": "Disputed"
+      },
+      {
+        "file": "pauline/1_Timothy.txt",
+        "true_author": "Pastoral (likely not Paul)"
+      },
+      {
+        "file": "pauline/2_Timothy.txt",
+        "true_author": "Pastoral (likely not Paul)"
+      }
+    ]
+  },
+  {
+    "id": "state_of_the_union",
+    "name": "State of the Union Addresses",
+    "description": "Presidential addresses from Lincoln, T. Roosevelt, and Wilson. 10 speeches with known authorship.",
+    "known": [
+      {
+        "file": "sotu/Abraham_Lincoln_1861_SOTU.txt",
+        "author": "Abraham Lincoln"
+      },
+      {
+        "file": "sotu/Abraham_Lincoln_1862_SOTU.txt",
+        "author": "Abraham Lincoln"
+      },
+      {
+        "file": "sotu/Abraham_Lincoln_1863_SOTU.txt",
+        "author": "Abraham Lincoln"
+      },
+      {
+        "file": "sotu/Abraham_Lincoln_1864_SOTU.txt",
+        "author": "Abraham Lincoln"
+      },
+      {
+        "file": "sotu/Theodore_Roosevelt_1901_SOTU.txt",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "file": "sotu/Theodore_Roosevelt_1902_SOTU.txt",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "file": "sotu/Theodore_Roosevelt_1903_SOTU.txt",
+        "author": "Theodore Roosevelt"
+      },
+      {
+        "file": "sotu/Woodrow_Wilson_1913_SOTU.txt",
+        "author": "Woodrow Wilson"
+      },
+      {
+        "file": "sotu/Woodrow_Wilson_1914_SOTU.txt",
+        "author": "Woodrow Wilson"
+      },
+      {
+        "file": "sotu/Woodrow_Wilson_1915_SOTU.txt",
+        "author": "Woodrow Wilson"
+      }
+    ],
+    "unknown": []
+  },
+  {
+    "id": "russian_literature",
+    "name": "Russian Literature",
+    "description": "Dostoevsky, Tolstoy, Chekhov, and Turgenev in English translation. 31 chapter excerpts. Cross-cultural stylometry on translated works.",
+    "known": [
+      {
+        "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch01.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch02.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch03.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch04.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch05.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_Crime_and_Punishment_ch06.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch01.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch02.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch03.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch04.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch05.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Dostoevsky_The_Brothers_Karamazov_ch06.txt",
+        "author": "Dostoevsky"
+      },
+      {
+        "file": "russian_lit/Tolstoy_War_and_Peace_ch01.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_War_and_Peace_ch02.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_War_and_Peace_ch03.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_War_and_Peace_ch04.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_War_and_Peace_ch05.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_War_and_Peace_ch06.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch01.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch02.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch03.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch04.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch05.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Tolstoy_Anna_Karenina_ch06.txt",
+        "author": "Tolstoy"
+      },
+      {
+        "file": "russian_lit/Chekhov_The_Lady_with_the_Dog_and_Other_Stories.txt",
+        "author": "Chekhov"
+      },
+      {
+        "file": "russian_lit/Turgenev_Fathers_and_Sons_ch01.txt",
+        "author": "Turgenev"
+      },
+      {
+        "file": "russian_lit/Turgenev_Fathers_and_Sons_ch02.txt",
+        "author": "Turgenev"
+      },
+      {
+        "file": "russian_lit/Turgenev_Fathers_and_Sons_ch03.txt",
+        "author": "Turgenev"
+      },
+      {
+        "file": "russian_lit/Turgenev_Fathers_and_Sons_ch04.txt",
+        "author": "Turgenev"
+      },
+      {
+        "file": "russian_lit/Turgenev_Fathers_and_Sons_ch05.txt",
+        "author": "Turgenev"
+      },
+      {
+        "file": "russian_lit/Turgenev_Fathers_and_Sons_ch06.txt",
+        "author": "Turgenev"
+      }
+    ],
+    "unknown": []
+  },
+  {
+    "id": "homeric_question",
+    "name": "The Homeric Question",
+    "description": "Iliad vs. Odyssey (Butler translation), split by book. 49 sections. Tests whether the same author composed both epics — one of the oldest attribution questions. Also suitable for authorship diarization research.",
+    "known": [
+      {
+        "file": "homer/Homer_Iliad_book01.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book02.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book03.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book04.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book05.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book06.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book07.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book08.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book09.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book10.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book11.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book12.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book13.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book14.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book15.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book16.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book17.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book18.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book19.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book20.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book21.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book22.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book23.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Iliad_book24.txt",
+        "author": "Iliad"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book01.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book02.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book03.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book04.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book05.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book06.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book07.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book08.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book09.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book10.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book11.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book12.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book13.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book14.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book15.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book16.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book17.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book18.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book19.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book20.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book21.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book22.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book23.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book24.txt",
+        "author": "Odyssey"
+      },
+      {
+        "file": "homer/Homer_Odyssey_book25.txt",
+        "author": "Odyssey"
+      }
+    ],
+    "unknown": []
   }
 ]

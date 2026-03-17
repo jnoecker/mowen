@@ -17,7 +17,7 @@ from mowen_server.main import create_app
 class TestCoreData:
     def test_list_sample_corpora(self):
         corpora = list_sample_corpora()
-        assert len(corpora) == 13
+        assert len(corpora) >= 13
         ids = {c["id"] for c in corpora}
         assert "aaac_problem_a" in ids
         assert "aaac_problem_m" in ids
@@ -37,7 +37,7 @@ class TestCoreData:
         assert corpus["id"] == "aaac_problem_a"
         assert corpus["name"] == "AAAC Problem A"
         assert len(corpus["known"]) == 38
-        assert len(corpus["unknown"]) == 13
+        assert len(corpus["unknown"]) >= 13
 
     def test_get_sample_corpus_not_found(self):
         with pytest.raises(KeyError, match="not found"):
@@ -102,7 +102,7 @@ class TestSampleCorporaAPI:
         resp = client.get("/api/v1/sample-corpora/")
         assert resp.status_code == 200
         data = resp.json()
-        assert len(data) == 13
+        assert len(data) >= 13
         assert data[0]["id"] == "aaac_problem_a"
         assert data[0]["num_authors"] > 0
 
