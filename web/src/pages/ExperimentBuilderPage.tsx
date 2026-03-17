@@ -793,7 +793,26 @@ export default function ExperimentBuilderPage() {
 
   return (
     <div>
-      <h1>New Experiment</h1>
+      <div className={s.headerRow}>
+        <h1>New Experiment</h1>
+        {step < STEPS.length - 1 ? (
+          <button
+            className="primary"
+            onClick={() => setStep((prev) => prev + 1)}
+            disabled={!canProceed()}
+          >
+            Next
+          </button>
+        ) : (
+          <button
+            className="primary"
+            onClick={handleSubmit}
+            disabled={createExperiment.isPending}
+          >
+            {createExperiment.isPending ? 'Submitting...' : 'Submit Experiment'}
+          </button>
+        )}
+      </div>
 
       {/* Step indicators */}
       <div className={s.stepIndicatorRow}>
