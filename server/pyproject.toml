@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "mowen-server"
 version = "1.0.0"
 description = "Web server for mowen authorship attribution toolkit"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
