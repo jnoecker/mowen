@@ -48,4 +48,9 @@ try:
 except ImportError:
     pass  # transformers/torch not installed
 
+try:
+    from mowen.event_drivers import selma_embeddings as selma_embeddings  # noqa: F401
+except ImportError:
+    pass  # transformers/torch not installed
+
 __all__ = ["EventDriver", "event_driver_registry"]
