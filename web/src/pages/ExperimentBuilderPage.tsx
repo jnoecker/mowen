@@ -6,12 +6,13 @@ import { corporaApi } from '../api/corpora';
 import { useExperimentStore } from '../store/experimentStore';
 import { useCreateExperiment } from '../hooks/useExperiment';
 import type { ComponentInfo, ComponentSpec, ParamInfo, CorpusResponse } from '../types';
+import s from './ExperimentBuilderPage.module.css';
 
 // Re-export the value type from ComponentSpec to avoid explicit `any` in signatures
 type ParamValue = ComponentSpec['params'][string];
 
 // ---------------------------------------------------------------------------
-// Constants & Styles
+// Constants
 // ---------------------------------------------------------------------------
 
 const STEPS = [
@@ -23,29 +24,6 @@ const STEPS = [
   'Analysis Method',
   'Review & Submit',
 ] as const;
-
-const cardStyle: React.CSSProperties = {
-  background: '#1a1a2e',
-  border: '1px solid #2a2a4a',
-  borderRadius: '8px',
-  padding: '1.25rem',
-  marginBottom: '1rem',
-};
-
-const stepIndicatorRow: React.CSSProperties = {
-  display: 'flex',
-  gap: '0.25rem',
-  marginBottom: '2rem',
-  flexWrap: 'wrap',
-};
-
-const navRow: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  marginTop: '2rem',
-  paddingTop: '1rem',
-  borderTop: '1px solid #2a2a4a',
-};
 
 // ---------------------------------------------------------------------------
 // ParameterEditor
@@ -61,17 +39,17 @@ function ParameterEditor({
   onChange: (name: string, value: ParamValue) => void;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.75rem' }}>
+    <div className={s.paramFields}>
       {params.map((p) => {
         const val = values[p.name] ?? p.default ?? '';
 
         if (p.choices && p.choices.length > 0) {
           return (
             <div key={p.name}>
-              <label style={{ fontSize: '0.8rem', color: '#8888aa', marginBottom: '0.15rem' }}>
+              <label className={s.paramLabel}>
                 {p.name}
                 {p.description && (
-                  <span style={{ marginLeft: '0.5rem', fontWeight: 'normal', opacity: 0.7 }}>
+                  <span className={s.paramHint}>
                     - {p.description}
                   </span>
                 )}
@@ -79,15 +57,7 @@ function ParameterEditor({
               <select
                 value={String(val)}
                 onChange={(e) => onChange(p.name, e.target.value)}
-                style={{
-                  width: '100%',
-                  background: '#16213e',
-                  border: '1px solid #2a2a4a',
-                  borderRadius: '6px',
-                  color: '#e0e0e0',
-                  padding: '0.4rem 0.6rem',
-                  fontSize: '0.85rem',
-                }}
+                className={s.paramInput}
               >
                 {p.choices.map((c) => (
                   <option key={String(c)} value={String(c)}>
@@ -102,10 +72,10 @@ function ParameterEditor({
         const isNumeric = p.type === 'int' || p.type === 'float';
         return (
           <div key={p.name}>
-            <label style={{ fontSize: '0.8rem', color: '#8888aa', marginBottom: '0.15rem' }}>
+            <label className={s.paramLabel}>
               {p.name}
               {p.description && (
-                <span style={{ marginLeft: '0.5rem', fontWeight: 'normal', opacity: 0.7 }}>
+                <span className={s.paramHint}>
                   - {p.description}
                 </span>
               )}
@@ -124,15 +94,7 @@ function ParameterEditor({
                   onChange(p.name, raw);
                 }
               }}
-              style={{
-                width: '100%',
-                background: '#16213e',
-                border: '1px solid #2a2a4a',
-                borderRadius: '6px',
-                color: '#e0e0e0',
-                padding: '0.4rem 0.6rem',
-                fontSize: '0.85rem',
-              }}
+              className={s.paramInput}
             />
           </div>
         );
@@ -159,11 +121,11 @@ function ComponentSelector({
   multiSelect: boolean;
 }) {
   if (isLoading) {
-    return <p style={{ color: '#8888aa' }}>Loading components...</p>;
+    return <p className={s.stepDesc}>Loading components...</p>;
   }
 
   if (components.length === 0) {
-    return <p style={{ color: '#8888aa' }}>No components available.</p>;
+    return <p className={s.stepDesc}>No components available.</p>;
   }
 
   const selectedMap = new Map(selected.map((s) => [s.name, s]));
@@ -210,7 +172,7 @@ function ComponentSelector({
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '0.75rem' }}>
+    <div className={s.componentGrid}>
       {components.map((comp) => {
         const isSelected = selectedMap.has(comp.name);
         const spec = selectedMap.get(comp.name);
@@ -218,47 +180,29 @@ function ComponentSelector({
           <div
             key={comp.name}
             onClick={() => toggle(comp)}
-            style={{
-              background: '#1a1a2e',
-              border: isSelected ? '2px solid #7c8cf8' : '1px solid #2a2a4a',
-              borderRadius: '8px',
-              padding: '1rem',
-              cursor: 'pointer',
-              transition: 'border-color 0.15s, box-shadow 0.15s',
-              boxShadow: isSelected ? '0 0 8px rgba(124, 140, 248, 0.2)' : 'none',
-            }}
+            className={`${s.componentCard} ${isSelected ? s.componentCardSelected : ''}`}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className={s.componentHeader}>
               <div>
-                <div style={{ fontWeight: 600, color: '#e0e0e0', fontSize: '0.95rem' }}>
+                <div className={s.componentName}>
                   {comp.display_name}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#8888aa', fontFamily: 'monospace' }}>
+                <div className={s.componentSlug}>
                   {comp.name}
                 </div>
               </div>
               <div
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: multiSelect ? '4px' : '50%',
-                  border: isSelected ? '2px solid #7c8cf8' : '2px solid #2a2a4a',
-                  background: isSelected ? '#7c8cf8' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
+                className={`${multiSelect ? s.checkbox : s.radio} ${isSelected ? s.checkboxSelected : ''}`}
               >
                 {isSelected && (
-                  <span style={{ color: '#fff', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                  <span className={s.checkmark}>
                     {multiSelect ? '\u2713' : '\u25CF'}
                   </span>
                 )}
               </div>
             </div>
             {comp.description && (
-              <p style={{ fontSize: '0.82rem', color: '#8888aa', marginTop: '0.4rem', lineHeight: 1.4 }}>
+              <p className={s.componentDesc}>
                 {comp.description}
               </p>
             )}
@@ -301,76 +245,49 @@ function StepNameCorpora({ corpora, isLoading }: { corpora: CorpusResponse[]; is
   return (
     <div>
       <div style={{ marginBottom: '1.5rem' }}>
-        <label style={{ fontSize: '0.9rem', color: '#8888aa', marginBottom: '0.35rem', display: 'block' }}>
+        <label className={s.paramLabel} style={{ display: 'block', fontSize: '0.9rem' }}>
           Experiment Name
         </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter experiment name"
-          style={{
-            width: '100%',
-            maxWidth: '500px',
-            background: '#16213e',
-            border: '1px solid #2a2a4a',
-            borderRadius: '6px',
-            color: '#e0e0e0',
-            padding: '0.5rem 0.75rem',
-            fontSize: '0.9rem',
-          }}
+          className={`${s.paramInput} ${s.nameInput}`}
         />
       </div>
 
-      {isLoading && <p style={{ color: '#8888aa' }}>Loading corpora...</p>}
+      {isLoading && <p className={s.stepDesc}>Loading corpora...</p>}
 
       {!isLoading && corpora.length === 0 && (
-        <p style={{ color: '#8888aa' }}>
+        <p className={s.stepDesc}>
           No corpora available. Create corpora before building an experiment.
         </p>
       )}
 
       {!isLoading && corpora.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+        <div className={s.corporaGrid}>
           {/* Known corpora */}
           <div>
-            <h3 style={{ color: '#e0e0e0', marginBottom: '0.5rem' }}>
+            <h3 style={{ marginBottom: '0.5rem' }}>
               Known Corpora
-              <span style={{ fontSize: '0.8rem', color: '#8888aa', fontWeight: 'normal', marginLeft: '0.5rem' }}>
+              <span className={s.corpusCount} style={{ fontWeight: 'normal', marginLeft: '0.5rem' }}>
                 (training data with known authors)
               </span>
             </h3>
-            <div
-              style={{
-                background: '#16213e',
-                border: '1px solid #2a2a4a',
-                borderRadius: '6px',
-                padding: '0.75rem',
-                maxHeight: '300px',
-                overflowY: 'auto',
-              }}
-            >
+            <div className={s.corporaList}>
               {corpora.map((c) => (
                 <label
                   key={c.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.4rem 0.25rem',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem',
-                    color: '#e0e0e0',
-                  }}
+                  className={s.corpusLabel}
                 >
                   <input
                     type="checkbox"
                     checked={knownCorpusIds.includes(c.id)}
                     onChange={() => toggleCorpus(knownCorpusIds, setKnownCorpusIds, c.id)}
-                    style={{ accentColor: '#7c8cf8' }}
+                    style={{ accentColor: 'var(--accent)' }}
                   />
                   <span>{c.name}</span>
-                  <span style={{ fontSize: '0.75rem', color: '#8888aa', marginLeft: 'auto' }}>
+                  <span className={s.corpusCount}>
                     {c.document_count} doc{c.document_count !== 1 ? 's' : ''}
                   </span>
                 </label>
@@ -380,44 +297,26 @@ function StepNameCorpora({ corpora, isLoading }: { corpora: CorpusResponse[]; is
 
           {/* Unknown corpora */}
           <div>
-            <h3 style={{ color: '#e0e0e0', marginBottom: '0.5rem' }}>
+            <h3 style={{ marginBottom: '0.5rem' }}>
               Unknown Corpora
-              <span style={{ fontSize: '0.8rem', color: '#8888aa', fontWeight: 'normal', marginLeft: '0.5rem' }}>
+              <span className={s.corpusCount} style={{ fontWeight: 'normal', marginLeft: '0.5rem' }}>
                 (documents to attribute)
               </span>
             </h3>
-            <div
-              style={{
-                background: '#16213e',
-                border: '1px solid #2a2a4a',
-                borderRadius: '6px',
-                padding: '0.75rem',
-                maxHeight: '300px',
-                overflowY: 'auto',
-              }}
-            >
+            <div className={s.corporaList}>
               {corpora.map((c) => (
                 <label
                   key={c.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.4rem 0.25rem',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                    fontSize: '0.9rem',
-                    color: '#e0e0e0',
-                  }}
+                  className={s.corpusLabel}
                 >
                   <input
                     type="checkbox"
                     checked={unknownCorpusIds.includes(c.id)}
                     onChange={() => toggleCorpus(unknownCorpusIds, setUnknownCorpusIds, c.id)}
-                    style={{ accentColor: '#7c8cf8' }}
+                    style={{ accentColor: 'var(--accent)' }}
                   />
                   <span>{c.name}</span>
-                  <span style={{ fontSize: '0.75rem', color: '#8888aa', marginLeft: 'auto' }}>
+                  <span className={s.corpusCount}>
                     {c.document_count} doc{c.document_count !== 1 ? 's' : ''}
                   </span>
                 </label>
@@ -459,34 +358,18 @@ function StepReview({
     return item ? item.display_name : name;
   };
 
-  const sectionStyle: React.CSSProperties = {
-    marginBottom: '1rem',
-    padding: '0.75rem 1rem',
-    background: '#16213e',
-    borderRadius: '6px',
-    border: '1px solid #2a2a4a',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: '0.8rem',
-    color: '#8888aa',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    marginBottom: '0.35rem',
-  };
-
   return (
     <div>
-      <div style={sectionStyle}>
-        <div style={labelStyle}>Experiment Name</div>
+      <div className="section-panel">
+        <div className="section-label">Experiment Name</div>
         <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{store.name}</div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-        <div style={sectionStyle}>
-          <div style={labelStyle}>Known Corpora</div>
+      <div className={s.reviewGrid}>
+        <div className="section-panel">
+          <div className="section-label">Known Corpora</div>
           {store.knownCorpusIds.length === 0 ? (
-            <span style={{ color: '#8888aa' }}>None selected</span>
+            <span className={s.stepDesc}>None selected</span>
           ) : (
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {store.knownCorpusIds.map((id) => (
@@ -497,10 +380,10 @@ function StepReview({
             </ul>
           )}
         </div>
-        <div style={sectionStyle}>
-          <div style={labelStyle}>Unknown Corpora</div>
+        <div className="section-panel">
+          <div className="section-label">Unknown Corpora</div>
           {store.unknownCorpusIds.length === 0 ? (
-            <span style={{ color: '#8888aa' }}>None selected</span>
+            <span className={s.stepDesc}>None selected</span>
           ) : (
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {store.unknownCorpusIds.map((id) => (
@@ -513,26 +396,17 @@ function StepReview({
         </div>
       </div>
 
-      <div style={sectionStyle}>
-        <div style={labelStyle}>Canonicizers</div>
+      <div className="section-panel">
+        <div className="section-label">Canonicizers</div>
         {store.canonicizers.length === 0 ? (
-          <span style={{ color: '#8888aa' }}>None</span>
+          <span className={s.stepDesc}>None</span>
         ) : (
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div className={s.reviewChips}>
             {store.canonicizers.map((c) => (
-              <span
-                key={c.name}
-                style={{
-                  padding: '0.25rem 0.6rem',
-                  background: '#1a1a2e',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  border: '1px solid #2a2a4a',
-                }}
-              >
+              <span key={c.name} className={s.reviewChip}>
                 {findDisplayName(allCanonicizers, c.name)}
                 {Object.keys(c.params).length > 0 && (
-                  <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
+                  <span className={s.reviewChipParams}>
                     ({Object.entries(c.params).map(([k, v]) => `${k}=${v}`).join(', ')})
                   </span>
                 )}
@@ -542,23 +416,14 @@ function StepReview({
         )}
       </div>
 
-      <div style={sectionStyle}>
-        <div style={labelStyle}>Event Drivers</div>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div className="section-panel">
+        <div className="section-label">Event Drivers</div>
+        <div className={s.reviewChips}>
           {store.eventDrivers.map((c) => (
-            <span
-              key={c.name}
-              style={{
-                padding: '0.25rem 0.6rem',
-                background: '#1a1a2e',
-                borderRadius: '4px',
-                fontSize: '0.85rem',
-                border: '1px solid #2a2a4a',
-              }}
-            >
+            <span key={c.name} className={s.reviewChip}>
               {findDisplayName(allEventDrivers, c.name)}
               {Object.keys(c.params).length > 0 && (
-                <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
+                <span className={s.reviewChipParams}>
                   ({Object.entries(c.params).map(([k, v]) => `${k}=${v}`).join(', ')})
                 </span>
               )}
@@ -567,28 +432,19 @@ function StepReview({
         </div>
       </div>
 
-      <div style={sectionStyle}>
-        <div style={labelStyle}>Event Cullers</div>
+      <div className="section-panel">
+        <div className="section-label">Event Cullers</div>
         {numericMode ? (
-          <span style={{ color: '#8888aa' }}>N/A (embedding mode)</span>
+          <span className={s.stepDesc}>N/A (embedding mode)</span>
         ) : store.eventCullers.length === 0 ? (
-          <span style={{ color: '#8888aa' }}>None</span>
+          <span className={s.stepDesc}>None</span>
         ) : (
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div className={s.reviewChips}>
             {store.eventCullers.map((c) => (
-              <span
-                key={c.name}
-                style={{
-                  padding: '0.25rem 0.6rem',
-                  background: '#1a1a2e',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  border: '1px solid #2a2a4a',
-                }}
-              >
+              <span key={c.name} className={s.reviewChip}>
                 {findDisplayName(allEventCullers, c.name)}
                 {Object.keys(c.params).length > 0 && (
-                  <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
+                  <span className={s.reviewChipParams}>
                     ({Object.entries(c.params).map(([k, v]) => `${k}=${v}`).join(', ')})
                   </span>
                 )}
@@ -598,11 +454,11 @@ function StepReview({
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-        <div style={sectionStyle}>
-          <div style={labelStyle}>Distance Function</div>
+      <div className={s.reviewGrid}>
+        <div className="section-panel">
+          <div className="section-label">Distance Function</div>
           {numericMode ? (
-            <span style={{ color: '#8888aa', fontSize: '0.9rem' }}>N/A (embedding mode)</span>
+            <span className={s.stepDesc}>N/A (embedding mode)</span>
           ) : (
             <>
               <span style={{ fontSize: '0.9rem' }}>
@@ -611,20 +467,20 @@ function StepReview({
                   : 'None'}
               </span>
               {store.distanceFunction && Object.keys(store.distanceFunction.params).length > 0 && (
-                <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
+                <span className={s.reviewChipParams}>
                   ({Object.entries(store.distanceFunction.params).map(([k, v]) => `${k}=${v}`).join(', ')})
                 </span>
               )}
             </>
           )}
         </div>
-        <div style={sectionStyle}>
-          <div style={labelStyle}>Analysis Method</div>
+        <div className="section-panel">
+          <div className="section-label">Analysis Method</div>
           <span style={{ fontSize: '0.9rem' }}>
             {findDisplayName(allAnalysisMethods, store.analysisMethod.name)}
           </span>
           {Object.keys(store.analysisMethod.params).length > 0 && (
-            <span style={{ color: '#8888aa', marginLeft: '0.4rem', fontSize: '0.75rem' }}>
+            <span className={s.reviewChipParams}>
               ({Object.entries(store.analysisMethod.params).map(([k, v]) => `${k}=${v}`).join(', ')})
             </span>
           )}
@@ -753,7 +609,7 @@ export default function ExperimentBuilderPage() {
         return (
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Canonicizers</h2>
-            <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+            <p className={s.stepDesc}>
               Text preprocessing steps. Optional - select any that apply.
             </p>
             <ComponentSelector
@@ -769,7 +625,7 @@ export default function ExperimentBuilderPage() {
         return (
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Event Drivers</h2>
-            <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+            <p className={s.stepDesc}>
               Methods for extracting features from text. At least one is required.
             </p>
             <ComponentSelector
@@ -786,13 +642,13 @@ export default function ExperimentBuilderPage() {
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Event Cullers</h2>
             {numericMode ? (
-              <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              <p className={s.stepDesc}>
                 Event cullers are not applicable with embedding-based event drivers.
                 This step will be skipped.
               </p>
             ) : (
               <>
-                <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                <p className={s.stepDesc}>
                   Filter extracted events. Optional.
                 </p>
                 <ComponentSelector
@@ -811,13 +667,13 @@ export default function ExperimentBuilderPage() {
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Distance Function</h2>
             {numericMode ? (
-              <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+              <p className={s.stepDesc}>
                 Distance functions are not applicable with embedding-based event drivers.
                 The sklearn analysis method handles similarity internally. This step will be skipped.
               </p>
             ) : (
               <>
-                <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                <p className={s.stepDesc}>
                   How to measure distance between event distributions. Select one.
                 </p>
                 <ComponentSelector
@@ -838,7 +694,7 @@ export default function ExperimentBuilderPage() {
         return (
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Analysis Method</h2>
-            <p style={{ color: '#8888aa', fontSize: '0.85rem', marginBottom: '1rem' }}>
+            <p className={s.stepDesc}>
               {numericMode
                 ? 'Select a classifier for the embedding vectors. Only sklearn-based methods are compatible with embeddings.'
                 : 'The method used to determine authorship attribution. Select one.'}
@@ -869,17 +725,7 @@ export default function ExperimentBuilderPage() {
               numericMode={numericMode}
             />
             {submitError && (
-              <div
-                style={{
-                  marginTop: '1rem',
-                  padding: '0.75rem 1rem',
-                  background: 'rgba(248, 113, 113, 0.1)',
-                  border: '1px solid #f87171',
-                  borderRadius: '6px',
-                  color: '#f87171',
-                  fontSize: '0.9rem',
-                }}
-              >
+              <div className={s.errorBox}>
                 {submitError}
               </div>
             )}
@@ -897,10 +743,11 @@ export default function ExperimentBuilderPage() {
       <h1>New Experiment</h1>
 
       {/* Step indicators */}
-      <div style={stepIndicatorRow}>
+      <div className={s.stepIndicatorRow}>
         {STEPS.map((label, i) => {
           const isActive = i === step;
           const isCompleted = i < step;
+          const isClickable = i <= step;
           return (
             <button
               key={i}
@@ -908,42 +755,10 @@ export default function ExperimentBuilderPage() {
                 // Allow clicking on completed steps or current step
                 if (i <= step) setStep(i);
               }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                padding: '0.4rem 0.75rem',
-                borderRadius: '20px',
-                fontSize: '0.8rem',
-                fontWeight: isActive ? 600 : 400,
-                border: isActive
-                  ? '1px solid #7c8cf8'
-                  : isCompleted
-                    ? '1px solid #4ade80'
-                    : '1px solid #2a2a4a',
-                background: isActive ? 'rgba(124, 140, 248, 0.15)' : 'transparent',
-                color: isActive ? '#7c8cf8' : isCompleted ? '#4ade80' : '#8888aa',
-                cursor: i <= step ? 'pointer' : 'default',
-                opacity: i > step ? 0.5 : 1,
-              }}
+              className={`${s.stepBtn} ${isActive ? s.stepBtnActive : ''} ${isCompleted ? s.stepBtnCompleted : ''} ${isClickable ? s.stepBtnClickable : ''}`}
             >
               <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  fontSize: '0.7rem',
-                  fontWeight: 'bold',
-                  background: isActive
-                    ? '#7c8cf8'
-                    : isCompleted
-                      ? '#4ade80'
-                      : '#2a2a4a',
-                  color: isActive || isCompleted ? '#fff' : '#8888aa',
-                }}
+                className={`${s.stepNumber} ${isActive ? s.stepNumberActive : ''} ${isCompleted ? s.stepNumberCompleted : ''}`}
               >
                 {isCompleted ? '\u2713' : i + 1}
               </span>
@@ -954,10 +769,10 @@ export default function ExperimentBuilderPage() {
       </div>
 
       {/* Step content */}
-      <div style={cardStyle}>{renderStep()}</div>
+      <div className="card">{renderStep()}</div>
 
       {/* Navigation buttons */}
-      <div style={navRow}>
+      <div className={s.navRow}>
         <button
           onClick={() => setStep((s) => s - 1)}
           disabled={step === 0}

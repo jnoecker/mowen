@@ -3,28 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { corporaApi, sampleCorporaApi } from '../api/corpora';
 import { documentsApi } from '../api/documents';
 import type { CorpusResponse, DocumentResponse, SampleCorpusInfo } from '../types';
-
-// ---------------------------------------------------------------------------
-// Shared styles
-// ---------------------------------------------------------------------------
-
-const cardStyle: React.CSSProperties = {
-  background: 'var(--bg-surface)',
-  border: '1px solid var(--border)',
-  borderRadius: '8px',
-  padding: '1.25rem',
-  marginBottom: '1rem',
-};
-
-const inputStyle: React.CSSProperties = {
-  background: 'var(--bg-elevated)',
-  border: '1px solid var(--border)',
-  borderRadius: 'var(--radius)',
-  color: 'var(--text)',
-  padding: '0.4rem 0.6rem',
-  fontSize: '0.85rem',
-  width: '100%',
-};
+import s from './CorporaPage.module.css';
 
 // ---------------------------------------------------------------------------
 // Document assignment panel (shown when a corpus card is expanded)
@@ -74,54 +53,29 @@ function DocumentAssignment({
   };
 
   return (
-    <div
-      style={{
-        marginTop: '0.75rem',
-        paddingTop: '0.75rem',
-        borderTop: '1px solid var(--border)',
-      }}
-    >
+    <div className={s.assignPanel}>
       <h3 style={{ marginBottom: '0.5rem', fontSize: '0.95rem' }}>Documents in Corpus</h3>
 
-      {isLoading && <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading...</p>}
+      {isLoading && <p className="muted" style={{ fontSize: '0.85rem' }}>Loading...</p>}
 
       {!isLoading && corpusDocuments.length === 0 && (
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+        <p className="muted" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
           No documents assigned yet.
         </p>
       )}
 
       {!isLoading && corpusDocuments.length > 0 && (
-        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 0.75rem 0' }}>
+        <ul className={s.docList}>
           {corpusDocuments.map((doc) => (
-            <li
-              key={doc.id}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '0.35rem 0.5rem',
-                borderRadius: 'var(--radius)',
-                marginBottom: '0.25rem',
-                background: 'var(--bg-elevated)',
-                fontSize: '0.85rem',
-              }}
-            >
+            <li key={doc.id} className={s.docItem}>
               <span>
                 <strong>{doc.title}</strong>
                 {doc.author_name && (
-                  <span style={{ color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                    by {doc.author_name}
-                  </span>
+                  <span className={s.docByline}>by {doc.author_name}</span>
                 )}
               </span>
               <button
-                style={{
-                  padding: '0.2rem 0.5rem',
-                  fontSize: '0.8rem',
-                  color: 'var(--danger)',
-                  borderColor: 'var(--danger)',
-                }}
+                className={s.removeBtn}
                 onClick={() => removeMutation.mutate(doc.id)}
                 disabled={removeMutation.isPending}
               >
@@ -133,11 +87,11 @@ function DocumentAssignment({
       )}
 
       {/* Add-document selector */}
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+      <div className={s.addRow}>
         <select
           value={selectedDocId}
           onChange={(e) => setSelectedDocId(e.target.value ? Number(e.target.value) : '')}
-          style={{ ...inputStyle, flex: '1 1 auto' }}
+          className={`${s.inputStyled} ${s.addSelect}`}
           disabled={availableDocuments.length === 0}
         >
           <option value="">
@@ -153,8 +107,7 @@ function DocumentAssignment({
           ))}
         </select>
         <button
-          className="primary"
-          style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}
+          className={`primary ${s.addBtn}`}
           onClick={handleAdd}
           disabled={selectedDocId === '' || addMutation.isPending}
         >
@@ -217,16 +170,16 @@ function CorpusCard({
   };
 
   return (
-    <div style={cardStyle}>
+    <div className="card">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div className={s.headerRow}>
         <div style={{ flex: 1 }}>
           {editing ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className={s.editFields}>
               <div>
                 <label>Name</label>
                 <input
-                  style={inputStyle}
+                  className={s.inputStyled}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -234,7 +187,7 @@ function CorpusCard({
               <div>
                 <label>Description</label>
                 <input
-                  style={inputStyle}
+                  className={s.inputStyled}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Optional description"
@@ -245,29 +198,21 @@ function CorpusCard({
             <>
               <h2 style={{ marginBottom: '0.25rem' }}>{corpus.name}</h2>
               {corpus.description && (
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                <p className="muted" style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>
                   {corpus.description}
                 </p>
               )}
             </>
           )}
 
-          <div
-            style={{
-              display: 'flex',
-              gap: '1.25rem',
-              fontSize: '0.8rem',
-              color: 'var(--text-muted)',
-              marginTop: '0.35rem',
-            }}
-          >
+          <div className={s.meta}>
             <span>{corpus.document_count} document{corpus.document_count !== 1 ? 's' : ''}</span>
             <span>Created {new Date(corpus.created_at).toLocaleDateString()}</span>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0, marginLeft: '1rem' }}>
+        <div className={s.actionBtns}>
           {editing ? (
             <>
               <button className="primary" onClick={handleSave} disabled={!name.trim()}>
@@ -282,11 +227,7 @@ function CorpusCard({
               </button>
               <button onClick={() => setEditing(true)}>Edit</button>
               <button
-                style={
-                  confirmDelete
-                    ? { background: 'var(--danger)', borderColor: 'var(--danger)', color: '#fff' }
-                    : {}
-                }
+                className={confirmDelete ? 'danger' : undefined}
                 onClick={handleDelete}
                 onBlur={() => setConfirmDelete(false)}
               >
@@ -328,18 +269,18 @@ function SampleCorpusImporter() {
   const selected = sampleCorpora.find((c: SampleCorpusInfo) => c.id === selectedId);
 
   return (
-    <div style={cardStyle}>
+    <div className="card">
       <h2 style={{ marginBottom: '0.75rem' }}>Import Sample Corpus</h2>
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+      <p className="muted" style={{ fontSize: '0.85rem', marginBottom: '0.75rem' }}>
         Import a standard AAAC benchmark problem set with pre-labeled training and unknown documents.
       </p>
-      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 300px' }}>
+      <div className={s.formRow}>
+        <div className={s.fieldSample}>
           <label>Sample Corpus</label>
           <select
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
-            style={inputStyle}
+            className={s.inputStyled}
             disabled={sampleCorpora.length === 0 || importMutation.isPending}
           >
             <option value="">
@@ -352,7 +293,7 @@ function SampleCorpusImporter() {
             ))}
           </select>
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+        <div className={s.submitWrap}>
           <button
             className="primary"
             onClick={() => importMutation.mutate(selectedId)}
@@ -364,13 +305,13 @@ function SampleCorpusImporter() {
       </div>
 
       {selected && !importMutation.isPending && !importMutation.isSuccess && (
-        <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+        <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
           {selected.description}
         </p>
       )}
 
       {importMutation.isSuccess && (
-        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--success, #4caf50)' }}>
+        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--success)' }}>
           Imported successfully! Created "{importMutation.data.known_corpus.name}" ({importMutation.data.known_corpus.document_count} docs) and "{importMutation.data.unknown_corpus.name}" ({importMutation.data.unknown_corpus.document_count} docs).
         </p>
       )}
@@ -434,21 +375,16 @@ export default function CorporaPage() {
 
   // ----- render ------------------------------------------------------------
 
-  const createCardStyle: React.CSSProperties = {
-    ...cardStyle,
-    marginBottom: '1.5rem',
-  };
-
   return (
     <div>
       <h1>Corpora</h1>
 
       {/* Create corpus section */}
-      <div style={createCardStyle}>
+      <div className="card" style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ marginBottom: '0.75rem' }}>Create Corpus</h2>
         <form onSubmit={handleCreate}>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 200px' }}>
+          <div className={s.formRow}>
+            <div className={s.fieldName}>
               <label>Name</label>
               <input
                 value={name}
@@ -456,7 +392,7 @@ export default function CorporaPage() {
                 placeholder="Corpus name"
               />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', flex: '2 1 300px' }}>
+            <div className={s.fieldDesc}>
               <label>Description (optional)</label>
               <input
                 value={description}
@@ -464,7 +400,7 @@ export default function CorporaPage() {
                 placeholder="Optional description"
               />
             </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <div className={s.submitWrap}>
               <button
                 className="primary"
                 type="submit"
@@ -487,7 +423,7 @@ export default function CorporaPage() {
       <SampleCorpusImporter />
 
       {/* Corpora list */}
-      {corporaLoading && <p style={{ color: 'var(--text-muted)' }}>Loading corpora...</p>}
+      {corporaLoading && <p className="muted">Loading corpora...</p>}
 
       {corporaError && (
         <p style={{ color: 'var(--danger)' }}>
@@ -496,7 +432,7 @@ export default function CorporaPage() {
       )}
 
       {!corporaLoading && !corporaError && corpora.length === 0 && (
-        <p style={{ color: 'var(--text-muted)' }}>
+        <p className="muted">
           No corpora yet. Create one above to get started.
         </p>
       )}

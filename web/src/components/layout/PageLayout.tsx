@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import s from './PageLayout.module.css';
 
 export default function PageLayout() {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className={s.layout}>
       <Navbar />
-      <main style={{ flex: 1, padding: '1.5rem 2rem', maxWidth: '1200px', width: '100%', margin: '0 auto' }}>
+      <hr className="divider" />
+      <main className={s.main}>
         <Outlet />
       </main>
     </div>

@@ -1,0 +1,349 @@
+/* ============================================================
+   mowen (墨紋) Shared Component Styles
+   ============================================================ */
+
+/* ---- Buttons ---- */
+
+button {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+button:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-glow);
+  border-color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 1px 3px rgba(200, 82, 60, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+button.primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.1) 100%
+    ),
+    var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow:
+    0 2px 8px rgba(200, 82, 60, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+button.danger {
+  background-color: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+button.danger:hover {
+  background-color: #b54545;
+  border-color: #b54545;
+}
+
+/* ---- Forms ---- */
+
+input, select, textarea {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.05) 0%,
+      transparent 30%
+    ),
+    var(--bg-elevated);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px var(--accent-glow),
+    0 0 12px rgba(200, 82, 60, 0.1);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-faint);
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+/* ---- Tables ---- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+tbody tr {
+  transition: background-color 0.15s;
+}
+
+tbody tr:hover {
+  background-color: rgba(50, 45, 40, 0.3);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---- Cards — ink-wash panels ---- */
+
+.card {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      transparent 40%
+    ),
+    var(--bg-surface);
+  border: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ---- Badges — seal/hanko style ---- */
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1.5px solid;
+}
+
+.badge--pending {
+  background: rgba(107, 99, 89, 0.08);
+  color: var(--text-muted);
+  border-color: var(--text-faint);
+}
+
+.badge--running {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(200, 82, 60, 0.15);
+}
+
+.badge--completed {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.badge--failed {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+/* ---- Dividers (brush-stroke) ---- */
+
+.divider {
+  border: none;
+  height: 3px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 5%,
+      rgba(61, 55, 50, 0.15) 8%,
+      rgba(61, 55, 50, 0.6) 15%,
+      var(--border-strong) 25%,
+      var(--border-strong) 50%,
+      rgba(61, 55, 50, 0.8) 70%,
+      rgba(61, 55, 50, 0.4) 85%,
+      rgba(61, 55, 50, 0.1) 93%,
+      transparent 96%,
+      transparent 100%
+    );
+  margin: 0;
+  opacity: 0.7;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='3'%3E%3Cfilter id='r'%3E%3CfeTurbulence baseFrequency='0.03 0.8' numOctaves='2' seed='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 1 1 1 1 1 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='400' height='3' filter='url(%23r)'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='3'%3E%3Cfilter id='r'%3E%3CfeTurbulence baseFrequency='0.03 0.8' numOctaves='2' seed='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 1 1 1 1 1 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='400' height='3' filter='url(%23r)'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+}
+
+/* ---- Stat cards ---- */
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card__value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+.stat-card__label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+/* ---- Score bars — ink wash ---- */
+
+.score-bar {
+  height: 14px;
+  background: var(--bg-inset);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(46, 42, 37, 0.5);
+}
+
+.score-bar__fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 2px;
+  position: relative;
+}
+
+/* Subtle paper-edge highlight on bar fill */
+.score-bar__fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent);
+  border-radius: 1px 1px 0 0;
+}
+
+/* ---- Progress bars ---- */
+
+.progress-bar {
+  height: 8px;
+  background: var(--bg-inset);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #d4735f);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* ---- Tags (pipeline component chips) ---- */
+
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  margin-right: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ---- Section (review panels) ---- */
+
+.section-panel {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-elevated);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.section-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}

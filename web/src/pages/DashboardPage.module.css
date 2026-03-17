@@ -1,0 +1,99 @@
+.statsRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* Ink ripple watermark behind stat cards */
+.statsRow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  height: 280px;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(ellipse at center,
+      transparent 18%,
+      rgba(200, 82, 60, 0.03) 20%,
+      transparent 22%,
+      transparent 34%,
+      rgba(200, 82, 60, 0.025) 36%,
+      transparent 38%,
+      transparent 50%,
+      rgba(200, 82, 60, 0.02) 52%,
+      transparent 54%,
+      transparent 66%,
+      rgba(200, 82, 60, 0.015) 68%,
+      transparent 70%
+    );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.statCard {
+  flex: 1 1 200px;
+  text-align: center;
+  margin-bottom: 0;
+  padding: 1.75rem 1.25rem;
+  position: relative;
+}
+
+.statCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent) 30%,
+    var(--accent) 70%,
+    transparent
+  );
+  opacity: 0.25;
+  border-radius: 1px;
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 30px rgba(200, 82, 60, 0.15);
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 0.6rem;
+}
+
+.quickActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.quickActionsLabel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-right: 0.5rem;
+}
+
+.dateCell {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}

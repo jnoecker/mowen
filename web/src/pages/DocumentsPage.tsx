@@ -2,6 +2,7 @@ import { useState, useRef, type FormEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { documentsApi } from '../api/documents';
 import type { DocumentResponse } from '../types';
+import s from './DocumentsPage.module.css';
 
 // ---------------------------------------------------------------------------
 // Inline-editable document row
@@ -44,22 +45,12 @@ function DocumentRow({
     setConfirmDelete(false);
   };
 
-  const inputStyle: React.CSSProperties = {
-    background: 'var(--bg-elevated)',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius)',
-    color: 'var(--text)',
-    padding: '0.3rem 0.5rem',
-    fontSize: '0.85rem',
-    width: '100%',
-  };
-
   return (
     <tr>
       <td>
         {editing ? (
           <input
-            style={inputStyle}
+            className={s.editInput}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -70,7 +61,7 @@ function DocumentRow({
       <td>
         {editing ? (
           <input
-            style={inputStyle}
+            className={s.editInput}
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Unknown"
@@ -85,7 +76,7 @@ function DocumentRow({
       <td>{doc.char_count.toLocaleString()} chars</td>
       <td>{new Date(doc.created_at).toLocaleDateString()}</td>
       <td>
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
+        <div className={s.actionsCell}>
           {editing ? (
             <>
               <button className="primary" onClick={save}>
@@ -97,11 +88,7 @@ function DocumentRow({
             <>
               <button onClick={() => setEditing(true)}>Edit</button>
               <button
-                style={
-                  confirmDelete
-                    ? { background: 'var(--danger)', borderColor: 'var(--danger)', color: '#fff' }
-                    : {}
-                }
+                className={confirmDelete ? 'danger' : undefined}
                 onClick={handleDelete}
                 onBlur={() => setConfirmDelete(false)}
               >
@@ -201,29 +188,6 @@ export default function DocumentsPage() {
     });
   };
 
-  // ----- styles ------------------------------------------------------------
-
-  const cardStyle: React.CSSProperties = {
-    background: 'var(--bg-surface)',
-    border: '1px solid var(--border)',
-    borderRadius: '8px',
-    padding: '1.25rem',
-    marginBottom: '1.5rem',
-  };
-
-  const formRowStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '0.75rem',
-    alignItems: 'flex-end',
-    flexWrap: 'wrap',
-  };
-
-  const fieldStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1 1 180px',
-  };
-
   // ----- render ------------------------------------------------------------
 
   return (
@@ -231,15 +195,15 @@ export default function DocumentsPage() {
       <h1>Documents</h1>
 
       {/* Upload section */}
-      <div style={cardStyle}>
+      <div className="card" style={{ marginBottom: '1.5rem' }}>
         <h2 style={{ marginBottom: '0.75rem' }}>Upload Document</h2>
         <form onSubmit={handleUpload}>
-          <div style={formRowStyle}>
-            <div style={fieldStyle}>
+          <div className={s.formRow}>
+            <div className={s.field}>
               <label>File</label>
               <input ref={fileRef} type="file" onChange={handleFileChange} />
             </div>
-            <div style={fieldStyle}>
+            <div className={s.field}>
               <label>Title</label>
               <input
                 value={title}
@@ -247,7 +211,7 @@ export default function DocumentsPage() {
                 placeholder="Document title"
               />
             </div>
-            <div style={fieldStyle}>
+            <div className={s.field}>
               <label>Author (optional)</label>
               <input
                 value={author}
@@ -255,7 +219,7 @@ export default function DocumentsPage() {
                 placeholder="Author name"
               />
             </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <div className={s.submitWrap}>
               <button
                 className="primary"
                 type="submit"
@@ -272,7 +236,7 @@ export default function DocumentsPage() {
             style={{
               marginTop: '0.75rem',
               fontSize: '0.85rem',
-              color: feedback.type === 'success' ? 'var(--success, #4ade80)' : 'var(--danger)',
+              color: feedback.type === 'success' ? 'var(--success)' : 'var(--danger)',
             }}
           >
             {feedback.message}
@@ -281,10 +245,10 @@ export default function DocumentsPage() {
       </div>
 
       {/* Documents table */}
-      <div style={cardStyle}>
+      <div className="card">
         <h2 style={{ marginBottom: '0.75rem' }}>All Documents</h2>
 
-        {isLoading && <p style={{ color: 'var(--text-muted)' }}>Loading documents...</p>}
+        {isLoading && <p className="muted">Loading documents...</p>}
 
         {fetchError && (
           <p style={{ color: 'var(--danger)' }}>
@@ -293,7 +257,7 @@ export default function DocumentsPage() {
         )}
 
         {!isLoading && !fetchError && documents.length === 0 && (
-          <p style={{ color: 'var(--text-muted)' }}>
+          <p className="muted">
             No documents yet. Upload one above to get started.
           </p>
         )}
