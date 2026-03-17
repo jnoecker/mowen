@@ -285,6 +285,86 @@ def convert_jgaap(
 
 
 # ---------------------------------------------------------------------------
+# mowen detect-changes
+# ---------------------------------------------------------------------------
+
+@app.command("detect-changes")
+def detect_changes(
+    document: Annotated[
+        Path,
+        typer.Argument(help="Path to a document file."),
+    ],
+    event_driver: Annotated[
+        list[str],
+        typer.Option(
+            "--event-driver", "-e",
+            help="Event driver. Repeatable.",
+        ),
+    ],
+    distance: Annotated[
+        str,
+        typer.Option("--distance", help="Distance function."),
+    ] = "cosine",
+    threshold: Annotated[
+        float,
+        typer.Option("--threshold", "-t", help="Change detection threshold (0-1)."),
+    ] = 0.5,
+    separator: Annotated[
+        str,
+        typer.Option("--separator", help="Paragraph separator."),
+    ] = "\n\n",
+    output_json: Annotated[
+        bool,
+        typer.Option("--json", help="Output as JSON."),
+    ] = False,
+) -> None:
+    """Detect style changes (authorship boundaries) in a document."""
+    from mowen.document_loaders import load_document
+    from mowen.pipeline import PipelineConfig
+    from mowen.style_change import detect_style_changes
+
+    doc = load_document(str(document))
+    config = PipelineConfig(
+        event_drivers=[_spec(e) for e in event_driver],
+        distance_function=_spec(distance),
+    )
+
+    result = detect_style_changes(
+        doc, config, threshold=threshold, separator=separator,
+    )
+
+    if output_json:
+        out = {
+            "document": result.document.title,
+            "paragraphs": len(result.paragraphs),
+            "boundaries": [
+                {
+                    "index": p.boundary_index,
+                    "score": round(p.score, 4),
+                    "is_change": p.is_change,
+                }
+                for p in result.predictions
+            ],
+        }
+        typer.echo(json.dumps(out, indent=2))
+    else:
+        typer.echo(f"\n  {result.document.title}")
+        typer.echo(f"  {len(result.paragraphs)} paragraphs, "
+                   f"{sum(1 for p in result.predictions if p.is_change)} "
+                   f"change(s) detected\n")
+        for i, para in enumerate(result.paragraphs):
+            preview = para[:60].replace("\n", " ")
+            typer.echo(f"  [{i + 1}] {preview}...")
+            if i < len(result.predictions):
+                p = result.predictions[i]
+                marker = "CHANGE" if p.is_change else "  same"
+                typer.echo(
+                    f"       --- {marker} "
+                    f"(score={p.score:.3f}) ---"
+                )
+
+
+# ---------------------------------------------------------------------------
 # mowen evaluate
 # ---------------------------------------------------------------------------
 
