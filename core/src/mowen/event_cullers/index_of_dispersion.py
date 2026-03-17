@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _compute_event_stats,
+    _per_document_histograms,
+    _top_n_events,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
-from mowen.types import Event, EventSet
+from mowen.types import EventSet
 
 
 @event_culler_registry.register("index_of_dispersion")
@@ -35,17 +40,11 @@ class IndexOfDispersion(EventCuller):
             self._kept_events = set()
             return
 
-        n_docs = len(doc_histograms)
-        event_iod: dict[Event, float] = {}
-        for event in all_events:
-            counts = [h.get(event, 0) for h in doc_histograms]
-            mean = sum(counts) / n_docs
-            if mean == 0.0:
-                event_iod[event] = 0.0
-                continue
-            variance = sum((c - mean) ** 2 for c in counts) / n_docs
-            event_iod[event] = variance / mean
+        stats = _compute_event_stats(all_events, doc_histograms)
+        event_iod = {
+            event: (st.variance / st.mean if st.mean != 0.0 else 0.0)
+            for event, st in stats.items()
+        }
 
         n: int = self.get_param("n")
-        ranked = sorted(event_iod, key=lambda e: event_iod[e], reverse=True)
-        self._kept_events = set(ranked[:n])
+        self._kept_events = _top_n_events(event_iod, n)

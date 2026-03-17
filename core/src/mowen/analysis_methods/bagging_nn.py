@@ -7,7 +7,6 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 from mowen.analysis_methods.base import NeighborAnalysisMethod, analysis_method_registry
-from mowen.exceptions import PipelineError
 from mowen.parameters import ParamDef
 from mowen.types import Attribution, Document, Event, Histogram
 
@@ -95,10 +94,7 @@ class BaggingNearestNeighbor(NeighborAnalysisMethod):
 
     def analyze(self, unknown_histogram: Histogram) -> list[Attribution]:
         """Return attributions ranked by fraction of nearest samples."""
-        if self.distance_function is None:
-            raise PipelineError(
-                "distance_function must be set before calling analyze()"
-            )
+        df = self._require_distance_function()
 
         if not self._samples:
             return []
@@ -108,7 +104,7 @@ class BaggingNearestNeighbor(NeighborAnalysisMethod):
         # Compute distance to every sample
         distances: list[tuple[str, float]] = []
         for author, sample_hist in self._samples:
-            dist = self.distance_function.distance(unknown_histogram, sample_hist)
+            dist = df.distance(unknown_histogram, sample_hist)
             distances.append((author, dist))
 
         # Sort and take top n_samples

@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+from mowen.event_drivers.base import EventDriver, event_driver_registry, generate_ngrams
 from mowen.parameters import ParamDef
-from mowen.types import Event, EventSet
-
-from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.types import EventSet
 
 
 @event_driver_registry.register("character_ngram")
@@ -34,7 +33,4 @@ class CharacterNGram(EventDriver):
 
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
-        events = EventSet()
-        for i in range(len(text) - n + 1):
-            events.append(Event(data=text[i : i + n]))
-        return events
+        return generate_ngrams(text, n, joiner="")

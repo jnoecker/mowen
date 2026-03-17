@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _per_document_histograms,
+    _top_n_events,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
 from mowen.types import Event, EventSet
 
@@ -55,5 +60,4 @@ class WeightedVariance(EventCuller):
             event_wvar[event] = weighted_var
 
         n: int = self.get_param("n")
-        ranked = sorted(event_wvar, key=lambda e: event_wvar[e], reverse=True)
-        self._kept_events = set(ranked[:n])
+        self._kept_events = _top_n_events(event_wvar, n)

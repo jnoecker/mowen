@@ -431,3 +431,111 @@ class TestHistogramIntersectionDistance:
         h2 = Histogram({Event("a"): 1, Event("b"): 3})  # total=4
         # min(3,1) + min(1,3) = 1 + 1 = 2. min_total=4. 1 - 2/4 = 0.5
         assert abs(d.distance(h1, h2) - 0.5) < 1e-6
+
+
+class TestKeseljWeightedDistance:
+    def test_identical(self):
+        d = distance_function_registry.create("keselj_weighted")
+        h = Histogram({Event("a"): 3, Event("b"): 1})
+        assert abs(d.distance(h, h)) < 1e-6
+
+    def test_symmetric(self):
+        d = distance_function_registry.create("keselj_weighted")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert abs(d.distance(h1, h2) - d.distance(h2, h1)) < 1e-6
+
+    def test_disjoint(self):
+        d = distance_function_registry.create("keselj_weighted")
+        h1 = Histogram({Event("a"): 1})
+        h2 = Histogram({Event("b"): 1})
+        # Each event: (1-0)/(1+0) = 1, squared = 1. Two events -> 2.0
+        assert abs(d.distance(h1, h2) - 2.0) < 1e-6
+
+    def test_non_negative(self):
+        d = distance_function_registry.create("keselj_weighted")
+        h1 = Histogram({Event("a"): 5, Event("b"): 2})
+        h2 = Histogram({Event("a"): 1, Event("c"): 3})
+        assert d.distance(h1, h2) >= 0.0
+
+
+class TestCrossEntropyDistance:
+    def test_identical(self):
+        d = distance_function_registry.create("cross_entropy")
+        h = Histogram({Event("a"): 1, Event("b"): 1})
+        # H(P, P) = -sum(p * log(p)) = entropy of P
+        val = d.distance(h, h)
+        expected = -2 * (0.5 * math.log(0.5))  # = log(2)
+        assert abs(val - expected) < 1e-6
+
+    def test_non_negative(self):
+        d = distance_function_registry.create("cross_entropy")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert d.distance(h1, h2) >= 0.0
+
+
+class TestSoergelDistance:
+    def test_identical(self):
+        d = distance_function_registry.create("soergel")
+        h = Histogram({Event("a"): 3, Event("b"): 1})
+        assert abs(d.distance(h, h)) < 1e-6
+
+    def test_symmetric(self):
+        d = distance_function_registry.create("soergel")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert abs(d.distance(h1, h2) - d.distance(h2, h1)) < 1e-6
+
+    def test_disjoint(self):
+        d = distance_function_registry.create("soergel")
+        h1 = Histogram({Event("a"): 1})
+        h2 = Histogram({Event("b"): 1})
+        # |1-0|+|0-1| / max(1,0)+max(0,1) = 2/2 = 1.0
+        assert abs(d.distance(h1, h2) - 1.0) < 1e-6
+
+    def test_range(self):
+        d = distance_function_registry.create("soergel")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert 0.0 <= d.distance(h1, h2) <= 1.0
+
+
+class TestMatusitaDistance:
+    def test_identical(self):
+        d = distance_function_registry.create("matusita")
+        h = Histogram({Event("a"): 3, Event("b"): 1})
+        assert abs(d.distance(h, h)) < 1e-6
+
+    def test_symmetric(self):
+        d = distance_function_registry.create("matusita")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert abs(d.distance(h1, h2) - d.distance(h2, h1)) < 1e-6
+
+    def test_related_to_hellinger(self):
+        """Matusita should be exactly sqrt(2) * Hellinger."""
+        m = distance_function_registry.create("matusita")
+        h_dist = distance_function_registry.create("hellinger")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert abs(m.distance(h1, h2) - math.sqrt(2) * h_dist.distance(h1, h2)) < 1e-6
+
+
+class TestWaveHedgesDistance:
+    def test_identical(self):
+        d = distance_function_registry.create("wave_hedges")
+        h = Histogram({Event("a"): 3, Event("b"): 1})
+        assert abs(d.distance(h, h)) < 1e-6
+
+    def test_symmetric(self):
+        d = distance_function_registry.create("wave_hedges")
+        h1 = Histogram({Event("a"): 3, Event("b"): 1})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3})
+        assert abs(d.distance(h1, h2) - d.distance(h2, h1)) < 1e-6
+
+    def test_non_negative(self):
+        d = distance_function_registry.create("wave_hedges")
+        h1 = Histogram({Event("a"): 5, Event("b"): 2, Event("c"): 3})
+        h2 = Histogram({Event("a"): 1, Event("b"): 3, Event("c"): 2})
+        assert d.distance(h1, h2) >= 0.0

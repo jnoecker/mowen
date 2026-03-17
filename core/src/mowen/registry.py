@@ -56,3 +56,30 @@ class Registry[T]:
     def names(self) -> list[str]:
         """Return all registered component names."""
         return list(self._components.keys())
+
+    def describe_components(self) -> list[dict[str, Any]]:
+        """Return structured metadata for all registered components."""
+        result: list[dict[str, Any]] = []
+        for name, cls in self._components.items():
+            entry: dict[str, Any] = {
+                "name": name,
+                "display_name": getattr(cls, "display_name", name),
+                "description": getattr(cls, "description", ""),
+            }
+            if isinstance(cls, type) and issubclass(cls, Configurable):
+                pdefs = cls.param_defs()
+                if pdefs:
+                    entry["params"] = [
+                        {
+                            "name": p.name,
+                            "type": p.param_type.__name__,
+                            "default": p.default,
+                            "description": p.description,
+                            "min_value": p.min_value,
+                            "max_value": p.max_value,
+                            "choices": p.choices,
+                        }
+                        for p in pdefs
+                    ]
+            result.append(entry)
+        return result

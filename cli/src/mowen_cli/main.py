@@ -58,6 +58,19 @@ def _build_config(
     )
 
 
+def _make_progress_cb(output_json: bool):
+    """Create a terminal progress-bar callback, or None if not appropriate."""
+    if not output_json and sys.stderr.isatty():
+        def on_progress(frac: float, msg: str) -> None:
+            bar_len = 30
+            filled = int(bar_len * frac)
+            bar = "█" * filled + "░" * (bar_len - filled)
+            typer.echo(f"\r  {bar} {frac:5.0%}  {msg:<40}", err=True, nl=False)
+
+        return on_progress
+    return None
+
+
 # ---------------------------------------------------------------------------
 # mowen run
 # ---------------------------------------------------------------------------
@@ -119,17 +132,7 @@ def run(
     # Build pipeline config
     config = _build_config(event_driver, distance, analysis, canonicizer, culler)
 
-    # Progress callback for terminal
-    if not output_json and sys.stderr.isatty():
-        def on_progress(frac: float, msg: str) -> None:
-            bar_len = 30
-            filled = int(bar_len * frac)
-            bar = "█" * filled + "░" * (bar_len - filled)
-            typer.echo(f"\r  {bar} {frac:5.0%}  {msg:<40}", err=True, nl=False)
-
-        progress_cb = on_progress
-    else:
-        progress_cb = None
+    progress_cb = _make_progress_cb(output_json)
 
     # Execute
     try:
@@ -197,51 +200,30 @@ def list_components(
     selected = {category: registries[category]} if category else registries
 
     if output_json:
-        out: dict = {}
-        for cat_name, registry in selected.items():
-            out[cat_name] = []
-            for name, cls in registry.list_all().items():
-                entry: dict = {
-                    "name": name,
-                    "display_name": getattr(cls, "display_name", name),
-                    "description": getattr(cls, "description", ""),
-                }
-                if hasattr(cls, "param_defs"):
-                    params = cls.param_defs()
-                    if params:
-                        entry["params"] = [
-                            {
-                                "name": p.name,
-                                "type": p.param_type.__name__,
-                                "default": p.default,
-                                "description": p.description,
-                            }
-                            for p in params
-                        ]
-                out[cat_name].append(entry)
+        out: dict = {
+            cat_name: registry.describe_components()
+            for cat_name, registry in selected.items()
+        }
         typer.echo(json.dumps(out, indent=2))
     else:
         for cat_name, registry in selected.items():
             typer.echo(f"\n  {cat_name}")
             typer.echo(f"  {'═' * 50}")
-            for name, cls in registry.list_all().items():
-                display = getattr(cls, "display_name", name)
-                desc = getattr(cls, "description", "")
-                typer.echo(f"    {name:<30} {display}")
-                if desc:
-                    typer.echo(f"      {desc}")
-                if hasattr(cls, "param_defs"):
-                    for p in cls.param_defs():
-                        constraint = ""
-                        if p.choices:
-                            constraint = f"  choices={p.choices}"
-                        elif p.min_value is not None or p.max_value is not None:
-                            lo = p.min_value if p.min_value is not None else ""
-                            hi = p.max_value if p.max_value is not None else ""
-                            constraint = f"  range=[{lo}, {hi}]"
-                        typer.echo(
-                            f"        --{p.name} ({p.param_type.__name__}, default={p.default}){constraint}"
-                        )
+            for comp in registry.describe_components():
+                typer.echo(f"    {comp['name']:<30} {comp['display_name']}")
+                if comp["description"]:
+                    typer.echo(f"      {comp['description']}")
+                for p in comp.get("params", []):
+                    constraint = ""
+                    if p["choices"]:
+                        constraint = f"  choices={p['choices']}"
+                    elif p["min_value"] is not None or p["max_value"] is not None:
+                        lo = p["min_value"] if p["min_value"] is not None else ""
+                        hi = p["max_value"] if p["max_value"] is not None else ""
+                        constraint = f"  range=[{lo}, {hi}]"
+                    typer.echo(
+                        f"        --{p['name']} ({p['type']}, default={p['default']}){constraint}"
+                    )
 
 
 # ---------------------------------------------------------------------------
@@ -364,16 +346,7 @@ def evaluate(
 
     config = _build_config(event_driver, distance, analysis, canonicizer, culler)
 
-    # Progress callback
-    if not output_json and sys.stderr.isatty():
-        def on_progress(frac: float, msg: str) -> None:
-            bar_len = 30
-            filled = int(bar_len * frac)
-            bar = "█" * filled + "░" * (bar_len - filled)
-            typer.echo(f"\r  {bar} {frac:5.0%}  {msg:<40}", err=True, nl=False)
-        progress_cb = on_progress
-    else:
-        progress_cb = None
+    progress_cb = _make_progress_cb(output_json)
 
     # Run evaluation
     try:

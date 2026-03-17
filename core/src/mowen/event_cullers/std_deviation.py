@@ -5,7 +5,11 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _aggregate_counts, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _aggregate_counts,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
 from mowen.types import EventSet
 

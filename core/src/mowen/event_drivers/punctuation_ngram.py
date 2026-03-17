@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import string
 
-from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.event_drivers.base import EventDriver, event_driver_registry, generate_ngrams
 from mowen.parameters import ParamDef
-from mowen.types import Event, EventSet
+from mowen.types import EventSet
 
 
 @event_driver_registry.register("punctuation_ngram")
@@ -29,7 +29,4 @@ class PunctuationNGram(EventDriver):
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
         punct_chars = [ch for ch in text if ch in string.punctuation]
-        events = EventSet()
-        for i in range(len(punct_chars) - n + 1):
-            events.append(Event(data="".join(punct_chars[i:i + n])))
-        return events
+        return generate_ngrams(punct_chars, n, joiner="")

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+from mowen.event_drivers.base import EventDriver, event_driver_registry, generate_ngrams
 from mowen.parameters import ParamDef
 from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
-from mowen.types import Event, EventSet
-
-from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.types import EventSet
 
 
 @event_driver_registry.register("word_ngram")
@@ -37,8 +36,4 @@ class WordNGram(EventDriver):
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
         tok: str = self.get_param("tokenizer")
-        words = tokenize_text(text, tok)
-        events = EventSet()
-        for i in range(len(words) - n + 1):
-            events.append(Event(data=" ".join(words[i : i + n])))
-        return events
+        return generate_ngrams(tokenize_text(text, tok), n)

@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from mowen.analysis_methods.base import NeighborAnalysisMethod, analysis_method_registry
-from mowen.exceptions import PipelineError
 from mowen.types import Attribution, Histogram
 
 
@@ -29,16 +28,13 @@ class NearestNeighbor(NeighborAnalysisMethod):
 
     def analyze(self, unknown_histogram: Histogram) -> list[Attribution]:
         """Return attributions ranked by minimum distance per author."""
-        if self.distance_function is None:
-            raise PipelineError(
-                "distance_function must be set before calling analyze()"
-            )
+        df = self._require_distance_function()
 
         # Compute distance from unknown to every known document.
         best_per_author: dict[str, float] = {}
         for doc, hist in self._known_docs:
             author = doc.author or ""
-            dist = self.distance_function.distance(unknown_histogram, hist)
+            dist = df.distance(unknown_histogram, hist)
             if author not in best_per_author or dist < best_per_author[author]:
                 best_per_author[author] = dist
 

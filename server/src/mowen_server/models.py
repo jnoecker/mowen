@@ -51,7 +51,8 @@ class Corpus(Base):
         "Document", secondary="corpus_documents", back_populates="corpora"
     )
     experiments = relationship(
-        "ExperimentCorpus", back_populates="corpus"
+        "ExperimentCorpus", back_populates="corpus",
+        cascade="all, delete-orphan", passive_deletes=True,
     )
 
 

@@ -26,11 +26,10 @@ class SortedCharacterNGram(EventDriver):
 
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
-        events = EventSet()
-        for i in range(len(text) - n + 1):
-            gram = "".join(sorted(text[i:i + n]))
-            events.append(Event(data=gram))
-        return events
+        return EventSet(
+            Event(data="".join(sorted(text[i:i + n])))
+            for i in range(len(text) - n + 1)
+        )
 
 
 @event_driver_registry.register("sorted_word_ngram")
@@ -54,8 +53,7 @@ class SortedWordNGram(EventDriver):
         n: int = self.get_param("n")
         tok: str = self.get_param("tokenizer")
         words = tokenize_text(text, tok)
-        events = EventSet()
-        for i in range(len(words) - n + 1):
-            gram = " ".join(sorted(words[i:i + n]))
-            events.append(Event(data=gram))
-        return events
+        return EventSet(
+            Event(data=" ".join(sorted(words[i:i + n])))
+            for i in range(len(words) - n + 1)
+        )
