@@ -39,7 +39,7 @@ mowen-server
 # Open http://localhost:8000
 ```
 
-You should see 647+ tests passing and the web UI loading.
+You should see 658+ tests passing and the web UI loading.
 
 ### 3. Optional dependencies
 
@@ -105,7 +105,8 @@ mowen/
 │       ├── storage.py       Document file storage
 │       └── routers/         API endpoints
 ├── web/                     React/TypeScript frontend (Vite)
-├── tests/                   pytest test suite
+├── tests/                   pytest test suite (658+)
+├── scripts/                 Corpus build scripts
 └── JGAAP/                   Reference Java implementation (gitignored)
 ```
 
@@ -189,6 +190,20 @@ methods.
 Drop a text file (one word per line, `#` comments allowed) in
 `core/src/mowen/data/function_words/<language>.txt`. It becomes available
 as `function_words` driver with `language=<language>`.
+
+### Add or rebuild sample corpora
+
+20 sample corpora are bundled under `core/src/mowen/data/sample_corpora/`.
+The 7 non-AAAC corpora (Federalist Papers, Shakespeare, etc.) are sourced
+from Project Gutenberg and can be rebuilt:
+
+```bash
+python scripts/build_sample_corpora.py
+```
+
+To add a new corpus, add a directory with `.txt` files under
+`sample_corpora/` and add an entry to `manifest.json` with `id`, `name`,
+`description`, `known`, and `unknown` arrays.
 
 ### Run a single test file
 

@@ -105,16 +105,22 @@ Generous padding throughout — cards 1.5rem, tables 0.75rem, main content area 
 
 ## Logo & Favicon
 
-### Favicon — Ink Ripple
-Hand-crafted SVG: dark charcoal background with 3 slightly irregular concentric elliptical rings in warm off-white (varying opacity) and a solid cinnabar center dot. The rings are offset and rotated slightly to feel brush-drawn, not mechanical.
+### Logo — Scroll, Brush & Seal
+AI-generated illustration of an aged parchment scroll with ornate purple/gold finials, a turquoise calligraphy brush laid diagonally across it, and a cinnabar wax seal at bottom-left embossed with the character 墨 in seal script (篆書). Black background, transparent PNG.
+
+### Favicon — 墨 Seal Character
+SVG with dark charcoal background (`#1e1b18`). The vectorized 墨 character in seal script, rendered in cinnabar (`#c8523c`). Scaled to fit a 32x32 viewport with padding. Source: `web/src/assets/seal.svg` (standalone vectorized character).
+
+### Navbar brand
+The full scroll logo at 2.6rem height alongside the "mowen (墨紋)" wordmark in Cormorant Garamond + Noto Serif JP.
 
 ### AI generation prompts (for future logo work)
 
-**Primary mark:**
-> Minimalist logo mark, concentric ripple pattern like a single drop of black ink falling into still water, viewed from above. Three to four elliptical rings radiating outward with organic irregularity — not perfect circles but slightly calligraphic, as if drawn with a brush. Monochrome with subtle warm charcoal tones. Clean vector style. Dark background (#141210). No text.
+**Logo with embossed seal:**
+> Ornate fantasy scroll with turquoise calligraphy brush, aged parchment texture, purple and gold finials. Red cinnabar wax seal at bottom-left with the Chinese character 墨 (ink) embossed in seal script (篆書). Black background. Square format, transparent PNG. No text besides the seal character.
 
 **App icon (512x512):**
-> App icon for 'mowen', an authorship attribution tool. Square with rounded corners. Dark warm charcoal background (#1e1b18). Center: ink ripple pattern in warm off-white (#e8e0d4) with a small solid cinnabar (#c8523c) circle at center. 3-4 ripple rings. Japanese/Chinese ink art aesthetic.
+> App icon for 'mowen', an authorship attribution tool. Square with rounded corners. Dark warm charcoal background (#1e1b18). Center: 墨 character in seal script, cinnabar red (#c8523c). Clean, modern, distinctive. Japanese/Chinese ink art aesthetic.
 
 ## Architecture
 

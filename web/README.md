@@ -41,6 +41,7 @@ The production build is served by the FastAPI backend from `web/dist/`.
 |-------|------|---------|
 | `/` | Dashboard | Overview |
 | `/documents` | Documents | Upload and manage documents |
-| `/corpora` | Corpora | Create document collections |
-| `/experiments/new` | Experiment Builder | Configure and submit experiments |
+| `/corpora` | Corpora | Create document collections, import samples |
+| `/experiments` | Experiments | List, clone, and delete experiments |
+| `/experiments/new` | Experiment Builder | Configure with presets and submit |
 | `/experiments/:id/results` | Results | View attribution results |

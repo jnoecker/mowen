@@ -18,11 +18,13 @@ Attribution Program.
 
 ## Features
 
-- **96 pipeline components** across 5 stages, all pluggable via a registry system
+- **95 pipeline components** across 5 stages, all pluggable via a registry system
 - **34 event drivers** — character/word n-grams, skip-grams, sorted n-grams, POS tags, NER, Porter stemmer, syllables, function words, WordNet definitions, transformer embeddings, and more
 - **22 distance functions** — cosine, Manhattan, KL divergence, chi-square, Keselj weighted, cross-entropy, Hellinger, and more
 - **15 analysis methods** — nearest neighbor, KNN, SVM, Random Forest, Logistic Regression, MLP, Burrows' Delta, Markov Chain, Bagging NN, Thin Cross-Entropy, and more
 - **14 event cullers** and **10 canonicizers** for feature selection and text normalization
+- **20 bundled sample corpora** — Federalist Papers, Shakespeare, Brontë Sisters, Pauline Epistles, Homer, Russian Literature, State of the Union, and 13 AAAC benchmark problems
+- **6 stylometry presets** — Burrows' Delta, Cosine Delta, Character N-gram Profile, Function Words, Multi-Feature SVM, and Transformer Embeddings
 - **Leave-one-out and k-fold cross-validation** with precision, recall, F1, and confusion matrix
 - **Multi-language support** — pluggable tokenizer framework with Chinese segmentation (jieba) and function word lists for 10 languages
 - **4 document loaders** — plain text, PDF, DOCX, HTML
@@ -131,13 +133,14 @@ core/       Python library (mowen)
     analysis_methods/    15 classifiers
     tokenizers/          Pluggable word segmentation (whitespace, jieba)
     document_loaders/    File format readers (txt, pdf, docx, html)
-    data/                Function word lists for 10 languages
+    data/                Function word lists + 20 sample corpora
     compat/              JGAAP CSV import
 
 cli/        Command-line interface (mowen-cli)
 server/     FastAPI backend + static frontend serving (mowen-server)
 web/        React/TypeScript frontend
-tests/      647 tests (pytest)
+tests/      658 tests (pytest)
+scripts/    Corpus build scripts
 ```
 
 ## Development
