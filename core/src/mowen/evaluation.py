@@ -75,6 +75,8 @@ class EvaluationResult:
     confusion_matrix: dict[str, dict[str, int]]
     eer: float | None = None
     c_at_1: float | None = None
+    f05u: float | None = None
+    brier: float | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -167,6 +169,89 @@ def _compute_c_at_1(predictions: list[Prediction]) -> float | None:
     return (nc + nu * nc / n) / n if n > 0 else None
 
 
+def _compute_f05u(predictions: list[Prediction]) -> float | None:
+    """Compute F_0.5u metric (Bevendorff et al., 2019).
+
+    A precision-weighted F-measure for verification that rewards leaving
+    hard cases unanswered (score = 0.5).  Non-answers are treated as
+    neither correct nor incorrect but earn a bonus proportional to the
+    overall accuracy.
+
+    For closed-set attribution where all predictions are answered,
+    this equals the standard F_0.5 on the binary correct/incorrect
+    framing.
+    """
+    if not predictions:
+        return None
+
+    n = len(predictions)
+    # Count non-answers: top score is exactly 0.5 (verification abstention)
+    nu = 0
+    if predictions[0].scores:
+        nu = sum(1 for p in predictions if p.scores and p.scores[0][1] == 0.5)
+
+    nc = sum(
+        1 for p in predictions if p.true_author == p.predicted_author
+    )
+    # Answered predictions only
+    n_answered = n - nu
+    if n_answered == 0:
+        # All unanswered — score based on c@1 logic
+        return nc / n if n > 0 else None
+
+    tp = nc
+    fp = n_answered - nc
+    fn = 0  # in the binary framing, fn = missed positives
+
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / n if n > 0 else 0.0
+
+    beta_sq = 0.25  # beta = 0.5, beta^2 = 0.25
+    if precision + recall == 0:
+        f05 = 0.0
+    else:
+        f05 = (1 + beta_sq) * precision * recall / (beta_sq * precision + recall)
+
+    # Credit for non-answers (same bonus structure as c@1)
+    if n > 0 and nu > 0:
+        answered_acc = nc / n_answered if n_answered > 0 else 0.0
+        f05u = (n_answered * f05 + nu * answered_acc) / n
+    else:
+        f05u = f05
+
+    return f05u
+
+
+def _compute_brier(predictions: list[Prediction]) -> float | None:
+    """Compute complement of Brier score for calibration quality.
+
+    Brier complement = 1 - (1/n) * sum((confidence - label)^2)
+
+    where confidence is the score assigned to the predicted (top-ranked)
+    author, normalized to [0, 1], and label is 1 if the prediction is
+    correct, 0 otherwise.  Higher is better; 1.0 is perfect.
+
+    Returns None if ranking scores are unavailable.
+    """
+    if not predictions or not predictions[0].scores:
+        return None
+
+    n = len(predictions)
+    brier_sum = 0.0
+
+    for p in predictions:
+        if not p.scores:
+            return None
+        # Top-ranked author's score as confidence
+        confidence = p.scores[0][1]
+        # Clamp to [0, 1] for methods that may produce scores outside range
+        confidence = max(0.0, min(1.0, confidence))
+        label = 1.0 if p.true_author == p.predicted_author else 0.0
+        brier_sum += (confidence - label) ** 2
+
+    return 1.0 - brier_sum / n
+
+
 def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
     """Compute aggregate metrics from fold results."""
     # Flatten predictions
@@ -202,6 +287,8 @@ def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
 
     eer = _compute_eer(all_preds)
     c1 = _compute_c_at_1(all_preds)
+    f05u = _compute_f05u(all_preds)
+    brier = _compute_brier(all_preds)
 
     return EvaluationResult(
         fold_results=fold_results,
@@ -213,6 +300,8 @@ def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
         confusion_matrix=cm,
         eer=eer,
         c_at_1=c1,
+        f05u=f05u,
+        brier=brier,
     )
 
 
@@ -422,6 +511,10 @@ def write_results_csv(
             w.writerow(["summary", "eer", f"{result.eer:.6f}"])
         if result.c_at_1 is not None:
             w.writerow(["summary", "c_at_1", f"{result.c_at_1:.6f}"])
+        if result.f05u is not None:
+            w.writerow(["summary", "f05u", f"{result.f05u:.6f}"])
+        if result.brier is not None:
+            w.writerow(["summary", "brier", f"{result.brier:.6f}"])
         w.writerow([])
 
         # Per-author

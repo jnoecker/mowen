@@ -12,8 +12,10 @@ from mowen.evaluation import (
     EvaluationResult,
     FoldResult,
     Prediction,
+    _compute_brier,
     _compute_c_at_1,
     _compute_eer,
+    _compute_f05u,
     _compute_metrics,
     k_fold,
     leave_one_out,
@@ -208,6 +210,111 @@ class TestCAt1:
         result = _compute_metrics(folds)
         assert result.c_at_1 is not None
         assert result.c_at_1 == 1.0
+
+
+# ---------------------------------------------------------------------------
+# F_0.5u metric
+# ---------------------------------------------------------------------------
+
+class TestF05u:
+    def test_perfect_accuracy(self):
+        """All correct predictions yield f05u = 1.0."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9), ("B", 0.1))),
+            Prediction("d2", "B", "B", (("B", 0.9), ("A", 0.1))),
+        ]
+        f05u = _compute_f05u(preds)
+        assert f05u == pytest.approx(1.0)
+
+    def test_zero_accuracy(self):
+        """All wrong predictions yield f05u = 0.0."""
+        preds = [
+            Prediction("d1", "A", "B", (("B", 0.9), ("A", 0.1))),
+            Prediction("d2", "B", "A", (("A", 0.9), ("B", 0.1))),
+        ]
+        f05u = _compute_f05u(preds)
+        assert f05u == pytest.approx(0.0)
+
+    def test_partial_accuracy(self):
+        """Partial accuracy gives f05u between 0 and 1."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9),)),
+            Prediction("d2", "A", "B", (("B", 0.9),)),
+            Prediction("d3", "B", "B", (("B", 0.9),)),
+            Prediction("d4", "B", "B", (("B", 0.9),)),
+        ]
+        f05u = _compute_f05u(preds)
+        assert f05u is not None
+        assert 0.0 < f05u < 1.0
+
+    def test_none_for_empty(self):
+        assert _compute_f05u([]) is None
+
+    def test_in_compute_metrics(self):
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9),)),
+            Prediction("d2", "B", "B", (("B", 0.9),)),
+        ]
+        folds = [FoldResult(fold_index=0, predictions=preds)]
+        result = _compute_metrics(folds)
+        assert result.f05u is not None
+        assert result.f05u == pytest.approx(1.0)
+
+
+# ---------------------------------------------------------------------------
+# Brier score
+# ---------------------------------------------------------------------------
+
+class TestBrier:
+    def test_perfect_with_high_confidence(self):
+        """Correct predictions with high confidence → Brier near 1.0."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.95), ("B", 0.05))),
+            Prediction("d2", "B", "B", (("B", 0.95), ("A", 0.05))),
+        ]
+        brier = _compute_brier(preds)
+        assert brier is not None
+        assert brier > 0.99
+
+    def test_wrong_with_high_confidence(self):
+        """Wrong predictions with high confidence → low Brier."""
+        preds = [
+            Prediction("d1", "A", "B", (("B", 0.95), ("A", 0.05))),
+            Prediction("d2", "B", "A", (("A", 0.95), ("B", 0.05))),
+        ]
+        brier = _compute_brier(preds)
+        assert brier is not None
+        assert brier < 0.2
+
+    def test_uncertain_predictions(self):
+        """Scores near 0.5 give moderate Brier regardless of correctness."""
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.5), ("B", 0.5))),
+            Prediction("d2", "B", "B", (("B", 0.5), ("A", 0.5))),
+        ]
+        brier = _compute_brier(preds)
+        assert brier is not None
+        assert 0.7 < brier < 0.8  # 1 - 0.5^2 = 0.75
+
+    def test_none_for_empty(self):
+        assert _compute_brier([]) is None
+
+    def test_none_for_no_scores(self):
+        preds = [
+            Prediction("d1", "A", "A", ()),
+            Prediction("d2", "B", "B", ()),
+        ]
+        assert _compute_brier(preds) is None
+
+    def test_in_compute_metrics(self):
+        preds = [
+            Prediction("d1", "A", "A", (("A", 0.9), ("B", 0.1))),
+            Prediction("d2", "B", "B", (("B", 0.9), ("A", 0.1))),
+        ]
+        folds = [FoldResult(fold_index=0, predictions=preds)]
+        result = _compute_metrics(folds)
+        assert result.brier is not None
+        assert result.brier > 0.9
 
 
 # ---------------------------------------------------------------------------

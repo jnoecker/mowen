@@ -409,6 +409,10 @@ def evaluate(
             out["eer"] = result.eer
         if result.c_at_1 is not None:
             out["c_at_1"] = result.c_at_1
+        if result.f05u is not None:
+            out["f05u"] = result.f05u
+        if result.brier is not None:
+            out["brier"] = result.brier
         typer.echo(json.dumps(out, indent=2))
     else:
         n_docs = sum(fr.total for fr in result.fold_results)
@@ -435,12 +439,20 @@ def evaluate(
         )
 
         # Verification-specific metrics
-        if result.eer is not None or result.c_at_1 is not None:
+        has_verif = any(
+            v is not None for v in
+            (result.eer, result.c_at_1, result.f05u, result.brier)
+        )
+        if has_verif:
             parts = []
             if result.eer is not None:
                 parts.append(f"EER={result.eer:.4f}")
             if result.c_at_1 is not None:
                 parts.append(f"c@1={result.c_at_1:.4f}")
+            if result.f05u is not None:
+                parts.append(f"F0.5u={result.f05u:.4f}")
+            if result.brier is not None:
+                parts.append(f"Brier={result.brier:.4f}")
             typer.echo(f"  Verification: {'  '.join(parts)}")
 
         # Confusion matrix

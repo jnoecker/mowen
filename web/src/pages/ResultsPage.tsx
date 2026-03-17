@@ -173,6 +173,70 @@ function computeMRR(evaluated: ExperimentResultResponse[]): number | null {
   return total / evaluated.length;
 }
 
+/**
+ * Compute F_0.5u: precision-weighted F-measure that credits non-answers.
+ * Non-answers are predictions where verification_threshold is set and
+ * the top score equals 0.5.
+ */
+function computeF05u(evaluated: ExperimentResultResponse[]): number | null {
+  if (evaluated.length === 0) return null;
+
+  const n = evaluated.length;
+  let nc = 0;
+  let nu = 0;
+  for (const r of evaluated) {
+    const predicted = r.rankings.length > 0 ? r.rankings[0].author : null;
+    if (predicted === r.unknown_document.author_name) nc++;
+    if (r.verification_threshold != null && r.rankings.length > 0 && r.rankings[0].score === 0.5) nu++;
+  }
+
+  const nAnswered = n - nu;
+  if (nAnswered === 0) return nc / n;
+
+  const tp = nc;
+  const fp = nAnswered - nc;
+  const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
+  const recall = n > 0 ? tp / n : 0;
+  const betaSq = 0.25;
+  const f05 = precision + recall > 0
+    ? (1 + betaSq) * precision * recall / (betaSq * precision + recall)
+    : 0;
+
+  if (nu > 0) {
+    const answeredAcc = nAnswered > 0 ? nc / nAnswered : 0;
+    return (nAnswered * f05 + nu * answeredAcc) / n;
+  }
+  return f05;
+}
+
+/**
+ * Brier score complement: 1 - mean((confidence - label)^2).
+ * Higher is better. Rewards well-calibrated probability outputs.
+ */
+function computeBrier(evaluated: ExperimentResultResponse[]): number | null {
+  if (evaluated.length === 0) return null;
+  // Only compute when scores are available (non-empty rankings)
+  if (evaluated.some((r) => r.rankings.length === 0)) return null;
+
+  const lowerIsBetter = evaluated[0]?.lower_is_better ?? true;
+  let brierSum = 0;
+  for (const r of evaluated) {
+    const trueAuthor = r.unknown_document.author_name!;
+    const predicted = r.rankings[0].author;
+    let confidence = r.rankings[0].score;
+    // For distance-based methods, lower score = more confident,
+    // so we invert by taking 1 - normalized score
+    if (lowerIsBetter) {
+      const maxScore = Math.max(...r.rankings.map((rk) => rk.score));
+      confidence = maxScore > 0 ? 1 - confidence / maxScore : 0;
+    }
+    confidence = Math.max(0, Math.min(1, confidence));
+    const label = predicted === trueAuthor ? 1 : 0;
+    brierSum += (confidence - label) ** 2;
+  }
+  return 1 - brierSum / evaluated.length;
+}
+
 // ---------------------------------------------------------------------------
 // Performance Summary (shown when ground truth is available)
 // ---------------------------------------------------------------------------
@@ -200,6 +264,8 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
 
   const auroc = computeAUROC(evaluated);
   const mrr = computeMRR(evaluated);
+  const f05u = computeF05u(evaluated);
+  const brier = computeBrier(evaluated);
 
   // Verification metrics (only when threshold is present)
   const hasVerification = evaluated.some((r) => r.verification_threshold != null);
@@ -248,6 +314,18 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
           <div className={s.metricCell}>
             <div className={s.metricValue} style={{ color: 'var(--text)' }}>{mrr.toFixed(3)}</div>
             <div className={s.metricLabel}>MRR</div>
+          </div>
+        )}
+        {f05u != null && (
+          <div className={s.metricCell}>
+            <div className={s.metricValue} style={{ color: 'var(--text)' }}>{f05u.toFixed(3)}</div>
+            <div className={s.metricLabel}>F0.5u</div>
+          </div>
+        )}
+        {brier != null && (
+          <div className={s.metricCell}>
+            <div className={s.metricValue} style={{ color: 'var(--text)' }}>{brier.toFixed(3)}</div>
+            <div className={s.metricLabel}>Brier</div>
           </div>
         )}
         <div className={s.metricCell}>
