@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.types import Event, EventSet
-
 from mowen.event_drivers.base import SpacyEventDriver, event_driver_registry
+from mowen.types import Event, EventSet
 
 
 @event_driver_registry.register("pos_tags")

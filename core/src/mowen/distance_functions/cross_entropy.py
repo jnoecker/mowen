@@ -5,7 +5,12 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from mowen.distance_functions.base import LOG_EPSILON, DistanceFunction, _iter_relative_frequencies, distance_function_registry
+from mowen.distance_functions.base import (
+    LOG_EPSILON,
+    DistanceFunction,
+    _iter_relative_frequencies,
+    distance_function_registry,
+)
 from mowen.types import Histogram
 
 

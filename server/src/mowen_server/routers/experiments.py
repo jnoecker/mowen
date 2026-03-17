@@ -12,11 +12,11 @@ from ..db import get_db, get_or_404
 from ..models import CorpusDocument, Experiment, ExperimentCorpus, ExperimentResult
 from ..runner import _make_session, experiment_runner
 from ..schemas import (
+    DocumentResponse,
     ExperimentConfig,
     ExperimentCreate,
     ExperimentResponse,
     ExperimentResultResponse,
-    DocumentResponse,
     RankingEntry,
 )
 

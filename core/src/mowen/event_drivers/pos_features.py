@@ -5,14 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from mowen.event_drivers.base import (
-    SpacyEventDriver,
     _SPACY_MODEL_PARAM,
+    SpacyEventDriver,
     event_driver_registry,
     generate_ngrams,
 )
 from mowen.parameters import ParamDef
 from mowen.types import Event, EventSet
-
 
 # Coarse POS mapping: maps fine-grained Universal POS tags to broad categories.
 # Compatible with spaCy's Universal POS tagset.

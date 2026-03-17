@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+from mowen.event_drivers.base import EventDriver, event_driver_registry, generate_ngrams
 from mowen.parameters import ParamDef
 from mowen.types import EventSet
-
-from mowen.event_drivers.base import EventDriver, event_driver_registry, generate_ngrams
 
 
 @event_driver_registry.register("character_ngram")

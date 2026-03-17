@@ -1,12 +1,11 @@
 """Pipeline component discovery endpoints."""
 
 from fastapi import APIRouter
-
-from mowen.canonicizers import canonicizer_registry
-from mowen.event_drivers import event_driver_registry
-from mowen.event_cullers import event_culler_registry
-from mowen.distance_functions import distance_function_registry
 from mowen.analysis_methods import analysis_method_registry
+from mowen.canonicizers import canonicizer_registry
+from mowen.distance_functions import distance_function_registry
+from mowen.event_cullers import event_culler_registry
+from mowen.event_drivers import event_driver_registry
 from mowen.registry import Registry
 
 from ..schemas import ComponentInfo, ParamInfo
