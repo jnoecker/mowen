@@ -8,6 +8,7 @@ from mowen.event_cullers import most_common as most_common
 from mowen.event_cullers import least_common as least_common
 from mowen.event_cullers import percentage_range as percentage_range
 from mowen.event_cullers import information_gain as information_gain
+from mowen.event_cullers import zeta as zeta
 from mowen.event_cullers import iqr as iqr
 from mowen.event_cullers import std_deviation as std_deviation
 from mowen.event_cullers import extreme as extreme

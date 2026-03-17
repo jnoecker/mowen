@@ -28,5 +28,6 @@ from mowen.distance_functions import soergel as soergel
 from mowen.distance_functions import wave_hedges as wave_hedges
 from mowen.distance_functions import wed as wed
 from mowen.distance_functions import nominal_ks as nominal_ks
+from mowen.distance_functions import ncd as ncd
 
 __all__ = ["DistanceFunction", "distance_function_registry"]
