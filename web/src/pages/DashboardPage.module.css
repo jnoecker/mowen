@@ -18,16 +18,16 @@
   background:
     radial-gradient(ellipse at center,
       transparent 18%,
-      rgba(200, 82, 60, 0.03) 20%,
+      rgba(168, 151, 210, 0.04) 20%,
       transparent 22%,
       transparent 34%,
-      rgba(200, 82, 60, 0.025) 36%,
+      rgba(168, 151, 210, 0.03) 36%,
       transparent 38%,
       transparent 50%,
-      rgba(200, 82, 60, 0.02) 52%,
+      rgba(168, 151, 210, 0.025) 52%,
       transparent 54%,
       transparent 66%,
-      rgba(200, 82, 60, 0.015) 68%,
+      rgba(168, 151, 210, 0.02) 68%,
       transparent 70%
     );
   border-radius: 50%;
@@ -68,7 +68,7 @@
   color: var(--accent);
   line-height: 1;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 30px rgba(200, 82, 60, 0.15);
+  text-shadow: 0 0 30px rgba(168, 151, 210, 0.20);
 }
 
 .statLabel {

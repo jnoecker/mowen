@@ -161,13 +161,13 @@
 }
 
 .barSuccess {
-  background: linear-gradient(90deg, var(--success), #88b87e);
+  background: linear-gradient(90deg, var(--success), #a3c096);
 }
 
 .barAccent {
-  background: linear-gradient(90deg, var(--accent), #d4735f);
+  background: linear-gradient(90deg, var(--accent), #beaee0);
 }
 
 .barDanger {
-  background: linear-gradient(90deg, var(--danger), #d47777);
+  background: linear-gradient(90deg, var(--danger), #d4bfbf);
 }

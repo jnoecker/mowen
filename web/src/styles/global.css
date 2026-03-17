@@ -38,17 +38,18 @@ body::before {
   mix-blend-mode: overlay;
 }
 
-/* Body vignette — warm ink-wash gradient at top */
+/* Body vignette — cool mist glow at top */
 body::after {
   content: '';
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 500px;
+  height: 600px;
   background: radial-gradient(
-    ellipse 120% 350px at 50% -50px,
-    rgba(50, 40, 30, 0.5),
+    ellipse 120% 400px at 50% -80px,
+    rgba(168, 151, 210, 0.08),
+    rgba(140, 174, 201, 0.04) 40%,
     transparent 70%
   );
   pointer-events: none;

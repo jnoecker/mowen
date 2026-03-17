@@ -1,62 +1,63 @@
 /* ============================================================
-   mowen (墨紋) Design Tokens — Sumi Ink + Cinnabar
+   mowen (墨紋) Design Tokens — Surreal Gentle Magic
+   Sumi ink typography meets AmbonMUD's enchanted mist palette
    ============================================================ */
 
 :root {
-  /* Backgrounds — warm charcoal */
-  --bg:          #141210;
-  --bg-surface:  #1e1b18;
-  --bg-elevated: #282420;
-  --bg-hover:    #322d28;
-  --bg-inset:    #0f0e0c;
+  /* Backgrounds — deep mist blues */
+  --bg:          #1e2538;
+  --bg-surface:  #2a3149;
+  --bg-elevated: #313a56;
+  --bg-hover:    #3a4468;
+  --bg-inset:    #181e30;
 
-  /* Text — aged paper tones */
-  --text:       #e8e0d4;
-  --text-muted: #9c9488;
-  --text-faint: #6b6359;
+  /* Text — moonlit cloud tones */
+  --text:       #dbe3f8;
+  --text-muted: #aebada;
+  --text-faint: #7f89a8;
 
-  /* Accent — Cinnabar/Vermillion (朱) */
-  --accent:        #c8523c;
-  --accent-hover:  #b5442f;
-  --accent-subtle: rgba(200, 82, 60, 0.12);
-  --accent-glow:   rgba(200, 82, 60, 0.25);
+  /* Accent — Lavender (enchanted) */
+  --accent:        #a897d2;
+  --accent-hover:  #9585c4;
+  --accent-subtle: rgba(168, 151, 210, 0.12);
+  --accent-glow:   rgba(168, 151, 210, 0.30);
 
-  /* Secondary — Gold (金) */
-  --gold:        #c9a84c;
-  --gold-subtle: rgba(201, 168, 76, 0.12);
+  /* Secondary — Soft Gold (luminous warmth) */
+  --gold:        #bea873;
+  --gold-subtle: rgba(190, 168, 115, 0.12);
 
-  /* Status — harmonized warm tones */
-  --success:        #6b9e5e;
-  --success-bg:     rgba(107, 158, 94, 0.12);
-  --success-border: rgba(107, 158, 94, 0.40);
+  /* Status — gentle magic tones */
+  --success:        #8da97b;
+  --success-bg:     rgba(141, 169, 123, 0.12);
+  --success-border: rgba(141, 169, 123, 0.40);
 
-  --warning:        #c9a84c;
-  --warning-bg:     rgba(201, 168, 76, 0.12);
-  --warning-border: rgba(201, 168, 76, 0.40);
+  --warning:        #bea873;
+  --warning-bg:     rgba(190, 168, 115, 0.12);
+  --warning-border: rgba(190, 168, 115, 0.40);
 
-  --danger:        #c75050;
-  --danger-bg:     rgba(199, 80, 80, 0.12);
-  --danger-border: rgba(199, 80, 80, 0.40);
+  --danger:        #c5a8a8;
+  --danger-bg:     rgba(197, 168, 168, 0.12);
+  --danger-border: rgba(197, 168, 168, 0.40);
 
-  --info:        #5e8a9e;
-  --info-bg:     rgba(94, 138, 158, 0.12);
-  --info-border: rgba(94, 138, 158, 0.40);
+  --info:        #8caec9;
+  --info-bg:     rgba(140, 174, 201, 0.12);
+  --info-border: rgba(140, 174, 201, 0.40);
 
-  /* Borders */
-  --border:        #2e2a25;
-  --border-strong: #3d3732;
+  /* Borders — glass edges */
+  --border:        rgba(151, 166, 204, 0.20);
+  --border-strong: rgba(151, 166, 204, 0.36);
 
-  /* Shadows — warm-tinted */
-  --shadow-sm: 0 1px 3px rgba(10, 8, 6, 0.3);
-  --shadow-md: 0 4px 12px rgba(10, 8, 6, 0.4);
-  --shadow-lg: 0 8px 24px rgba(10, 8, 6, 0.5);
+  /* Shadows — cool mist */
+  --shadow-sm: 0 1px 3px rgba(20, 24, 40, 0.3);
+  --shadow-md: 0 4px 12px rgba(20, 24, 40, 0.4);
+  --shadow-lg: 0 8px 24px rgba(20, 24, 40, 0.5);
 
-  /* Radii */
-  --radius:    6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
+  /* Radii — slightly softer */
+  --radius:    8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
 
-  /* Typography */
+  /* Typography — keep mowen's scholarly fonts */
   --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-cjk:     'Noto Serif JP', serif;
