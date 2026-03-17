@@ -21,6 +21,7 @@ from mowen.event_drivers import mw_function_words as mw_function_words  # noqa: 
 from mowen.event_drivers import pos_tags as pos_tags  # noqa: F401
 
 # --- Tier 3: Useful variants ---
+from mowen.event_drivers import leave_k_out_ngram as leave_k_out_ngram  # noqa: F401
 from mowen.event_drivers import sorted_ngram as sorted_ngram  # noqa: F401
 from mowen.event_drivers import k_skip_ngram as k_skip_ngram  # noqa: F401
 from mowen.event_drivers import suffix as suffix  # noqa: F401
@@ -34,6 +35,8 @@ from mowen.event_drivers import line_features as line_features  # noqa: F401
 from mowen.event_drivers import mn_letter_words as mn_letter_words  # noqa: F401
 from mowen.event_drivers import vowel_mn_letter_words as vowel_mn_letter_words  # noqa: F401
 from mowen.event_drivers import syllables as syllables  # noqa: F401
+from mowen.event_drivers import truncated_frequency as truncated_frequency  # noqa: F401
+from mowen.event_drivers import reaction_time as reaction_time  # noqa: F401
 
 # --- Tier 5: NLP-dependent (require optional extras) ---
 from mowen.event_drivers import pos_features as pos_features  # noqa: F401

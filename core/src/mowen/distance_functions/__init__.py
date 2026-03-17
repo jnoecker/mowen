@@ -18,7 +18,9 @@ from mowen.distance_functions import intersection as intersection
 from mowen.distance_functions import histogram_intersection as histogram_intersection
 from mowen.distance_functions import pearson_correlation as pearson_correlation
 from mowen.distance_functions import kendall_correlation as kendall_correlation
+from mowen.distance_functions import kendall_tau_b as kendall_tau_b
 from mowen.distance_functions import keselj_weighted as keselj_weighted
+from mowen.distance_functions import stamatatos as stamatatos
 from mowen.distance_functions import angular_separation as angular_separation
 from mowen.distance_functions import chord as chord
 from mowen.distance_functions import matusita as matusita

@@ -20,6 +20,7 @@ from mowen.analysis_methods import absolute_centroid as absolute_centroid
 from mowen.analysis_methods import bagging_nn as bagging_nn
 from mowen.analysis_methods import markov_chain as markov_chain
 from mowen.analysis_methods import thin_xent as thin_xent
+from mowen.analysis_methods import mahalanobis as mahalanobis
 
 # --- Sklearn classifiers (also work with embeddings) ---
 from mowen.analysis_methods import svm as svm
