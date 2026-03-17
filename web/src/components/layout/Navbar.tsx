@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import logoUrl from '../../assets/logo.png';
 import sealUrl from '../../assets/seal.svg';
 import s from './Navbar.module.css';
 
@@ -14,10 +13,7 @@ export default function Navbar() {
   return (
     <nav className={s.nav}>
       <NavLink to="/dashboard" className={s.brand}>
-        <span className={s.logoWrap}>
-          <img src={logoUrl} alt="" className={s.logo} />
-          <img src={sealUrl} alt="墨" className={s.seal} />
-        </span>
+        <img src={sealUrl} alt="墨" className={s.seal} />
         mowen <span className={s.brandCjk}>(墨紋)</span>
       </NavLink>
       <ul className={s.links}>
