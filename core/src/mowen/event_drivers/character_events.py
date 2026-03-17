@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from mowen.types import Event, EventSet
-
 from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.types import Event, EventSet
 
 
 @event_driver_registry.register("character_events")

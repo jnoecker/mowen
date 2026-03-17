@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mowen"
-version = "0.1.0"
+version = "1.0.0"
 description = "Authorship attribution toolkit — stylometric analysis with a configurable pipeline"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = []
 authors = [
     { name = "John Noecker Jr" },
@@ -22,12 +22,11 @@ keywords = [
     "machine-learning",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",

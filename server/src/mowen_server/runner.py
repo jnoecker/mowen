@@ -3,23 +3,21 @@
 import json
 import logging
 import threading
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable
 
 logger = logging.getLogger("mowen_server.runner")
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 from mowen.document_loaders import load_document
 from mowen.pipeline import Pipeline, PipelineConfig
 from mowen.types import Document as MowenDocument
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 from .models import (
     CorpusDocument,
     Experiment,
-    ExperimentCorpus,
     ExperimentResult,
 )
 from .models import Document as DBDocument
@@ -76,7 +74,7 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
         return
 
     experiment.status = "running"
-    experiment.started_at = datetime.now(timezone.utc)
+    experiment.started_at = datetime.now(UTC)
     session.commit()
 
     # Load config
@@ -126,7 +124,7 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
     if results:
         experiment.lower_is_better = int(results[0].lower_is_better)
     experiment.status = "completed"
-    experiment.completed_at = datetime.now(timezone.utc)
+    experiment.completed_at = datetime.now(UTC)
     experiment.progress = 1.0
     session.commit()
 
@@ -167,7 +165,7 @@ class ExperimentRunner:
                 if experiment:
                     experiment.status = "failed"
                     experiment.error_message = str(e)
-                    experiment.completed_at = datetime.now(timezone.utc)
+                    experiment.completed_at = datetime.now(UTC)
                     session.commit()
             except Exception:
                 logger.exception(

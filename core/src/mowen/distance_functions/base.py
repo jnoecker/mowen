@@ -11,7 +11,6 @@ from mowen.parameters import Configurable
 from mowen.registry import Registry
 from mowen.types import Histogram
 
-
 LOG_EPSILON: float = 1e-10
 """Small constant for log-domain smoothing in divergence metrics."""
 

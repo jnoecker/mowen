@@ -5,7 +5,7 @@ changes.
 
 ## Prerequisites
 
-- **Python 3.11+** (3.12 or 3.14 also work)
+- **Python 3.12+** (3.13, 3.14 also work)
 - **Node.js 22+** and npm (only needed for frontend development)
 - **Git**
 - **Docker** (optional, for containerized deployment)

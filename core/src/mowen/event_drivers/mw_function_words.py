@@ -7,7 +7,6 @@ from mowen.parameters import ParamDef
 from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
-
 # The classic 70 function words from Mosteller & Wallace (1964),
 # used in the landmark Federalist Papers authorship study.
 _MW_WORDS: frozenset[str] = frozenset({

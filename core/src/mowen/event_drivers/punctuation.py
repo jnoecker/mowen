@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-import unicodedata
-
-from mowen.types import Event, EventSet
-
 from mowen.event_drivers.base import EventDriver, event_driver_registry
+from mowen.types import Event, EventSet
 
 
 def _is_punctuation(ch: str) -> bool:

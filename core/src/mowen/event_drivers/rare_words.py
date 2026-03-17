@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from collections import Counter
 
+from mowen.event_drivers.base import EventDriver, event_driver_registry
 from mowen.parameters import ParamDef
 from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
-
-from mowen.event_drivers.base import EventDriver, event_driver_registry
 
 
 @event_driver_registry.register("rare_words")

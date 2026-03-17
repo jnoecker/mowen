@@ -2,11 +2,10 @@
 
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, Form, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, UploadFile, status
 from fastapi.responses import PlainTextResponse
-from sqlalchemy.orm import Session
-
 from mowen.document_loaders import load_document
+from sqlalchemy.orm import Session
 
 from ..config import Settings, get_settings
 from ..db import get_db, get_or_404

@@ -176,3 +176,5 @@ The core library has no required dependencies. Optional features:
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+Copyright 2026 John Noecker Jr.

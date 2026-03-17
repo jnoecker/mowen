@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 
@@ -45,7 +45,7 @@ def _build_config(
     analysis: str,
     canonicizer: list[str] | None,
     culler: list[str] | None,
-) -> "PipelineConfig":
+) -> PipelineConfig:
     """Build a PipelineConfig from CLI option values."""
     from mowen.pipeline import PipelineConfig
 
@@ -94,11 +94,11 @@ def run(
         typer.Option("--analysis", "-a", help="Analysis method (name or name:param=val,...)."),
     ] = "nearest_neighbor",
     canonicizer: Annotated[
-        Optional[list[str]],
+        list[str] | None,
         typer.Option("--canonicizer", "-c", help="Canonicizer (name or name:param=val,...). Repeatable."),
     ] = None,
     culler: Annotated[
-        Optional[list[str]],
+        list[str] | None,
         typer.Option("--culler", help="Event culler (name or name:param=val,...). Repeatable."),
     ] = None,
     output_json: Annotated[
@@ -106,14 +106,14 @@ def run(
         typer.Option("--json", help="Output results as JSON."),
     ] = False,
     base_dir: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option("--base-dir", help="Base directory for resolving relative paths in CSV."),
     ] = None,
 ) -> None:
     """Run an authorship attribution experiment."""
     from mowen.compat.jgaap_csv import load_jgaap_csv
     from mowen.exceptions import MowenError
-    from mowen.pipeline import Pipeline, PipelineConfig
+    from mowen.pipeline import Pipeline
 
     # Load documents
     try:
@@ -170,7 +170,7 @@ def run(
 @app.command("list-components")
 def list_components(
     category: Annotated[
-        Optional[str],
+        str | None,
         typer.Argument(help="Filter by category: canonicizers, event-drivers, event-cullers, distance-functions, analysis-methods."),
     ] = None,
     output_json: Annotated[
@@ -237,7 +237,7 @@ def convert_jgaap(
         typer.Argument(help="Path to JGAAP experiment CSV file."),
     ],
     base_dir: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option("--base-dir", help="Base directory for resolving relative paths."),
     ] = None,
 ) -> None:
@@ -261,7 +261,7 @@ def convert_jgaap(
             typer.echo(f"    {author}: {count} document{'s' if count != 1 else ''}")
 
     if unknown:
-        typer.echo(f"\n  Unknown documents:")
+        typer.echo("\n  Unknown documents:")
         for doc in unknown:
             preview = doc.text[:60].replace("\n", " ")
             typer.echo(f"    {doc.title}: {preview}...")
@@ -290,11 +290,11 @@ def evaluate(
         typer.Option("--analysis", "-a", help="Analysis method (name or name:param=val,...)."),
     ] = "nearest_neighbor",
     canonicizer: Annotated[
-        Optional[list[str]],
+        list[str] | None,
         typer.Option("--canonicizer", "-c", help="Canonicizer. Repeatable."),
     ] = None,
     culler: Annotated[
-        Optional[list[str]],
+        list[str] | None,
         typer.Option("--culler", help="Event culler. Repeatable."),
     ] = None,
     mode: Annotated[
@@ -306,11 +306,11 @@ def evaluate(
         typer.Option("--folds", "-k", help="Number of folds for kfold mode."),
     ] = 10,
     seed: Annotated[
-        Optional[int],
+        int | None,
         typer.Option("--seed", help="Random seed for kfold shuffle."),
     ] = None,
     output_csv: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option("--output-csv", "-o", help="Write results to CSV file."),
     ] = None,
     output_json: Annotated[
@@ -318,13 +318,15 @@ def evaluate(
         typer.Option("--json", help="Output results as JSON."),
     ] = False,
     base_dir: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option("--base-dir", help="Base directory for resolving relative paths in CSV."),
     ] = None,
 ) -> None:
     """Evaluate pipeline accuracy via cross-validation."""
     from mowen.compat.jgaap_csv import load_jgaap_csv
-    from mowen.evaluation import leave_one_out as loo_eval, k_fold as kfold_eval, write_results_csv
+    from mowen.evaluation import k_fold as kfold_eval
+    from mowen.evaluation import leave_one_out as loo_eval
+    from mowen.evaluation import write_results_csv
     from mowen.exceptions import EvaluationError, MowenError
 
     # Load documents
@@ -402,7 +404,7 @@ def evaluate(
         typer.echo(f"  {'═' * 56}")
         typer.echo(f"\n  Accuracy: {result.accuracy:.1%} ({n_correct}/{n_docs})")
 
-        typer.echo(f"\n  Per-author metrics:")
+        typer.echo("\n  Per-author metrics:")
         typer.echo(f"    {'Author':<20} {'Precision':>9} {'Recall':>9} {'F1':>9} {'Support':>8}")
         typer.echo(f"    {'─' * 20} {'─' * 9} {'─' * 9} {'─' * 9} {'─' * 8}")
         for a in result.per_author:
@@ -420,7 +422,7 @@ def evaluate(
         authors = sorted(result.confusion_matrix.keys())
         col_w = max(len(a) for a in authors) + 2
         col_w = max(col_w, 6)
-        typer.echo(f"\n  Confusion matrix:")
+        typer.echo("\n  Confusion matrix:")
         header = "    " + " " * col_w + "".join(f"{a:>{col_w}}" for a in authors)
         typer.echo(header)
         for true_a in authors:

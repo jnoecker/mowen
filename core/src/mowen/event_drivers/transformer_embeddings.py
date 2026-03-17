@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 from mowen.event_drivers.base import EventDriver, event_driver_registry
 from mowen.parameters import ParamDef
-from mowen.types import EventSet, NumericEventSet
+from mowen.types import NumericEventSet
 
 
 @event_driver_registry.register("transformer_embeddings")
