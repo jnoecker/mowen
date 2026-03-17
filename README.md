@@ -1,6 +1,10 @@
-# mowen (墨紋)
+<p align="center">
+  <img src="docs/logo.png" alt="mowen" width="256" />
+</p>
 
-**Authorship attribution toolkit**
+<h1 align="center">mowen (墨紋)</h1>
+
+<p align="center"><strong>Authorship attribution toolkit</strong></p>
 
 mowen is a modular framework for identifying who wrote a document based on
 stylometric analysis. It provides a configurable pipeline of text

@@ -18,6 +18,9 @@
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--text);
   text-decoration: none;
   font-family: var(--font-display);
@@ -30,6 +33,17 @@
 .brand:hover {
   color: var(--text);
   text-decoration: none;
+}
+
+.seal {
+  height: 1.8rem;
+  width: auto;
+  opacity: 0.9;
+  transition: opacity 0.15s;
+}
+
+.brand:hover .seal {
+  opacity: 1;
 }
 
 .brandCjk {
