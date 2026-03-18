@@ -1,6 +1,6 @@
 """Tests for the LLM zero-shot prompting analysis method."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from mowen.analysis_methods import analysis_method_registry
 from mowen.types import Document, Event, Histogram
@@ -52,15 +52,76 @@ class TestLLMPrompting:
         assert results[1].author == "B"
         assert results[0].score > results[1].score
 
-    def test_parse_response_fallback(self):
-        """When JSON fails, should find author names in text."""
+    def test_parse_response_json_with_surrounding_text(self):
+        """JSON embedded in explanatory text should still be extracted."""
         method = analysis_method_registry.create("llm_prompting")
         method.train(_make_training_data())
 
-        response = "I believe author B wrote this text because..."
+        response = (
+            "Based on my analysis of the writing styles, "
+            'here is my attribution: {"author": "B", "ranking": ["B", "A"]}. '
+            "The key indicators were vocabulary choice."
+        )
         results = method._parse_response(response)
-        assert any(r.author == "B" for r in results)
-        assert len(results) == 2  # all authors present
+        assert results[0].author == "B"
+
+    def test_parse_response_json_validates_author_names(self):
+        """JSON with unknown author names should be rejected."""
+        method = analysis_method_registry.create("llm_prompting")
+        method.train(_make_training_data())
+
+        response = '{"author": "Unknown Person", "ranking": ["Unknown Person"]}'
+        results = method._parse_response(response)
+        # Should fall back, not return "Unknown Person"
+        assert all(r.author in ("A", "B") for r in results)
+
+    def test_parse_response_malformed_json(self):
+        """Malformed JSON should fall back to text matching."""
+        method = analysis_method_registry.create("llm_prompting")
+        method.train(_make_training_data())
+
+        response = '{"author": "A", ranking: [broken json}. I think A wrote it.'
+        results = method._parse_response(response)
+        assert len(results) == 2
+
+    def test_parse_response_fallback_uses_last_mention(self):
+        """Text fallback should prefer the last-mentioned author."""
+        method = analysis_method_registry.create("llm_prompting")
+        method.train(_make_training_data())
+
+        response = (
+            "A is a possible candidate based on vocabulary. "
+            "However, B is unlikely due to sentence structure. "
+            "After careful analysis, the author is most likely A."
+        )
+        results = method._parse_response(response)
+        # A is mentioned last, should rank first
+        assert results[0].author == "A"
+
+    def test_parse_response_fallback_tail_single_author(self):
+        """When only one author appears in the tail, pick them."""
+        method = analysis_method_registry.create("llm_prompting")
+        method.train(_make_training_data())
+
+        response = (
+            "Both A and B have similar styles. "
+            "A uses more formal language. "
+            "B prefers shorter sentences. " * 10 +
+            "In conclusion, the unknown text was written by A."
+        )
+        results = method._parse_response(response)
+        assert results[0].author == "A"
+
+    def test_parse_response_no_author_found(self):
+        """When no author is found, all should still be present."""
+        method = analysis_method_registry.create("llm_prompting")
+        method.train(_make_training_data())
+
+        response = "I cannot determine the author of this text."
+        results = method._parse_response(response)
+        assert len(results) == 2
+        authors = {r.author for r in results}
+        assert authors == {"A", "B"}
 
     def test_all_authors_present_in_results(self):
         method = analysis_method_registry.create("llm_prompting")

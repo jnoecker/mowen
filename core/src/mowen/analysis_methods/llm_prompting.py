@@ -11,14 +11,17 @@ Identify Authorship?"
 from __future__ import annotations
 
 import json as json_mod
+import logging
 import os
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any
 
 from mowen.analysis_methods.base import AnalysisMethod, analysis_method_registry
 from mowen.parameters import ParamDef
 from mowen.types import Attribution, Document, Histogram
+
+logger = logging.getLogger(__name__)
 
 
 _PROMPT_TEMPLATES = {
@@ -221,31 +224,33 @@ class LLMPrompting(AnalysisMethod):
         return response.choices[0].message.content or ""
 
     def _parse_response(self, response: str) -> list[Attribution]:
-        """Parse LLM response into Attribution list."""
+        """Parse LLM response into Attribution list.
+
+        Parsing strategy (in order of preference):
+
+        1. Extract all JSON objects from the response and look for one
+           containing an ``"author"`` or ``"ranking"`` key whose values
+           match known author names.
+        2. Fall back to searching for author names at the *end* of the
+           response (last 200 chars) to avoid matching names that appear
+           in explanatory or elimination text.
+        3. If still empty, search the full response for author names
+           ordered by last occurrence position (the conclusion is
+           usually at the end).
+        """
         authors = list(self._author_excerpts.keys())
+        author_set = set(authors)
 
-        # Try to extract JSON from response
-        ranking: list[str] = []
-        try:
-            # Find JSON in the response
-            start = response.find("{")
-            end = response.rfind("}") + 1
-            if start >= 0 and end > start:
-                data = json_mod.loads(response[start:end])
-                if "ranking" in data:
-                    ranking = data["ranking"]
-                elif "author" in data:
-                    ranking = [data["author"]]
-        except (json_mod.JSONDecodeError, KeyError, TypeError):
-            pass
+        ranking = self._try_json_extraction(response, author_set)
 
-        # Fallback: look for author names in response text
         if not ranking:
-            for author in authors:
-                if author in response:
-                    ranking.append(author)
+            logger.warning(
+                "JSON extraction failed for LLM response; "
+                "falling back to text matching."
+            )
+            ranking = self._try_text_fallback(response, authors)
 
-        # Ensure all authors appear in ranking
+        # Ensure all known authors appear in ranking
         seen = set(ranking)
         for author in authors:
             if author not in seen:
@@ -261,3 +266,70 @@ class LLMPrompting(AnalysisMethod):
             for i, author in enumerate(ranking)
             if author in self._author_excerpts
         ]
+
+    def _try_json_extraction(
+        self, response: str, author_set: set[str],
+    ) -> list[str]:
+        """Extract and validate JSON objects from the LLM response.
+
+        Iterates over all ``{...}`` substrings, parses each as JSON,
+        and accepts the first one containing a valid ``"ranking"`` list
+        or ``"author"`` string that references known authors.
+        """
+        ranking: list[str] = []
+
+        for m in re.finditer(r"\{[^{}]*\}", response):
+            try:
+                data = json_mod.loads(m.group())
+            except (json_mod.JSONDecodeError, ValueError):
+                continue
+
+            if not isinstance(data, dict):
+                continue
+
+            # Prefer "ranking" (full ranked list)
+            if "ranking" in data and isinstance(data["ranking"], list):
+                candidates = [
+                    a for a in data["ranking"]
+                    if isinstance(a, str) and a in author_set
+                ]
+                if candidates:
+                    return candidates
+
+            # Accept "author" (single top pick)
+            if "author" in data and isinstance(data["author"], str):
+                if data["author"] in author_set:
+                    ranking = [data["author"]]
+                    # Keep looking in case a later object has "ranking"
+
+        return ranking
+
+    @staticmethod
+    def _try_text_fallback(
+        response: str, authors: list[str],
+    ) -> list[str]:
+        """Search for author names in the response text.
+
+        Looks at the tail of the response first (conclusions tend to
+        appear there), then falls back to ordering by last occurrence
+        position in the full response so that the final mention —
+        typically the attribution conclusion — ranks highest.
+        """
+        # Check tail (last 200 chars) for a single clear answer
+        tail = response[-200:] if len(response) > 200 else response
+        tail_found = [a for a in authors if a in tail]
+        if len(tail_found) == 1:
+            return tail_found
+
+        # Order all found authors by last occurrence (latest = most likely)
+        positions: list[tuple[int, str]] = []
+        for author in authors:
+            pos = response.rfind(author)
+            if pos >= 0:
+                positions.append((pos, author))
+
+        if positions:
+            positions.sort(reverse=True)
+            return [author for _, author in positions]
+
+        return []
