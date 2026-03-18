@@ -27,7 +27,7 @@ Attribution Program.
 - **Style change detection** — detect authorship boundaries within multi-author documents
 - **PAN-standard evaluation** — accuracy, F1, EER, c@1, F_0.5u, Brier score, AUROC, MRR, cross-genre and topic-controlled evaluation
 - **20 bundled sample corpora** — Federalist Papers, Shakespeare, Brontë Sisters, Pauline Epistles, Homer, Russian Literature, State of the Union, and 13 AAAC benchmark problems
-- **10 stylometry presets** — Burrows' Delta, Cosine Delta, Character N-grams, Function Words, Multi-Feature SVM, Transformer Embeddings, SELMA, General Imposters, Unmasking
+- **16 stylometry presets** — Burrows' Delta, Cosine Delta, Eder's Delta, Character N-grams, Function Words, Multi-Feature SVM, Transformer Embeddings, SELMA, PAN cngdist, PPM Compression, Forensic Verification, Cross-Genre Robust, Perplexity Profile, General Imposters, Unmasking, and more
 - **Multi-language support** — pluggable tokenizer framework with Chinese segmentation (jieba) and function word lists for 10 languages
 - **4 document loaders** — plain text, PDF, DOCX, HTML
 - JGAAP CSV compatibility for existing experiment files
