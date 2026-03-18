@@ -154,6 +154,130 @@ export const PRESETS: Preset[] = [
     },
   },
   {
+    id: 'eders-delta',
+    name: "Eder's Delta",
+    description:
+      "Eder's modification of Burrows' Delta using the most frequent words with z-score normalization. Designed to be more robust on shorter texts and more stable across corpus sizes than the original Delta. Widely used in computational literary studies.",
+    citation: 'Eder (2011)',
+    config: {
+      canonicizers: [
+        { name: 'unify_case', params: {} },
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'word_events', params: { tokenizer: 'whitespace' } },
+      ],
+      event_cullers: [
+        { name: 'most_common', params: { n: 200 } },
+      ],
+      distance_function: { name: 'manhattan', params: {} },
+      analysis_method: { name: 'eders_delta', params: {} },
+    },
+  },
+  {
+    id: 'pan-cngdist',
+    name: 'PAN cngdist Baseline',
+    description:
+      'The surprisingly competitive PAN shared task baseline: character 4-gram profiles compared with cosine distance. Placed 5th at PAN 2023, outperforming most neural submissions. An "embarrassingly simple" but remarkably effective method.',
+    citation: 'Stamatatos et al. (PAN 2023)',
+    config: {
+      canonicizers: [
+        { name: 'unify_case', params: {} },
+      ],
+      event_drivers: [
+        { name: 'character_ngram', params: { n: 4 } },
+      ],
+      event_cullers: [
+        { name: 'most_common', params: { n: 3000 } },
+      ],
+      distance_function: { name: 'cosine', params: {} },
+      analysis_method: { name: 'nearest_neighbor', params: {} },
+    },
+  },
+  {
+    id: 'compression-verification',
+    name: 'Compression Verification (PPM)',
+    description:
+      'Compression-based authorship analysis using Prediction by Partial Matching. Measures cross-entropy between character-level models of two texts. Theoretically motivated: if two texts compress well together, they share statistical regularities. No feature engineering required.',
+    citation: 'Teahan & Harper (2003), PAN baselines',
+    config: {
+      canonicizers: [],
+      event_drivers: [
+        { name: 'word_events', params: {} },
+      ],
+      event_cullers: [],
+      distance_function: { name: 'ppm', params: { order: 5 } },
+      analysis_method: { name: 'nearest_neighbor', params: {} },
+    },
+  },
+  {
+    id: 'forensic-verification',
+    name: 'Forensic Verification',
+    description:
+      'Conservative Imposters configuration for forensic casework where false positives are costly. Uses calibration to abstain on borderline cases (scores in [0.35, 0.65] are reported as INCONCLUSIVE). Higher iteration count for more stable results.',
+    citation: 'Koppel & Winter (2014), Seidman (2013)',
+    config: {
+      canonicizers: [
+        { name: 'unify_case', params: {} },
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'character_ngram', params: { n: 4 } },
+      ],
+      event_cullers: [
+        { name: 'most_common', params: { n: 1000 } },
+      ],
+      distance_function: { name: 'cosine', params: {} },
+      analysis_method: {
+        name: 'imposters',
+        params: {
+          n_iterations: 200,
+          feature_subset_ratio: 0.5,
+          random_seed: 42,
+          calibration_low: 0.35,
+          calibration_high: 0.65,
+        },
+      },
+    },
+  },
+  {
+    id: 'cross-genre',
+    name: 'Cross-Genre Robust',
+    description:
+      'Optimized for attribution across different text genres (e.g., articles vs. tweets, formal vs. informal). Uses function words as features — the most genre-independent stylistic signal — with contrastive centroid matching.',
+    citation: 'Ma et al. (AAAI 2025), Argamon (2007)',
+    config: {
+      canonicizers: [
+        { name: 'unify_case', params: {} },
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'function_words', params: { language: 'english', tokenizer: 'whitespace' } },
+      ],
+      event_cullers: [],
+      distance_function: null,
+      analysis_method: { name: 'contrastive', params: {} },
+    },
+  },
+  {
+    id: 'perplexity-profile',
+    name: 'Perplexity Profile',
+    description:
+      'Captures author-specific predictability patterns by extracting statistical moments (mean, variance, skewness, kurtosis) of per-token surprisal from a causal language model. Different authors produce text with different predictability signatures. Requires the transformers extra.',
+    citation: 'Basani & Chen (PAN 2025), Sun et al. (PAN 2025)',
+    config: {
+      canonicizers: [
+        { name: 'normalize_whitespace', params: {} },
+      ],
+      event_drivers: [
+        { name: 'perplexity', params: { model_name: 'gpt2' } },
+      ],
+      event_cullers: [],
+      distance_function: null,
+      analysis_method: { name: 'svm', params: {} },
+    },
+  },
+  {
     id: 'general-imposters',
     name: 'General Imposters Method',
     description:

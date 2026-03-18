@@ -13,7 +13,7 @@ Published on PyPI as three packages: `mowen` (core library), `mowen-cli`, and `m
 - **113 pipeline components** across 5 stages: 41 event drivers, 26 distance functions, 21 analysis methods, 15 event cullers, 10 canonicizers
 - **790+ tests** (pytest), plus a 70-experiment parallel validation suite against the original JGAAP
 - **20 bundled sample corpora** including the Federalist Papers, Shakespeare, Brontë Sisters, Pauline Epistles, Homer (Iliad vs. Odyssey), Russian literature, and 13 AAAC benchmark problems
-- **10 stylometry presets** based on published research: Burrows' Delta, Cosine Delta, Character N-grams, Function Words, Multi-Feature SVM, Transformer Embeddings, SELMA, General Imposters, Unmasking
+- **16 stylometry presets** based on published research spanning classic stylometry, modern neural approaches, authorship verification, and forensic best practices
 - **~13,000 lines** of Python and TypeScript/CSS
 - **10 natural languages** supported via pluggable tokenizers and function word lists
 - **4 document formats**: plain text, PDF, DOCX, HTML
