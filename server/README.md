@@ -23,7 +23,7 @@ Open http://localhost:8000 for the web UI. API docs at http://localhost:8000/doc
 - Upload and manage documents (plain text, PDF, DOCX, HTML)
 - Organize documents into corpora
 - Import from 20 bundled sample corpora (Federalist Papers, Shakespeare, Homer, etc.)
-- Build experiments with a step-by-step wizard and 6 stylometry presets
+- Build experiments with a step-by-step wizard and 10 stylometry presets
 - View attribution results with performance metrics and score visualizations
 - REST API with OpenAPI documentation
 

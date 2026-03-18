@@ -39,7 +39,7 @@ mowen-server
 # Open http://localhost:8000
 ```
 
-You should see 658+ tests passing and the web UI loading.
+You should see 790+ tests passing and the web UI loading.
 
 ### 3. Optional dependencies
 
@@ -84,10 +84,10 @@ mowen/
 │       ├── parameters.py    ParamDef and Configurable mixin
 │       ├── exceptions.py    Exception hierarchy
 │       ├── canonicizers/    Text preprocessors (10)
-│       ├── event_drivers/   Feature extractors (34)
-│       ├── event_cullers/   Feature selectors (14)
-│       ├── distance_functions/  Distance metrics (22)
-│       ├── analysis_methods/    Classifiers (15)
+│       ├── event_drivers/   Feature extractors (41)
+│       ├── event_cullers/   Feature selectors (15)
+│       ├── distance_functions/  Distance metrics (26)
+│       ├── analysis_methods/    Classifiers + verification (21)
 │       ├── tokenizers/      Word segmentation (whitespace, jieba)
 │       ├── document_loaders/  File format readers
 │       ├── data/            Function word lists (10 languages)
@@ -105,7 +105,7 @@ mowen/
 │       ├── storage.py       Document file storage
 │       └── routers/         API endpoints
 ├── web/                     React/TypeScript frontend (Vite)
-├── tests/                   pytest test suite (658+)
+├── tests/                   pytest test suite (790+)
 ├── scripts/                 Corpus build scripts
 └── JGAAP/                   Reference Java implementation (gitignored)
 ```
@@ -126,8 +126,20 @@ Text → Canonicize → Extract Events → Cull → Build Histograms → Analyze
 4. **Distance functions** measure dissimilarity between histograms
 5. **Analysis methods** classify unknown documents by author
 
-There's also a **numeric path** for transformer embeddings that bypasses
-steps 3-4 and feeds dense vectors directly to sklearn classifiers.
+There's also a **numeric path** for transformer/SELMA/perplexity/GNN embeddings
+that bypasses steps 3-4 and feeds dense vectors directly to sklearn classifiers.
+
+### Authorship verification
+
+The **General Imposters Method** and **Unmasking** support verification
+("did author X write this?") alongside closed-set attribution. Both output
+calibrated scores with optional non-answer support via dual-threshold
+calibration.
+
+### Style change detection
+
+`detect_style_changes()` in `style_change.py` detects authorship boundaries
+within multi-author documents at paragraph level.
 
 ### Registry pattern
 
@@ -163,7 +175,9 @@ Set it to `"jieba"` for Chinese text.
 
 `leave_one_out()` and `k_fold()` in `evaluation.py` wrap the pipeline to
 perform cross-validation. They return an `EvaluationResult` with accuracy,
-per-author precision/recall/F1, and a confusion matrix.
+per-author precision/recall/F1, confusion matrix, EER, c@1, F_0.5u, and Brier
+score. Additional evaluation modes: `cross_genre_evaluate()` and
+`topic_controlled_evaluate()` for measuring genre/topic robustness.
 
 ## Common tasks
 
