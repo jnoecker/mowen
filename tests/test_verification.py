@@ -174,6 +174,7 @@ class TestUnmasking:
         assert "unmasking" in analysis_method_registry.names()
 
     def test_correct_author_ranks_highest(self):
+        pytest.importorskip("sklearn")
         method = analysis_method_registry.create(
             "unmasking",
             _UNMASKING_PARAMS,
@@ -184,6 +185,7 @@ class TestUnmasking:
         assert results[0].author == "Author A"
 
     def test_scores_non_negative(self):
+        pytest.importorskip("sklearn")
         method = analysis_method_registry.create(
             "unmasking",
             _UNMASKING_PARAMS,
@@ -197,6 +199,7 @@ class TestUnmasking:
             assert isinstance(r.score, float)
 
     def test_all_authors_present(self):
+        pytest.importorskip("sklearn")
         method = analysis_method_registry.create(
             "unmasking",
             _UNMASKING_PARAMS,
@@ -208,6 +211,7 @@ class TestUnmasking:
         assert authors == {"Author A", "Author B"}
 
     def test_deterministic_with_seed(self):
+        pytest.importorskip("sklearn")
         results_list = []
         for _ in range(2):
             method = analysis_method_registry.create(
@@ -228,6 +232,7 @@ class TestUnmasking:
         verify the method works without error — the import check is tested
         implicitly.
         """
+        pytest.importorskip("sklearn")
         method = analysis_method_registry.create(
             "unmasking",
             _UNMASKING_PARAMS,
@@ -240,6 +245,7 @@ class TestUnmasking:
     def test_verification_threshold_in_pipeline(
         self, sample_documents, unknown_document
     ):
+        pytest.importorskip("sklearn")
         config = PipelineConfig(
             event_drivers=[ComponentSpec(name="character_ngram", params={"n": 2})],
             analysis_method=ComponentSpec(
