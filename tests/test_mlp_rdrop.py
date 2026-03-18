@@ -90,3 +90,31 @@ class TestMLPRDrop:
         results = method.analyze(unknown)
         authors = {r.author for r in results}
         assert authors == {"A", "B"}
+
+    def test_device_param_exists(self):
+        method = analysis_method_registry.create("mlp")
+        param_names = {p.name for p in method.param_defs()}
+        assert "device" in param_names
+
+    def test_device_cpu_explicit(self):
+        torch = pytest.importorskip("torch")
+        method = analysis_method_registry.create(
+            "mlp", {"r_drop": True, "max_iter": 50, "device": "cpu"}
+        )
+        method.train(_make_training_data())
+        unknown = Histogram({Event("a"): 5, Event("b"): 1})
+        results = method.analyze(unknown)
+        assert results[0].author == "A"
+        assert method._device == torch.device("cpu")
+
+    def test_device_auto_resolves(self):
+        torch = pytest.importorskip("torch")
+        method = analysis_method_registry.create(
+            "mlp", {"r_drop": True, "max_iter": 50, "device": "auto"}
+        )
+        method.train(_make_training_data())
+        # auto should resolve to some valid device
+        assert method._device is not None
+        unknown = Histogram({Event("a"): 5, Event("b"): 1})
+        results = method.analyze(unknown)
+        assert len(results) == 2
