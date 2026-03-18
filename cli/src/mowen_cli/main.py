@@ -426,6 +426,14 @@ def evaluate(
         str | None,
         typer.Option("--test-genre", help="Genre to test on (cross-genre mode)."),
     ] = None,
+    topic_controlled: Annotated[
+        bool,
+        typer.Option("--topic-controlled", help="Run topic-controlled evaluation (CSV needs topic column in metadata)."),
+    ] = False,
+    topic_key: Annotated[
+        str,
+        typer.Option("--topic-key", help="Metadata key for topic labels."),
+    ] = "topic",
 ) -> None:
     """Evaluate pipeline accuracy via cross-validation."""
     from mowen.compat.jgaap_csv import load_jgaap_csv
@@ -457,7 +465,35 @@ def evaluate(
 
     # Run evaluation
     try:
-        if train_genre and test_genre:
+        if topic_controlled:
+            from mowen.evaluation import topic_controlled_evaluate
+            tc_result = topic_controlled_evaluate(
+                known, config, topic_key=topic_key,
+                progress_callback=progress_cb,
+            )
+            # Display topic-controlled results and exit early
+            if progress_cb:
+                typer.echo("", err=True)
+            if output_json:
+                out_tc: dict = {
+                    "overall": {"accuracy": tc_result.overall.accuracy},
+                    "across_topic": {"accuracy": tc_result.across_topic.accuracy},
+                    "within_topic": {
+                        t: {"accuracy": r.accuracy}
+                        for t, r in tc_result.within_topic.items()
+                    },
+                }
+                typer.echo(json.dumps(out_tc, indent=2))
+            else:
+                typer.echo("\n  Topic-Controlled Evaluation")
+                typer.echo(f"  {'═' * 50}")
+                typer.echo(f"\n  Overall accuracy: {tc_result.overall.accuracy:.1%}")
+                typer.echo(f"  Across-topic accuracy: {tc_result.across_topic.accuracy:.1%}")
+                typer.echo("\n  Within-topic:")
+                for t, r in sorted(tc_result.within_topic.items()):
+                    typer.echo(f"    {t:<25} {r.accuracy:.1%}")
+            return
+        elif train_genre and test_genre:
             from mowen.evaluation import cross_genre_evaluate
             result = cross_genre_evaluate(
                 known, config, train_genre, test_genre,
