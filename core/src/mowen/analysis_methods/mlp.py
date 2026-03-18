@@ -5,6 +5,10 @@ robustness.  When ``r_drop=False`` (default), uses scikit-learn's
 MLPClassifier.  When ``r_drop=True``, trains a simple torch MLP with
 R-Drop (Regularized Dropout) loss.
 
+GPU acceleration is available when ``r_drop=True``.  Set the ``device``
+parameter to ``"auto"`` (default) to auto-detect CUDA or MPS, or
+specify ``"cpu"``, ``"cuda"``, or ``"mps"`` explicitly.
+
 Reference for R-Drop: Liang et al. (NeurIPS 2021).
 """
 
@@ -45,6 +49,7 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
         default_factory=list, init=False, repr=False,
     )
     _rdrop_active: bool = field(default=False, init=False, repr=False)
+    _device: Any = field(default=None, init=False, repr=False)
 
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
@@ -98,6 +103,16 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
                 min_value=1e-6,
                 max_value=1.0,
             ),
+            ParamDef(
+                name="device",
+                description=(
+                    "Device for R-Drop training: auto (detect GPU), "
+                    "cpu, cuda, or mps."
+                ),
+                param_type=str,
+                default="auto",
+                choices=["auto", "cpu", "cuda", "mps"],
+            ),
         ]
 
     def _create_model(self) -> Any:
@@ -109,6 +124,23 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
             hidden_layer_sizes=(hidden_size,),
             max_iter=max_iter,
         )
+
+    @staticmethod
+    def _resolve_device(device_param: str) -> Any:
+        """Return a ``torch.device`` from the user-facing parameter.
+
+        When *device_param* is ``"auto"``, selects CUDA if available,
+        then MPS (Apple Silicon), otherwise CPU.
+        """
+        import torch
+
+        if device_param == "auto":
+            if torch.cuda.is_available():
+                return torch.device("cuda")
+            if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+                return torch.device("mps")
+            return torch.device("cpu")
+        return torch.device(device_param)
 
     def train(self, known_docs: list[tuple[Document, Histogram]]) -> None:
         """Train with sklearn or R-Drop torch path."""
@@ -132,6 +164,9 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
                 "R-Drop regularization requires PyTorch. "
                 "Install with: pip install torch"
             ) from exc
+
+        device = self._resolve_device(self.get_param("device"))
+        self._device = device
 
         # Detect numeric mode and build feature matrix
         self._numeric_mode = any(
@@ -169,16 +204,16 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
         lr: float = self.get_param("learning_rate")
         max_iter: int = self.get_param("max_iter")
 
-        # Build torch model
+        # Build torch model and move to device
         model = nn.Sequential(
             nn.Linear(input_dim, hidden_size),
             nn.ReLU(),
             nn.Dropout(dropout),
             nn.Linear(hidden_size, n_classes),
-        )
+        ).to(device)
 
-        x_tensor = torch.tensor(x_list, dtype=torch.float32)
-        y_tensor = torch.tensor(y_encoded, dtype=torch.long)
+        x_tensor = torch.tensor(x_list, dtype=torch.float32, device=device)
+        y_tensor = torch.tensor(y_encoded, dtype=torch.long, device=device)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         ce_loss = nn.CrossEntropyLoss()
@@ -230,7 +265,8 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
         else:
             vec = self._vectorize(unknown_histogram, self._vocabulary)
 
-        x = torch.tensor([vec], dtype=torch.float32)
+        device = self._device or torch.device("cpu")
+        x = torch.tensor([vec], dtype=torch.float32, device=device)
         with torch.no_grad():
             logits = self._torch_model(x)
             probs = torch.nn.functional.softmax(logits, dim=-1)[0]
