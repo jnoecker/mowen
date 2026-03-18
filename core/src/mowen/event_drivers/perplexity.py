@@ -138,7 +138,7 @@ class PerplexityDriver(EventDriver):
             surprisals.append(-token_log_prob)
 
         if not surprisals:
-            return NumericEventSet([0.0, 0.0, 0.0, 0.0])
+            return NumericEventSet([float("nan")] * 4)
 
         mean, var, skew, kurt = _statistics(surprisals)
         return NumericEventSet([mean, var, skew, kurt])

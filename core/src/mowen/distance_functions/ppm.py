@@ -103,8 +103,8 @@ class _PPMModel:
                 if count > 0:
                     return count / node.total
 
-        # Fallback: uniform over alphabet
-        return 1.0 / max(self._alphabet_size, 256)
+        # Fallback: uniform over observed alphabet (or 256 if empty)
+        return 1.0 / (self._alphabet_size if self._alphabet_size > 0 else 256)
 
 
 def _histogram_to_text(h: Histogram) -> str:

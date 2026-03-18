@@ -72,9 +72,15 @@ class MahalanobisDistance(AnalysisMethod):
         cov = (centered.T @ centered) / max(len(all_vectors) - 1, 1)
         # Use pseudo-inverse for singular matrices.
         try:
-            cov_inv = pinv(cov)
+            cov_inv = np.linalg.inv(cov)
         except LinAlgError:
-            cov_inv = np.eye(n_features)
+            import warnings
+            warnings.warn(
+                "Covariance matrix is singular (insufficient data or "
+                "redundant features). Falling back to pseudo-inverse.",
+                stacklevel=2,
+            )
+            cov_inv = pinv(cov)
 
         unknown_vec = _to_vector(unknown_histogram)
 

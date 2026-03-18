@@ -151,6 +151,8 @@ class ExperimentResponse(BaseModel):
     config: ExperimentConfig
     progress: float
     error_message: str | None
+    lower_is_better: bool = True
+    verification_threshold: float | None = None
     known_corpus_ids: list[int] = []
     unknown_corpus_ids: list[int] = []
     created_at: datetime
@@ -158,6 +160,32 @@ class ExperimentResponse(BaseModel):
     completed_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class StyleChangeRequest(BaseModel):
+    """Request body for style change detection."""
+
+    document_id: int
+    event_drivers: list[ComponentSpec]
+    distance_function: ComponentSpec | None = None
+    threshold: float = 0.5
+    separator: str = "\n\n"
+
+
+class StyleChangeBoundary(BaseModel):
+    """A single boundary prediction between adjacent paragraphs."""
+
+    index: int
+    score: float
+    is_change: bool
+
+
+class StyleChangeResponse(BaseModel):
+    """Result of style change detection on a document."""
+
+    document_title: str
+    num_paragraphs: int
+    boundaries: list[StyleChangeBoundary]
 
 
 class RankingEntry(BaseModel):
