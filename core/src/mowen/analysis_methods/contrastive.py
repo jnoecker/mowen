@@ -146,6 +146,11 @@ class ContrastiveLearning(AnalysisMethod):
 
         proj_dim: int = self.get_param("projection_dim")
         if proj_dim > 0:
+            if proj_dim > self._dim:
+                raise ValueError(
+                    f"projection_dim ({proj_dim}) must be <= feature dimension "
+                    f"({self._dim})"
+                )
             self._learn_projection(author_vecs, proj_dim)
             # Re-compute centroids in projected space
             self._centroids = {}

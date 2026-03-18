@@ -113,7 +113,7 @@ def detect_style_changes(
         if rng > 0:
             normalized = [(d - min_d) / rng for d in distances]
         else:
-            normalized = [0.5] * len(distances)
+            normalized = [0.0] * len(distances)
     else:
         normalized = []
 

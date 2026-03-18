@@ -168,7 +168,8 @@ class TestRun:
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert "verification_threshold" in data[0]
-        assert "verified" in data[0]
+        assert "verdict" in data[0]
+        assert data[0]["verdict"] in ("VERIFIED", "REJECTED", "INCONCLUSIVE")
         assert data[0]["verification_threshold"] == 0.5
 
     def test_run_no_unknowns(self, tmp_path):
@@ -195,6 +196,89 @@ class TestConvertJgaap:
 
     def test_convert_missing_file(self):
         result = runner.invoke(app, ["convert-jgaap", "/nonexistent.csv"])
+        assert result.exit_code == 1
+
+
+class TestDetectChanges:
+    def test_detect_changes_text_output(self, tmp_path):
+        doc_path = _write_style_change_doc(tmp_path)
+        result = runner.invoke(app, [
+            "detect-changes", str(doc_path),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        output = _strip_ansi(result.output).lower()
+        assert "change" in output or "same" in output
+
+    def test_detect_changes_json_output(self, tmp_path):
+        doc_path = _write_style_change_doc(tmp_path)
+        result = runner.invoke(app, [
+            "detect-changes", str(doc_path),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "--json",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        data = json.loads(_strip_ansi(result.output))
+        assert "boundaries" in data
+        assert "paragraphs" in data
+
+    def test_detect_changes_threshold(self, tmp_path):
+        doc_path = _write_style_change_doc(tmp_path)
+        # threshold=0.0 means everything is a change
+        result = runner.invoke(app, [
+            "detect-changes", str(doc_path),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "-t", "0.0",
+            "--json",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        data = json.loads(_strip_ansi(result.output))
+        assert len(data["boundaries"]) > 0
+        assert all(b["is_change"] for b in data["boundaries"])
+
+    def test_detect_changes_custom_separator(self, tmp_path):
+        text = (
+            "The government must be strong and protect liberty. "
+            "Federal power requires the authority of taxation."
+            "---"
+            "12345 67890 !@#$% ^&*() +=- []{}|;':,./<>? "
+            "99999 88888 77777 66666 55555 44444 33333"
+        )
+        doc_path = tmp_path / "custom_sep.txt"
+        doc_path.write_text(text, encoding="utf-8")
+        result = runner.invoke(app, [
+            "detect-changes", str(doc_path),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+            "--separator", "---",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        output = _strip_ansi(result.output)
+        assert "2 paragraphs" in output
+
+    def test_detect_changes_single_paragraph(self, tmp_path):
+        doc_path = tmp_path / "single.txt"
+        doc_path.write_text(
+            "This is a single paragraph with no breaks at all.",
+            encoding="utf-8",
+        )
+        result = runner.invoke(app, [
+            "detect-changes", str(doc_path),
+            "-e", "character_ngram:n=3",
+            "--distance", "cosine",
+        ])
+        assert result.exit_code == 0, _strip_ansi(result.output)
+        output = _strip_ansi(result.output)
+        assert "0 change" in output
+
+    def test_detect_changes_missing_file(self):
+        result = runner.invoke(app, [
+            "detect-changes", "/nonexistent_file.txt",
+            "-e", "character_ngram:n=3",
+        ])
         assert result.exit_code == 1
 
 
@@ -314,3 +398,16 @@ def _write_corpus(tmp_path):
     (tmp_path / "manifest.csv").write_text(
         "a1.txt,Author A\nb1.txt,Author B\nunknown.txt,\n", encoding="utf-8"
     )
+
+
+def _write_style_change_doc(tmp_path):
+    """Write a multi-paragraph document for style change detection."""
+    text = (
+        "The government must be strong and protect liberty. "
+        "Federal power requires the authority of taxation.\n\n"
+        "12345 67890 !@#$% ^&*() +=- []{}|;':,./<>? "
+        "99999 88888 77777 66666 55555 44444 33333"
+    )
+    doc_path = tmp_path / "multi_author.txt"
+    doc_path.write_text(text, encoding="utf-8")
+    return doc_path

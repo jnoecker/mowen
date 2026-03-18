@@ -82,6 +82,8 @@ export interface ExperimentResponse {
   config: ExperimentConfig;
   progress: number;
   error_message: string | null;
+  lower_is_better: boolean;
+  verification_threshold: number | null;
   known_corpus_ids: number[];
   unknown_corpus_ids: number[];
   created_at: string;

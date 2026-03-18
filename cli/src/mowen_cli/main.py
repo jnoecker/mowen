@@ -157,9 +157,11 @@ def run(
                 if r.rankings:
                     top_score = r.rankings[0].score
                     if top_score == 0.5:
-                        entry["inconclusive"] = True
+                        entry["verdict"] = "INCONCLUSIVE"
+                    elif top_score >= r.verification_threshold:
+                        entry["verdict"] = "VERIFIED"
                     else:
-                        entry["verified"] = top_score >= r.verification_threshold
+                        entry["verdict"] = "REJECTED"
             out.append(entry)
         typer.echo(json.dumps(out, indent=2))
     else:

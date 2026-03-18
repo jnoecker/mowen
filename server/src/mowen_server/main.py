@@ -49,13 +49,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
 
-    from mowen_server.routers import corpora, documents, experiments, pipeline, sample_corpora
+    from mowen_server.routers import (
+        corpora,
+        documents,
+        experiments,
+        pipeline,
+        sample_corpora,
+        style_change,
+    )
 
     app.include_router(documents.router)
     app.include_router(corpora.router)
     app.include_router(experiments.router)
     app.include_router(pipeline.router)
     app.include_router(sample_corpora.router)
+    app.include_router(style_change.router)
 
     @app.get("/api/v1/health")
     def health():

@@ -34,6 +34,8 @@ def _experiment_to_response(experiment: Experiment) -> ExperimentResponse:
         config=ExperimentConfig.model_validate_json(experiment.config),
         progress=experiment.progress,
         error_message=experiment.error_message,
+        lower_is_better=bool(experiment.lower_is_better),
+        verification_threshold=experiment.verification_threshold,
         known_corpus_ids=known_ids,
         unknown_corpus_ids=unknown_ids,
         created_at=experiment.created_at,
@@ -49,6 +51,17 @@ def create_experiment(
     settings: Settings = Depends(get_settings),
 ) -> ExperimentResponse:
     """Create and submit a new experiment for execution."""
+    # Validate that distance_function is provided when the analysis method needs it
+    from mowen.analysis_methods import NeighborAnalysisMethod, analysis_method_registry
+    method_name = body.config.analysis_method.name
+    method_cls = analysis_method_registry.get(method_name)
+    if method_cls is not None and issubclass(method_cls, NeighborAnalysisMethod):
+        if body.config.distance_function is None:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Analysis method {method_name!r} requires a distance_function.",
+            )
+
     # Reject overlapping corpus IDs
     overlap = set(body.known_corpus_ids) & set(body.unknown_corpus_ids)
     if overlap:

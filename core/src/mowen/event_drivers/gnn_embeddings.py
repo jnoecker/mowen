@@ -13,6 +13,7 @@ Reference: Valdez Valenzuela et al. (PAN 2023/2025).
 from __future__ import annotations
 
 import hashlib
+import logging
 import math
 from dataclasses import dataclass, field
 from typing import Any
@@ -20,6 +21,8 @@ from typing import Any
 from mowen.event_drivers.base import EventDriver, event_driver_registry
 from mowen.parameters import ParamDef
 from mowen.types import NumericEventSet
+
+logger = logging.getLogger(__name__)
 
 
 def _relu(x: float) -> float:
@@ -223,6 +226,21 @@ class GNNEmbeddingDriver(EventDriver):
         dep_to_idx = {d: i for i, d in enumerate(dep_labels)}
 
         # Build node features: token vector + POS one-hot + dep one-hot
+        n_with_vec = sum(1 for t in doc if t.has_vector)
+        if n_with_vec == 0:
+            logger.warning(
+                "No tokens have word vectors in spaCy model %r. "
+                "GNN features will rely on POS/dep tags only.",
+                self.get_param("spacy_model"),
+            )
+        elif n_with_vec < len(doc) * 0.5:
+            logger.warning(
+                "%d/%d tokens lack word vectors (%.0f%% OOV). "
+                "GNN embedding quality may be degraded.",
+                len(doc) - n_with_vec,
+                len(doc),
+                (len(doc) - n_with_vec) / len(doc) * 100,
+            )
         vec_dim = len(doc[0].vector) if doc[0].has_vector else 0
         pos_dim = len(pos_labels)
         dep_dim = len(dep_labels)
