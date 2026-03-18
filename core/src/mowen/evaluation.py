@@ -575,6 +575,133 @@ def cross_genre_evaluate(
 
 
 # ---------------------------------------------------------------------------
+# Topic-controlled evaluation
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class TopicControlledResult:
+    """Comparative results from topic-controlled evaluation."""
+
+    within_topic: dict[str, EvaluationResult]  # topic -> result
+    across_topic: EvaluationResult
+    overall: EvaluationResult
+
+
+def topic_controlled_evaluate(
+    documents: list[Document],
+    config: PipelineConfig,
+    *,
+    topic_key: str = "topic",
+    progress_callback: ProgressCallback | None = None,
+) -> TopicControlledResult:
+    """Evaluate with topic controls to measure topic confounding.
+
+    Produces three sets of results:
+
+    * **within-topic**: LOO for each topic separately
+    * **across-topic**: for each topic, train on other topics, test on it
+    * **overall**: standard LOO ignoring topics
+
+    Documents must have ``metadata[topic_key]`` set and an author.
+
+    Parameters
+    ----------
+    documents:
+        All documents with topic metadata.
+    config:
+        Pipeline configuration.
+    topic_key:
+        Metadata key for topic labels.
+    progress_callback:
+        Optional ``(fraction, message)`` callback.
+    """
+    # Validate
+    for doc in documents:
+        if topic_key not in doc.metadata:
+            raise EvaluationError(
+                f"Document {doc.title!r} missing metadata key "
+                f"{topic_key!r}"
+            )
+        if not doc.author:
+            raise EvaluationError(
+                f"Document {doc.title!r} has no author"
+            )
+
+    # Group by topic
+    by_topic: dict[str, list[Document]] = {}
+    for doc in documents:
+        topic = doc.metadata[topic_key]
+        by_topic.setdefault(topic, []).append(doc)
+
+    topics = sorted(by_topic.keys())
+
+    # Within-topic: LOO per topic
+    within: dict[str, EvaluationResult] = {}
+    for i, topic in enumerate(topics):
+        topic_docs = by_topic[topic]
+        topic_authors = {d.author for d in topic_docs}
+        if len(topic_authors) < 2 or len(topic_docs) < 2:
+            logger.warning(
+                "Topic %r skipped for within-topic: "
+                "insufficient authors or documents",
+                topic,
+            )
+            continue
+        if progress_callback:
+            frac = i / (len(topics) * 2)
+            progress_callback(frac, f"Within-topic: {topic}")
+        within[topic] = leave_one_out(topic_docs, config)
+
+    # Across-topic: for each topic, train on others, test on it
+    across_folds: list[FoldResult] = []
+    for i, topic in enumerate(topics):
+        test_docs = by_topic[topic]
+        train_docs = [
+            d for t, docs in by_topic.items()
+            for d in docs if t != topic
+        ]
+        train_authors = {d.author for d in train_docs}
+        if len(train_authors) < 2:
+            logger.warning(
+                "Topic %r skipped for across-topic: "
+                "training set has < 2 authors",
+                topic,
+            )
+            continue
+        if progress_callback:
+            frac = 0.5 + i / (len(topics) * 2)
+            progress_callback(frac, f"Across-topic: {topic}")
+
+        results = Pipeline(config).execute(train_docs, test_docs)
+        preds = [
+            _make_prediction(r, test_docs[j].author or "")
+            for j, r in enumerate(results)
+        ]
+        across_folds.append(FoldResult(fold_index=i, predictions=preds))
+
+    across = _compute_metrics(across_folds) if across_folds else EvaluationResult(
+        fold_results=[], accuracy=0.0, per_author=[],
+        macro_precision=0.0, macro_recall=0.0, macro_f1=0.0,
+        confusion_matrix={},
+    )
+
+    # Overall: standard LOO
+    if progress_callback:
+        progress_callback(0.9, "Overall LOO")
+    overall = leave_one_out(documents, config)
+
+    if progress_callback:
+        progress_callback(1.0, "Evaluation complete")
+
+    return TopicControlledResult(
+        within_topic=within,
+        across_topic=across,
+        overall=overall,
+    )
+
+
+# ---------------------------------------------------------------------------
 # CSV export
 # ---------------------------------------------------------------------------
 
