@@ -24,8 +24,7 @@ class LogisticRegression(SklearnAnalysisMethod):
 
     display_name: str = "Logistic Regression"
     description: str = (
-        "Assigns authorship using Logistic Regression "
-        "(requires scikit-learn)."
+        "Assigns authorship using Logistic Regression " "(requires scikit-learn)."
     )
 
     def _create_model(self) -> Any:

@@ -20,7 +20,6 @@ from mowen.analysis_methods.base import AnalysisMethod, analysis_method_registry
 from mowen.parameters import ParamDef
 from mowen.types import Attribution, Document, Histogram
 
-
 _PROMPT_TEMPLATES = {
     "no_guidance": (
         "Here are texts by known authors:\n\n{known_texts}\n\n"
@@ -84,7 +83,9 @@ class LLMPrompting(AnalysisMethod):
     )
 
     _author_excerpts: dict[str, str] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
 
     @classmethod
@@ -153,9 +154,7 @@ class LLMPrompting(AnalysisMethod):
         """Reconstruct text from histogram events."""
         tokens = []
         for event in histogram.unique_events():
-            tokens.extend(
-                [event.data] * histogram.absolute_frequency(event)
-            )
+            tokens.extend([event.data] * histogram.absolute_frequency(event))
         return " ".join(tokens)
 
     def _build_prompt(self, unknown_text: str) -> str:

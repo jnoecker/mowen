@@ -8,9 +8,7 @@ from dataclasses import dataclass
 from mowen.canonicizers.base import Canonicizer, canonicizer_registry
 
 # Match control characters (ASCII 0-31) except \t (9), \n (10), \r (13).
-_CONTROL_CHAR_PATTERN = re.compile(
-    r"[\x00-\x08\x0b\x0c\x0e-\x1f]"
-)
+_CONTROL_CHAR_PATTERN = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
 @canonicizer_registry.register("strip_null_chars")

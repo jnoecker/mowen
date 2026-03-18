@@ -33,9 +33,7 @@ def load_function_words(language: str) -> frozenset[str]:
     data_dir = Path(__file__).parent / "function_words"
     word_file = data_dir / f"{lang}.txt"
     if not word_file.exists():
-        available = sorted(
-            p.stem for p in data_dir.glob("*.txt")
-        )
+        available = sorted(p.stem for p in data_dir.glob("*.txt"))
         raise FileNotFoundError(
             f"No function word list for language {language!r}. "
             f"Available: {', '.join(available)}"
@@ -77,14 +75,16 @@ def list_sample_corpora() -> list[dict[str, Any]]:
     """
     result = []
     for entry in _load_manifest():
-        result.append({
-            "id": entry["id"],
-            "name": entry["name"],
-            "description": entry["description"],
-            "num_known": len(entry["known"]),
-            "num_unknown": len(entry["unknown"]),
-            "num_authors": len({k["author"] for k in entry["known"]}),
-        })
+        result.append(
+            {
+                "id": entry["id"],
+                "name": entry["name"],
+                "description": entry["description"],
+                "num_known": len(entry["known"]),
+                "num_unknown": len(entry["unknown"]),
+                "num_authors": len({k["author"] for k in entry["known"]}),
+            }
+        )
     return result
 
 
@@ -106,8 +106,7 @@ def get_sample_corpus(corpus_id: str) -> dict[str, Any]:
             return entry
     available = [e["id"] for e in _load_manifest()]
     raise KeyError(
-        f"Sample corpus {corpus_id!r} not found. "
-        f"Available: {', '.join(available)}"
+        f"Sample corpus {corpus_id!r} not found. " f"Available: {', '.join(available)}"
     )
 
 

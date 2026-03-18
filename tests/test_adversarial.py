@@ -13,7 +13,6 @@ from mowen.exceptions import DocumentLoadError, PipelineError
 from mowen.pipeline import Pipeline, PipelineConfig
 from mowen.types import Document, Event, EventSet, Histogram, NumericEventSet
 
-
 # -----------------------------------------------------------------------
 # Finding 1: Loader fail-closed for optional extensions
 # -----------------------------------------------------------------------
@@ -75,6 +74,7 @@ class TestMixedDriverValidation:
         from mowen.event_drivers.base import EventDriver, event_driver_registry
 
         try:
+
             @event_driver_registry.register("_test_numeric")
             class _TestNumericDriver(EventDriver):
                 display_name = "Test Numeric"
@@ -82,6 +82,7 @@ class TestMixedDriverValidation:
 
                 def create_event_set(self, text):
                     return NumericEventSet([1.0, 2.0, 3.0])
+
         except Exception:
             pass  # Already registered from test_embeddings.py
 
@@ -102,6 +103,7 @@ class TestMixedDriverValidation:
         from mowen.event_drivers.base import EventDriver, event_driver_registry
 
         try:
+
             @event_driver_registry.register("_test_numeric2")
             class _TestNumericDriver2(EventDriver):
                 display_name = "Test Numeric 2"
@@ -109,6 +111,7 @@ class TestMixedDriverValidation:
 
                 def create_event_set(self, text):
                     return NumericEventSet([1.0, 2.0, 3.0])
+
         except Exception:
             pass
 
@@ -191,9 +194,9 @@ class TestMarkovChainOOV:
 
         # Both authors should have different scores for the OOV event
         scores = {r.author: r.score for r in results}
-        assert scores["BigAuthor"] != scores["SmallAuthor"], (
-            "OOV smoothing should differ based on author corpus size"
-        )
+        assert (
+            scores["BigAuthor"] != scores["SmallAuthor"]
+        ), "OOV smoothing should differ based on author corpus size"
         # BigAuthor's OOV probability is smaller (more total tokens → lower Laplace prob)
         # so its log-likelihood should be more negative
         assert scores["BigAuthor"] < scores["SmallAuthor"]
@@ -303,10 +306,22 @@ class TestBurrowsDeltaZeroVariance:
 
         # Event 'c' has identical frequency in all docs → zero variance
         data = [
-            (Document(text="", author="A"), Histogram({Event("a"): 5, Event("b"): 1, Event("c"): 3})),
-            (Document(text="", author="A"), Histogram({Event("a"): 4, Event("b"): 2, Event("c"): 3})),
-            (Document(text="", author="B"), Histogram({Event("a"): 1, Event("b"): 5, Event("c"): 3})),
-            (Document(text="", author="B"), Histogram({Event("a"): 2, Event("b"): 4, Event("c"): 3})),
+            (
+                Document(text="", author="A"),
+                Histogram({Event("a"): 5, Event("b"): 1, Event("c"): 3}),
+            ),
+            (
+                Document(text="", author="A"),
+                Histogram({Event("a"): 4, Event("b"): 2, Event("c"): 3}),
+            ),
+            (
+                Document(text="", author="B"),
+                Histogram({Event("a"): 1, Event("b"): 5, Event("c"): 3}),
+            ),
+            (
+                Document(text="", author="B"),
+                Histogram({Event("a"): 2, Event("b"): 4, Event("c"): 3}),
+            ),
         ]
         method.train(data)
 

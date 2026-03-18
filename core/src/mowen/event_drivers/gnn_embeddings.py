@@ -67,8 +67,7 @@ class _SimpleGCN:
             scale = 1.0 / math.sqrt(in_d)
             raw = _seeded_random(seed + rng_offset, in_d * out_d)
             w = [
-                [raw[i * out_d + j] * scale for j in range(out_d)]
-                for i in range(in_d)
+                [raw[i * out_d + j] * scale for j in range(out_d)] for i in range(in_d)
             ]
             self.layers.append(w)
             bias = [0.0] * out_d
@@ -289,14 +288,8 @@ class GNNEmbeddingDriver(EventDriver):
                 for d in range(embed_dim)
             ]
         elif pooling == "max":
-            pooled = [
-                max(ne[d] for ne in node_embeds)
-                for d in range(embed_dim)
-            ]
+            pooled = [max(ne[d] for ne in node_embeds) for d in range(embed_dim)]
         else:  # sum
-            pooled = [
-                sum(ne[d] for ne in node_embeds)
-                for d in range(embed_dim)
-            ]
+            pooled = [sum(ne[d] for ne in node_embeds) for d in range(embed_dim)]
 
         return NumericEventSet(pooled)

@@ -16,7 +16,6 @@ from mowen.pipeline import Pipeline, PipelineConfig
 from mowen.registry import Registry
 from mowen.types import Document, EventSet, NumericEventSet
 
-
 # -- Mock embedding driver (no HuggingFace needed) --------------------------
 
 # Use a separate registry so we don't pollute the real one
@@ -217,8 +216,8 @@ class TestNumericPipeline:
             event_drivers=[{"name": "mock_embeddings"}],
             analysis_method={"name": "svm"},
         )
-        Pipeline(config, progress_callback=lambda f, m: progress_log.append((f, m))).execute(
-            known_docs, unknown_docs
-        )
+        Pipeline(
+            config, progress_callback=lambda f, m: progress_log.append((f, m))
+        ).execute(known_docs, unknown_docs)
         assert len(progress_log) > 0
         assert progress_log[-1][0] >= 0.9

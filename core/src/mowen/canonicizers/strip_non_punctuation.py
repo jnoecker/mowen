@@ -9,9 +9,7 @@ from dataclasses import dataclass
 from mowen.canonicizers.base import Canonicizer, canonicizer_registry
 
 # Match any character that is NOT punctuation and NOT whitespace.
-_NON_PUNCT_PATTERN = re.compile(
-    "[^" + re.escape(string.punctuation) + r"\s]"
-)
+_NON_PUNCT_PATTERN = re.compile("[^" + re.escape(string.punctuation) + r"\s]")
 
 
 @canonicizer_registry.register("strip_non_punctuation")

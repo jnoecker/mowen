@@ -37,13 +37,19 @@ class MarkovChain(AnalysisMethod):
     )
 
     _author_distributions: dict[str, dict[Event, float]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _author_totals: dict[str, int] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _global_vocab: set[Event] = field(
-        default_factory=set, init=False, repr=False,
+        default_factory=set,
+        init=False,
+        repr=False,
     )
 
     def train(self, known_docs: list[tuple[Document, Histogram]]) -> None:

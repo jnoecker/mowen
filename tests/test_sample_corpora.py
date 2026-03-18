@@ -58,9 +58,9 @@ class TestCoreData:
         for meta in list_sample_corpora():
             corpus = get_sample_corpus(meta["id"])
             for entry in corpus["known"] + corpus["unknown"]:
-                assert (data_dir / entry["file"]).is_file(), (
-                    f"Missing: {entry['file']} in {meta['id']}"
-                )
+                assert (
+                    data_dir / entry["file"]
+                ).is_file(), f"Missing: {entry['file']} in {meta['id']}"
 
 
 # -----------------------------------------------------------------------

@@ -22,9 +22,7 @@ class ManhattanDistance(DistanceFunction):
     """
 
     display_name: str = "Manhattan Distance"
-    description: str = (
-        "Sum of absolute differences of relative frequencies (L1 norm)."
-    )
+    description: str = "Sum of absolute differences of relative frequencies (L1 norm)."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Manhattan distance between *h1* and *h2*."""

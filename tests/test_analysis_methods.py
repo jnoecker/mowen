@@ -348,11 +348,19 @@ def _make_large_training_data():
     """Larger training set for sklearn methods."""
     data = []
     for i, (a, b) in enumerate([(5, 1), (4, 2), (6, 1), (5, 2)]):
-        data.append((Document(text="", author="Author A", title=f"a{i}"),
-                      Histogram({Event("a"): a, Event("b"): b})))
+        data.append(
+            (
+                Document(text="", author="Author A", title=f"a{i}"),
+                Histogram({Event("a"): a, Event("b"): b}),
+            )
+        )
     for i, (a, b) in enumerate([(1, 5), (2, 4), (1, 6), (2, 5)]):
-        data.append((Document(text="", author="Author B", title=f"b{i}"),
-                      Histogram({Event("a"): a, Event("b"): b})))
+        data.append(
+            (
+                Document(text="", author="Author B", title=f"b{i}"),
+                Histogram({Event("a"): a, Event("b"): b}),
+            )
+        )
     return data
 
 
@@ -411,7 +419,9 @@ class TestLogisticRegression:
 class TestMultilayerPerceptron:
     def test_attributes_correctly(self):
         sklearn = pytest.importorskip("sklearn")
-        method = analysis_method_registry.create("mlp", {"hidden_size": 10, "max_iter": 500})
+        method = analysis_method_registry.create(
+            "mlp", {"hidden_size": 10, "max_iter": 500}
+        )
         method.train(_make_large_training_data())
         unknown = Histogram({Event("a"): 6, Event("b"): 1})
         results = method.analyze(unknown)
@@ -419,7 +429,9 @@ class TestMultilayerPerceptron:
 
     def test_all_authors_present(self):
         sklearn = pytest.importorskip("sklearn")
-        method = analysis_method_registry.create("mlp", {"hidden_size": 10, "max_iter": 500})
+        method = analysis_method_registry.create(
+            "mlp", {"hidden_size": 10, "max_iter": 500}
+        )
         method.train(_make_large_training_data())
         unknown = Histogram({Event("a"): 3, Event("b"): 3})
         results = method.analyze(unknown)
@@ -427,7 +439,9 @@ class TestMultilayerPerceptron:
 
     def test_scores_are_probabilities(self):
         sklearn = pytest.importorskip("sklearn")
-        method = analysis_method_registry.create("mlp", {"hidden_size": 10, "max_iter": 500})
+        method = analysis_method_registry.create(
+            "mlp", {"hidden_size": 10, "max_iter": 500}
+        )
         method.train(_make_large_training_data())
         results = method.analyze(Histogram({Event("a"): 6, Event("b"): 1}))
         assert all(0 <= r.score <= 1 for r in results)

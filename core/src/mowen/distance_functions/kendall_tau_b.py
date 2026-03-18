@@ -27,15 +27,11 @@ class KendallTauBDistance(DistanceFunction):
     """
 
     display_name: str = "Kendall Tau-B Distance"
-    description: str = (
-        "Kendall tau-b distance: tie-corrected rank correlation."
-    )
+    description: str = "Kendall tau-b distance: tie-corrected rank correlation."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Kendall tau-b distance between *h1* and *h2*."""
-        all_events = sorted(
-            h1.unique_events() | h2.unique_events(), key=str
-        )
+        all_events = sorted(h1.unique_events() | h2.unique_events(), key=str)
         n = len(all_events)
         if n < 2:
             return 0.0
@@ -64,8 +60,7 @@ class KendallTauBDistance(DistanceFunction):
                     discordant += 1
 
         denom = math.sqrt(
-            (concordant + discordant + ties1)
-            * (concordant + discordant + ties2)
+            (concordant + discordant + ties1) * (concordant + discordant + ties2)
         )
         if denom == 0.0:
             return 0.0

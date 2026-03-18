@@ -6,6 +6,7 @@ import pytest
 _spacy_available = False
 try:
     import spacy
+
     spacy.load("en_core_web_sm")
     _spacy_available = True
 except Exception:
@@ -21,10 +22,12 @@ _skip_spacy = pytest.mark.skipif(
 class TestGNNEmbeddings:
     def test_registered(self):
         from mowen.event_drivers import event_driver_registry
+
         assert "gnn_embeddings" in event_driver_registry.names()
 
     def test_param_defs(self):
         from mowen.event_drivers import event_driver_registry
+
         driver = event_driver_registry.create("gnn_embeddings")
         param_names = {p.name for p in driver.param_defs()}
         assert "spacy_model" in param_names
@@ -37,9 +40,7 @@ class TestGNNEmbeddings:
         from mowen.types import NumericEventSet
 
         driver = event_driver_registry.create("gnn_embeddings")
-        result = driver.create_event_set(
-            "The quick brown fox jumps over the lazy dog."
-        )
+        result = driver.create_event_set("The quick brown fox jumps over the lazy dog.")
         assert isinstance(result, NumericEventSet)
         assert len(result) == 64  # default hidden_dim
 
@@ -47,9 +48,7 @@ class TestGNNEmbeddings:
         from mowen.event_drivers import event_driver_registry
         from mowen.types import NumericEventSet
 
-        driver = event_driver_registry.create(
-            "gnn_embeddings", {"hidden_dim": 32}
-        )
+        driver = event_driver_registry.create("gnn_embeddings", {"hidden_dim": 32})
         result = driver.create_event_set("Hello world.")
         assert isinstance(result, NumericEventSet)
         assert len(result) == 32
@@ -71,9 +70,7 @@ class TestGNNEmbeddings:
 
         driver = event_driver_registry.create("gnn_embeddings")
         r1 = driver.create_event_set("The cat sat on the mat.")
-        r2 = driver.create_event_set(
-            "Economic policy drives national growth."
-        )
+        r2 = driver.create_event_set("Economic policy drives national growth.")
         assert list(r1) != list(r2)
 
     def test_empty_text(self):

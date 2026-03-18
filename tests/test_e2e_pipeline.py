@@ -73,7 +73,9 @@ def test_e2e_word_events_manhattan():
     known = [
         Document(text="the cat sat on the mat the cat is fluffy", author="CatPerson"),
         Document(text="the dog ran in the park the dog is loyal", author="DogPerson"),
-        Document(text="the cat played with yarn the fluffy cat purred", author="CatPerson"),
+        Document(
+            text="the cat played with yarn the fluffy cat purred", author="CatPerson"
+        ),
     ]
     unknown = [Document(text="the cat napped on a soft fluffy blanket")]
 

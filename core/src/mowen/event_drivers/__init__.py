@@ -33,7 +33,9 @@ from mowen.event_drivers import vowel_initial_words as vowel_initial_words  # no
 from mowen.event_drivers import sentence_features as sentence_features  # noqa: F401
 from mowen.event_drivers import line_features as line_features  # noqa: F401
 from mowen.event_drivers import mn_letter_words as mn_letter_words  # noqa: F401
-from mowen.event_drivers import vowel_mn_letter_words as vowel_mn_letter_words  # noqa: F401
+from mowen.event_drivers import (
+    vowel_mn_letter_words as vowel_mn_letter_words,
+)  # noqa: F401
 from mowen.event_drivers import syllables as syllables  # noqa: F401
 from mowen.event_drivers import truncated_frequency as truncated_frequency  # noqa: F401
 from mowen.event_drivers import reaction_time as reaction_time  # noqa: F401
@@ -44,7 +46,9 @@ from mowen.event_drivers import ner as ner  # noqa: F401
 from mowen.event_drivers import definitions as definitions  # noqa: F401
 
 try:
-    from mowen.event_drivers import transformer_embeddings as transformer_embeddings  # noqa: F401
+    from mowen.event_drivers import (
+        transformer_embeddings as transformer_embeddings,
+    )  # noqa: F401
 except ImportError:
     pass  # transformers/torch not installed
 

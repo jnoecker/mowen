@@ -57,7 +57,9 @@ class TestStyleChangeDetection:
         text = "First section.---Second section."
         doc = Document(text=text, title="custom")
         result = detect_style_changes(
-            doc, _config(), separator="---",
+            doc,
+            _config(),
+            separator="---",
         )
         assert len(result.paragraphs) == 2
         assert len(result.predictions) == 1

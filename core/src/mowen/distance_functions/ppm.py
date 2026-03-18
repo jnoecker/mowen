@@ -78,9 +78,7 @@ class _PPMModel:
 
         return total_log_prob / len(text)
 
-    def _char_probability(
-        self, text: str, pos: int, char: str
-    ) -> float:
+    def _char_probability(self, text: str, pos: int, char: str) -> float:
         """Estimate probability of char at position using backoff."""
         # Try decreasing context lengths
         for d in range(min(self.order, pos), -1, -1):

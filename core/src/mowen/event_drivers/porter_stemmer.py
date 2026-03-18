@@ -56,13 +56,19 @@ def _stem(word: str) -> str:
         n = len(w)
         if n < 3:
             return False
-        return (_is_consonant(w, n - 3) and not _is_consonant(w, n - 2)
-                and _is_consonant(w, n - 1) and w[-1] not in "wxy")
+        return (
+            _is_consonant(w, n - 3)
+            and not _is_consonant(w, n - 2)
+            and _is_consonant(w, n - 1)
+            and w[-1] not in "wxy"
+        )
 
-    def _replace(w: str, suffix: str, replacement: str, condition=None) -> tuple[str, bool]:
+    def _replace(
+        w: str, suffix: str, replacement: str, condition=None
+    ) -> tuple[str, bool]:
         if not w.endswith(suffix):
             return w, False
-        stem = w[:-len(suffix)] if suffix else w
+        stem = w[: -len(suffix)] if suffix else w
         if condition is None or condition(stem):
             return stem + replacement, True
         return w, False
@@ -84,7 +90,7 @@ def _stem(word: str) -> str:
         changed = False
         for suffix in ("ed", "ing"):
             if word.endswith(suffix):
-                stem = word[:-len(suffix)]
+                stem = word[: -len(suffix)]
                 if _has_vowel(stem):
                     word = stem
                     changed = True
@@ -103,42 +109,76 @@ def _stem(word: str) -> str:
 
     # Step 2
     step2 = [
-        ("ational", "ate"), ("tional", "tion"), ("enci", "ence"),
-        ("anci", "ance"), ("izer", "ize"), ("abli", "able"),
-        ("alli", "al"), ("entli", "ent"), ("eli", "e"),
-        ("ousli", "ous"), ("ization", "ize"), ("ation", "ate"),
-        ("ator", "ate"), ("alism", "al"), ("iveness", "ive"),
-        ("fulness", "ful"), ("ousness", "ous"), ("aliti", "al"),
-        ("iviti", "ive"), ("biliti", "ble"),
+        ("ational", "ate"),
+        ("tional", "tion"),
+        ("enci", "ence"),
+        ("anci", "ance"),
+        ("izer", "ize"),
+        ("abli", "able"),
+        ("alli", "al"),
+        ("entli", "ent"),
+        ("eli", "e"),
+        ("ousli", "ous"),
+        ("ization", "ize"),
+        ("ation", "ate"),
+        ("ator", "ate"),
+        ("alism", "al"),
+        ("iveness", "ive"),
+        ("fulness", "ful"),
+        ("ousness", "ous"),
+        ("aliti", "al"),
+        ("iviti", "ive"),
+        ("biliti", "ble"),
     ]
     for suffix, replacement in step2:
         if word.endswith(suffix):
-            stem = word[:-len(suffix)]
+            stem = word[: -len(suffix)]
             if _measure(stem) > 0:
                 word = stem + replacement
             break
 
     # Step 3
     step3 = [
-        ("icate", "ic"), ("ative", ""), ("alize", "al"),
-        ("iciti", "ic"), ("ical", "ic"), ("ful", ""), ("ness", ""),
+        ("icate", "ic"),
+        ("ative", ""),
+        ("alize", "al"),
+        ("iciti", "ic"),
+        ("ical", "ic"),
+        ("ful", ""),
+        ("ness", ""),
     ]
     for suffix, replacement in step3:
         if word.endswith(suffix):
-            stem = word[:-len(suffix)]
+            stem = word[: -len(suffix)]
             if _measure(stem) > 0:
                 word = stem + replacement
             break
 
     # Step 4
     step4 = [
-        "al", "ance", "ence", "er", "ic", "able", "ible", "ant",
-        "ement", "ment", "ent", "ion", "ou", "ism", "ate", "iti",
-        "ous", "ive", "ize",
+        "al",
+        "ance",
+        "ence",
+        "er",
+        "ic",
+        "able",
+        "ible",
+        "ant",
+        "ement",
+        "ment",
+        "ent",
+        "ion",
+        "ou",
+        "ism",
+        "ate",
+        "iti",
+        "ous",
+        "ive",
+        "ize",
     ]
     for suffix in step4:
         if word.endswith(suffix):
-            stem = word[:-len(suffix)]
+            stem = word[: -len(suffix)]
             if suffix == "ion" and stem and stem[-1] in "st":
                 if _measure(stem) > 1:
                     word = stem

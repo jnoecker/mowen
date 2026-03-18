@@ -71,7 +71,8 @@ def _compute_event_stats(
 
 
 def _top_n_events(
-    event_scores: dict[Event, float], n: int,
+    event_scores: dict[Event, float],
+    n: int,
 ) -> set[Event]:
     """Return the top *n* events ranked by score (descending)."""
     ranked = sorted(event_scores, key=lambda e: event_scores[e], reverse=True)

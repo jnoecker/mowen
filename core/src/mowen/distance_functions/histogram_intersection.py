@@ -19,9 +19,7 @@ class HistogramIntersectionDistance(DistanceFunction):
     """
 
     display_name: str = "Histogram Intersection Distance"
-    description: str = (
-        "Histogram intersection distance using absolute frequencies."
-    )
+    description: str = "Histogram intersection distance using absolute frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the histogram intersection distance between *h1* and *h2*."""

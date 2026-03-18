@@ -9,8 +9,8 @@ from mowen.analysis_methods import analysis_method_registry
 from mowen.event_drivers import event_driver_registry
 from mowen.types import Document, Event, EventSet, Histogram
 
-
 # -- Helpers --
+
 
 def _make_histogram(word_counts: dict[str, int]) -> Histogram:
     events = []
@@ -26,6 +26,7 @@ SAMPLE_TEXT = (
 
 
 # -- Distance Functions --
+
 
 class TestStamatatosDistance:
     def test_registered(self):
@@ -77,6 +78,7 @@ class TestKendallTauB:
 
 # -- Analysis Methods --
 
+
 class TestMahalanobis:
     def test_registered(self):
         assert "mahalanobis" in analysis_method_registry.names()
@@ -98,6 +100,7 @@ class TestMahalanobis:
 
 
 # -- Event Drivers --
+
 
 class TestLeaveKOutNgrams:
     def test_character_registered(self):

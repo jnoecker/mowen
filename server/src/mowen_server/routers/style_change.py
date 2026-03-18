@@ -30,7 +30,10 @@ def detect_changes(body: StyleChangeRequest, db: Session = Depends(get_db)):
             {"name": ed.name, "params": ed.params} for ed in body.event_drivers
         ],
         distance_function=(
-            {"name": body.distance_function.name, "params": body.distance_function.params}
+            {
+                "name": body.distance_function.name,
+                "params": body.distance_function.params,
+            }
             if body.distance_function is not None
             else None
         ),

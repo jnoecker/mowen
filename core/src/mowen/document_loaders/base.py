@@ -12,7 +12,9 @@ class DocumentLoader(ABC):
     """Loads a Document from a file."""
 
     @abstractmethod
-    def load(self, path: Path, author: str | None = None, title: str | None = None) -> Document:
+    def load(
+        self, path: Path, author: str | None = None, title: str | None = None
+    ) -> Document:
         """Load a document from the given file path."""
         ...
 

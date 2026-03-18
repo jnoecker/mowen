@@ -13,7 +13,14 @@ class TestParamDef:
         assert p.validate("7") == 7
 
     def test_min_max(self):
-        p = ParamDef(name="n", description="count", param_type=int, default=5, min_value=1, max_value=10)
+        p = ParamDef(
+            name="n",
+            description="count",
+            param_type=int,
+            default=5,
+            min_value=1,
+            max_value=10,
+        )
         assert p.validate(5) == 5
         with pytest.raises(ParameterError, match="minimum"):
             p.validate(0)
@@ -21,7 +28,13 @@ class TestParamDef:
             p.validate(11)
 
     def test_choices(self):
-        p = ParamDef(name="mode", description="mode", param_type=str, default="a", choices=["a", "b"])
+        p = ParamDef(
+            name="mode",
+            description="mode",
+            param_type=str,
+            default="a",
+            choices=["a", "b"],
+        )
         assert p.validate("a") == "a"
         with pytest.raises(ParameterError, match="not in"):
             p.validate("c")

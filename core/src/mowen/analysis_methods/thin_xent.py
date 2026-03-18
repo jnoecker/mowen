@@ -28,12 +28,12 @@ class ThinCrossEntropy(AnalysisMethod):
     """
 
     display_name: str = "Thin Cross-Entropy"
-    description: str = (
-        "Authorship via cross-entropy of event transition sequences."
-    )
+    description: str = "Authorship via cross-entropy of event transition sequences."
 
     _author_transitions: dict[str, dict[Event, dict[Event, float]]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _vocab_size: int = field(default=0, init=False, repr=False)
 
@@ -104,10 +104,7 @@ class ThinCrossEntropy(AnalysisMethod):
 
         if len(unknown_seq) < 2:
             # Can't compute transitions; return equal scores.
-            return [
-                Attribution(author=a, score=0.0)
-                for a in self._author_transitions
-            ]
+            return [Attribution(author=a, score=0.0) for a in self._author_transitions]
 
         attributions: list[Attribution] = []
         for author, trans_probs in self._author_transitions.items():
@@ -127,7 +124,9 @@ class ThinCrossEntropy(AnalysisMethod):
                 n_transitions += 1
 
             # Cross-entropy = negative mean log probability.
-            xent = -total_log_prob / n_transitions if n_transitions > 0 else float("inf")
+            xent = (
+                -total_log_prob / n_transitions if n_transitions > 0 else float("inf")
+            )
             attributions.append(Attribution(author=author, score=xent))
 
         attributions.sort(key=lambda a: a.score)

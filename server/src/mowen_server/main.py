@@ -74,7 +74,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     static_dir = Path(__file__).resolve().parent.parent.parent.parent / "web" / "dist"
     if static_dir.is_dir():
         # Serve static assets
-        app.mount("/assets", StaticFiles(directory=static_dir / "assets"), name="static")
+        app.mount(
+            "/assets", StaticFiles(directory=static_dir / "assets"), name="static"
+        )
 
         # Catch-all: serve index.html for SPA client-side routing
         @app.get("/{full_path:path}")

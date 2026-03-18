@@ -75,6 +75,7 @@ class MahalanobisDistance(AnalysisMethod):
             cov_inv = np.linalg.inv(cov)
         except LinAlgError:
             import warnings
+
             warnings.warn(
                 "Covariance matrix is singular (insufficient data or "
                 "redundant features). Falling back to pseudo-inverse.",

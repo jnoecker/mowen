@@ -57,7 +57,9 @@ def _load_corpus_docs(
         if db_doc is None:
             continue
         docs.append(
-            load_document(db_doc.file_path, author=db_doc.author_name, title=db_doc.title)
+            load_document(
+                db_doc.file_path, author=db_doc.author_name, title=db_doc.title
+            )
         )
         doc_ids.append(db_doc.id)
     return docs, doc_ids
@@ -81,9 +83,7 @@ def execute_experiment(experiment_id: int, session: Session) -> None:
     config_dict = json.loads(experiment.config)
 
     # Collect corpus IDs by role
-    known_corpus_ids = [
-        ec.corpus_id for ec in experiment.corpora if ec.role == "known"
-    ]
+    known_corpus_ids = [ec.corpus_id for ec in experiment.corpora if ec.role == "known"]
     unknown_corpus_ids = [
         ec.corpus_id for ec in experiment.corpora if ec.role == "unknown"
     ]

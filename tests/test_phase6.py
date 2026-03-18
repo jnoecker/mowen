@@ -14,7 +14,6 @@ from mowen.event_cullers import event_culler_registry
 from mowen.event_drivers import event_driver_registry
 from mowen.types import Document, Event, EventSet, Histogram
 
-
 # ---------------------------------------------------------------------------
 # Event drivers
 # ---------------------------------------------------------------------------
@@ -255,11 +254,19 @@ class TestNominalKSDistance:
 def _make_training_data():
     data = []
     for i, (a, b) in enumerate([(5, 1), (4, 2), (6, 1), (5, 2)]):
-        data.append((Document(text="", author="A", title=f"a{i}"),
-                      Histogram({Event("a"): a, Event("b"): b})))
+        data.append(
+            (
+                Document(text="", author="A", title=f"a{i}"),
+                Histogram({Event("a"): a, Event("b"): b}),
+            )
+        )
     for i, (a, b) in enumerate([(1, 5), (2, 4), (1, 6), (2, 5)]):
-        data.append((Document(text="", author="B", title=f"b{i}"),
-                      Histogram({Event("a"): a, Event("b"): b})))
+        data.append(
+            (
+                Document(text="", author="B", title=f"b{i}"),
+                Histogram({Event("a"): a, Event("b"): b}),
+            )
+        )
     return data
 
 

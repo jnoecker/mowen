@@ -71,12 +71,10 @@ def detect_style_changes(
 
     # Instantiate components
     canonicizers = [
-        canonicizer_registry.create(s.name, s.params)
-        for s in config.canonicizers
+        canonicizer_registry.create(s.name, s.params) for s in config.canonicizers
     ]
     event_drivers = [
-        event_driver_registry.create(s.name, s.params)
-        for s in config.event_drivers
+        event_driver_registry.create(s.name, s.params) for s in config.event_drivers
     ]
 
     df_spec = config.distance_function
@@ -94,6 +92,7 @@ def detect_style_changes(
 
         # Extract events and build histogram
         from mowen.types import EventSet
+
         combined = EventSet()
         for driver in event_drivers:
             combined.extend(driver.create_event_set(text))

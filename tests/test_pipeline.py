@@ -39,7 +39,9 @@ class TestPipeline:
         assert len(results) == 1
         assert results[0].top_author is not None
 
-    def test_pipeline_with_multiple_canonicizers(self, sample_documents, unknown_document):
+    def test_pipeline_with_multiple_canonicizers(
+        self, sample_documents, unknown_document
+    ):
         config = PipelineConfig(
             canonicizers=[
                 {"name": "unify_case"},

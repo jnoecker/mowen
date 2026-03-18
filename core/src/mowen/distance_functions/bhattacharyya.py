@@ -24,9 +24,7 @@ class BhattacharyyaDistance(DistanceFunction):
     """
 
     display_name: str = "Bhattacharyya Distance"
-    description: str = (
-        "Bhattacharyya distance: -ln of the Bhattacharyya coefficient."
-    )
+    description: str = "Bhattacharyya distance: -ln of the Bhattacharyya coefficient."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Bhattacharyya distance between *h1* and *h2*."""

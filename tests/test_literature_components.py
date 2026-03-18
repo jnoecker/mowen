@@ -19,6 +19,7 @@ def _make_histogram(word_counts: dict[str, int]) -> Histogram:
 
 # -- NCD --
 
+
 class TestNCD:
     def test_registered(self):
         assert "ncd" in distance_function_registry.names()
@@ -55,6 +56,7 @@ class TestNCD:
 
 
 # -- Craig's Zeta --
+
 
 class TestZeta:
     def test_registered(self):
@@ -97,6 +99,7 @@ class TestZeta:
 
 # -- Eder's Delta --
 
+
 class TestEdersDelta:
     def test_registered(self):
         assert "eders_delta" in analysis_method_registry.names()
@@ -106,10 +109,22 @@ class TestEdersDelta:
         m.set_params({"top_n": 0})  # use all features
 
         known = [
-            (Document(text="", author="A"), _make_histogram({"the": 10, "a": 8, "was": 5})),
-            (Document(text="", author="A"), _make_histogram({"the": 12, "a": 7, "was": 6})),
-            (Document(text="", author="B"), _make_histogram({"the": 3, "a": 2, "big": 10})),
-            (Document(text="", author="B"), _make_histogram({"the": 4, "a": 1, "big": 8})),
+            (
+                Document(text="", author="A"),
+                _make_histogram({"the": 10, "a": 8, "was": 5}),
+            ),
+            (
+                Document(text="", author="A"),
+                _make_histogram({"the": 12, "a": 7, "was": 6}),
+            ),
+            (
+                Document(text="", author="B"),
+                _make_histogram({"the": 3, "a": 2, "big": 10}),
+            ),
+            (
+                Document(text="", author="B"),
+                _make_histogram({"the": 4, "a": 1, "big": 8}),
+            ),
         ]
         m.train(known)
 

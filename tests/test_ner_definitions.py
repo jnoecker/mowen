@@ -15,6 +15,7 @@ class TestNamedEntities:
     def test_import_error_without_spacy(self):
         try:
             import spacy  # noqa: F401
+
             pytest.skip("spaCy is installed and functional")
         except (ImportError, Exception):
             # spaCy not installed or broken (e.g. pydantic v1 on Python 3.14)
@@ -40,6 +41,7 @@ class TestDefinitionEvents:
     def test_import_error_without_nltk(self):
         try:
             from nltk.corpus import wordnet  # noqa: F401
+
             # Also check that wordnet data is actually available
             wordnet.synsets("test")
             pytest.skip("NLTK with WordNet is installed")
@@ -52,6 +54,7 @@ class TestDefinitionEvents:
         """If NLTK+WordNet are available, verify basic functionality."""
         try:
             from nltk.corpus import wordnet  # noqa: F401
+
             wordnet.synsets("test")
         except (ImportError, LookupError):
             pytest.skip("NLTK with WordNet not available")

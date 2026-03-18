@@ -44,7 +44,9 @@ def _experiment_to_response(experiment: Experiment) -> ExperimentResponse:
     )
 
 
-@router.post("/", response_model=ExperimentResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", response_model=ExperimentResponse, status_code=status.HTTP_201_CREATED
+)
 def create_experiment(
     body: ExperimentCreate,
     db: Session = Depends(get_db),
@@ -53,6 +55,7 @@ def create_experiment(
     """Create and submit a new experiment for execution."""
     # Validate that distance_function is provided when the analysis method needs it
     from mowen.analysis_methods import NeighborAnalysisMethod, analysis_method_registry
+
     method_name = body.config.analysis_method.name
     method_cls = analysis_method_registry.get(method_name)
     if method_cls is not None and issubclass(method_cls, NeighborAnalysisMethod):

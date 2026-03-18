@@ -32,9 +32,7 @@ class TestPerplexityDriver:
         from mowen.types import NumericEventSet
 
         driver = event_driver_registry.create("perplexity")
-        result = driver.create_event_set(
-            "The quick brown fox jumps over the lazy dog."
-        )
+        result = driver.create_event_set("The quick brown fox jumps over the lazy dog.")
         assert isinstance(result, NumericEventSet)
         assert len(result) == 4  # mean, variance, skewness, kurtosis
 
@@ -43,12 +41,8 @@ class TestPerplexityDriver:
         from mowen.event_drivers import event_driver_registry
 
         driver = event_driver_registry.create("perplexity")
-        r1 = driver.create_event_set(
-            "The quick brown fox jumps over the lazy dog."
-        )
-        r2 = driver.create_event_set(
-            "xyzzy plugh zork quux corge grault garply"
-        )
+        r1 = driver.create_event_set("The quick brown fox jumps over the lazy dog.")
+        r2 = driver.create_event_set("xyzzy plugh zork quux corge grault garply")
         # At least one feature should differ
         assert any(a != b for a, b in zip(r1, r2))
 

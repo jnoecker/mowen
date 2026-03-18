@@ -97,7 +97,10 @@ def generate_ngrams(sequence: Sequence[str], n: int, joiner: str = " ") -> Event
 
 
 def generate_skip_ngrams(
-    sequence: Sequence[str], n: int, k: int, joiner: str = " ",
+    sequence: Sequence[str],
+    n: int,
+    k: int,
+    joiner: str = " ",
 ) -> EventSet:
     """Build an EventSet of k-skip-n-grams from *sequence*."""
     events = EventSet()

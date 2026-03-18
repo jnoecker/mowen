@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _aggregate_counts, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _aggregate_counts,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
 from mowen.types import EventSet
 
@@ -71,7 +75,5 @@ class IQR(EventCuller):
         upper = q3 + factor * iqr
 
         self._kept_events = {
-            event
-            for event, freq in combined.items()
-            if lower <= freq <= upper
+            event for event, freq in combined.items() if lower <= freq <= upper
         }

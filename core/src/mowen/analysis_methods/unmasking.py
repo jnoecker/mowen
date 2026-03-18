@@ -40,10 +40,14 @@ class Unmasking(AnalysisMethod):
     )
 
     _author_histograms: dict[str, list[Histogram]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _all_events: list[Event] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
 
     @classmethod
@@ -172,7 +176,9 @@ class Unmasking(AnalysisMethod):
                     labels.append(label)
 
             # Add the unknown document as positive (same-author hypothesis)
-            vectors.append(self._histogram_to_vector(unknown_histogram, self._all_events))
+            vectors.append(
+                self._histogram_to_vector(unknown_histogram, self._all_events)
+            )
             labels.append(1)
 
             x_data = np.array(vectors)

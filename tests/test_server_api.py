@@ -46,15 +46,18 @@ def client(tmp_path_factory):
 
     def sync_submit(experiment_id, db_url, upload_dir):
         from mowen_server.db import SessionLocal
+
         session = SessionLocal()
         try:
             execute_experiment(experiment_id, session)
         except Exception as e:
             session.rollback()
             from mowen_server.models import Experiment
+
             exp = session.get(Experiment, experiment_id)
             if exp:
                 from datetime import datetime, timezone
+
                 exp.status = "failed"
                 exp.error_message = str(e)
                 exp.completed_at = datetime.now(timezone.utc)
@@ -89,6 +92,7 @@ def uploaded_doc(client):
 # Health
 # -----------------------------------------------------------------------
 
+
 class TestHealth:
     def test_health(self, client):
         resp = client.get("/api/v1/health")
@@ -99,6 +103,7 @@ class TestHealth:
 # -----------------------------------------------------------------------
 # Pipeline (read-only)
 # -----------------------------------------------------------------------
+
 
 class TestPipeline:
     def test_list_canonicizers(self, client):
@@ -145,6 +150,7 @@ class TestPipeline:
 # -----------------------------------------------------------------------
 # Documents
 # -----------------------------------------------------------------------
+
 
 class TestDocuments:
     def test_upload_document(self, client):
@@ -217,6 +223,7 @@ class TestDocuments:
 # -----------------------------------------------------------------------
 # Corpora
 # -----------------------------------------------------------------------
+
 
 class TestCorpora:
     def test_create_corpus(self, client):
@@ -291,15 +298,28 @@ class TestCorpora:
 # Experiments (end-to-end)
 # -----------------------------------------------------------------------
 
+
 class TestExperiments:
     def _setup_experiment(self, client):
         """Upload docs, create corpora, return corpus IDs."""
         # Known docs
         known_texts = [
-            (b"The government must be strong to protect liberty and ensure order.", "Hamilton"),
-            (b"A strong federal union requires the power of taxation and defense.", "Hamilton"),
-            (b"The separation of powers prevents tyranny in republican government.", "Madison"),
-            (b"Factions are controlled by the diversity of a large republic.", "Madison"),
+            (
+                b"The government must be strong to protect liberty and ensure order.",
+                "Hamilton",
+            ),
+            (
+                b"A strong federal union requires the power of taxation and defense.",
+                "Hamilton",
+            ),
+            (
+                b"The separation of powers prevents tyranny in republican government.",
+                "Madison",
+            ),
+            (
+                b"Factions are controlled by the diversity of a large republic.",
+                "Madison",
+            ),
         ]
         doc_ids_known = []
         for text, author in known_texts:
@@ -314,7 +334,13 @@ class TestExperiments:
         # Unknown doc
         resp = client.post(
             "/api/v1/documents/",
-            files={"file": ("unknown.txt", b"The government must protect the union through strong federal power.", "text/plain")},
+            files={
+                "file": (
+                    "unknown.txt",
+                    b"The government must protect the union through strong federal power.",
+                    "text/plain",
+                )
+            },
             data={"title": "Mystery doc"},
         )
         assert resp.status_code == 201
@@ -388,7 +414,9 @@ class TestExperiments:
         # Runner executes synchronously in test mode
         resp = client.get(f"/api/v1/experiments/{exp_id}")
         status = resp.json()["status"]
-        assert status == "completed", f"Experiment status: {status}, error: {resp.json().get('error_message')}"
+        assert (
+            status == "completed"
+        ), f"Experiment status: {status}, error: {resp.json().get('error_message')}"
 
         # Get results
         resp = client.get(f"/api/v1/experiments/{exp_id}/results")
@@ -484,11 +512,17 @@ class TestExperiments:
         # Create two corpora that share a document
         resp = client.post("/api/v1/corpora/", json={"name": "Corpus K"})
         k_id = resp.json()["id"]
-        client.post(f"/api/v1/corpora/{k_id}/documents", json={"document_ids": [uploaded_doc["id"]]})
+        client.post(
+            f"/api/v1/corpora/{k_id}/documents",
+            json={"document_ids": [uploaded_doc["id"]]},
+        )
 
         resp = client.post("/api/v1/corpora/", json={"name": "Corpus U"})
         u_id = resp.json()["id"]
-        client.post(f"/api/v1/corpora/{u_id}/documents", json={"document_ids": [uploaded_doc["id"]]})
+        client.post(
+            f"/api/v1/corpora/{u_id}/documents",
+            json={"document_ids": [uploaded_doc["id"]]},
+        )
 
         resp = client.post(
             "/api/v1/experiments/",

@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _per_document_histograms, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _per_document_histograms,
+    event_culler_registry,
+)
 from mowen.types import EventSet
 
 

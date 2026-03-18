@@ -10,13 +10,57 @@ from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
 # Common stop words to filter from definitions.
-_STOP_WORDS = frozenset({
-    "a", "an", "the", "is", "are", "was", "were", "be", "been", "being",
-    "have", "has", "had", "do", "does", "did", "will", "would", "shall",
-    "should", "may", "might", "can", "could", "must", "of", "in", "to",
-    "for", "with", "on", "at", "by", "from", "as", "into", "through",
-    "and", "but", "or", "nor", "not", "so", "yet", "if", "that", "it",
-})
+_STOP_WORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "shall",
+        "should",
+        "may",
+        "might",
+        "can",
+        "could",
+        "must",
+        "of",
+        "in",
+        "to",
+        "for",
+        "with",
+        "on",
+        "at",
+        "by",
+        "from",
+        "as",
+        "into",
+        "through",
+        "and",
+        "but",
+        "or",
+        "nor",
+        "not",
+        "so",
+        "yet",
+        "if",
+        "that",
+        "it",
+    }
+)
 
 
 @event_driver_registry.register("definitions")

@@ -51,12 +51,16 @@ class ContrastiveLearning(AnalysisMethod):
     )
 
     _centroids: dict[str, list[float]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _projection: Any = field(default=None, init=False, repr=False)
     _dim: int = field(default=0, init=False, repr=False)
     _vocabulary: list[Any] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
     _numeric_mode: bool = field(default=False, init=False, repr=False)
 
@@ -93,8 +97,7 @@ class ContrastiveLearning(AnalysisMethod):
             ParamDef(
                 name="random_seed",
                 description=(
-                    "Random seed for reproducibility "
-                    "(0 = non-deterministic)."
+                    "Random seed for reproducibility " "(0 = non-deterministic)."
                 ),
                 param_type=int,
                 default=0,
@@ -119,6 +122,7 @@ class ContrastiveLearning(AnalysisMethod):
         else:
             # Build shared vocabulary from all histograms
             from mowen.types import Event
+
             vocab_set: set[Event] = set()
             for _, hist in self._known_docs:
                 vocab_set.update(hist.unique_events())
@@ -126,9 +130,9 @@ class ContrastiveLearning(AnalysisMethod):
 
             for doc, hist in self._known_docs:
                 author = doc.author or ""
-                author_vecs[author].append([
-                    hist.relative_frequency(e) for e in self._vocabulary
-                ])
+                author_vecs[author].append(
+                    [hist.relative_frequency(e) for e in self._vocabulary]
+                )
 
         if not author_vecs:
             return
@@ -187,9 +191,7 @@ class ContrastiveLearning(AnalysisMethod):
         rng = np.random.default_rng(seed if seed != 0 else None)
 
         # Initialize projection matrix
-        w = rng.standard_normal((self._dim, proj_dim)).astype(
-            np.float32
-        ) * 0.01
+        w = rng.standard_normal((self._dim, proj_dim)).astype(np.float32) * 0.01
         self._projection = w
 
         # Build pair lists
@@ -222,7 +224,7 @@ class ContrastiveLearning(AnalysisMethod):
 
             # Cosine similarity gradient update
             diff = pa - pb
-            dist_sq = float(np.sum(diff ** 2))
+            dist_sq = float(np.sum(diff**2))
 
             if same:
                 # Pull together: minimize distance
@@ -243,6 +245,7 @@ class ContrastiveLearning(AnalysisMethod):
         if self._projection is None:
             return vec
         import numpy as np
+
         v = np.array(vec, dtype=np.float32)
         return (v @ self._projection).tolist()
 
@@ -251,10 +254,7 @@ class ContrastiveLearning(AnalysisMethod):
         if isinstance(unknown_histogram, NumericEventSet):
             vec = list(unknown_histogram)
         else:
-            vec = [
-                unknown_histogram.relative_frequency(e)
-                for e in self._vocabulary
-            ]
+            vec = [unknown_histogram.relative_frequency(e) for e in self._vocabulary]
 
         if self._projection is not None:
             vec = self._project(vec)

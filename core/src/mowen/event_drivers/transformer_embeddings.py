@@ -97,7 +97,9 @@ class TransformerEmbeddingDriver(EventDriver):
         # Mean pooling over token dimension, respecting attention mask
         attention_mask = inputs["attention_mask"]
         token_embeddings = outputs.last_hidden_state
-        mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        mask_expanded = (
+            attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        )
         sum_embeddings = (token_embeddings * mask_expanded).sum(dim=1)
         sum_mask = mask_expanded.sum(dim=1).clamp(min=1e-9)
         embedding = (sum_embeddings / sum_mask).squeeze(0)

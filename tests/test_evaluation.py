@@ -25,20 +25,44 @@ from mowen.exceptions import EvaluationError
 from mowen.pipeline import PipelineConfig
 from mowen.types import Document
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 def _make_docs() -> list[Document]:
     """Create a small corpus with 2 authors, 3 docs each."""
     return [
-        Document(text="The government must be strong and unified.", author="Hamilton", title="ham1"),
-        Document(text="A strong federal union requires taxation.", author="Hamilton", title="ham2"),
-        Document(text="The power of the federal government is essential.", author="Hamilton", title="ham3"),
-        Document(text="Separation of powers prevents tyranny.", author="Madison", title="mad1"),
-        Document(text="Factions are controlled by a large republic.", author="Madison", title="mad2"),
-        Document(text="The diversity of interests guards liberty.", author="Madison", title="mad3"),
+        Document(
+            text="The government must be strong and unified.",
+            author="Hamilton",
+            title="ham1",
+        ),
+        Document(
+            text="A strong federal union requires taxation.",
+            author="Hamilton",
+            title="ham2",
+        ),
+        Document(
+            text="The power of the federal government is essential.",
+            author="Hamilton",
+            title="ham3",
+        ),
+        Document(
+            text="Separation of powers prevents tyranny.",
+            author="Madison",
+            title="mad1",
+        ),
+        Document(
+            text="Factions are controlled by a large republic.",
+            author="Madison",
+            title="mad2",
+        ),
+        Document(
+            text="The diversity of interests guards liberty.",
+            author="Madison",
+            title="mad3",
+        ),
     ]
 
 
@@ -53,6 +77,7 @@ def _simple_config() -> PipelineConfig:
 # ---------------------------------------------------------------------------
 # Metrics computation
 # ---------------------------------------------------------------------------
+
 
 class TestComputeMetrics:
     def test_perfect_accuracy(self):
@@ -125,6 +150,7 @@ class TestComputeMetrics:
 # ---------------------------------------------------------------------------
 # Verification metrics (EER, c@1)
 # ---------------------------------------------------------------------------
+
 
 class TestEER:
     def test_perfect_scores_eer_zero(self):
@@ -230,6 +256,7 @@ class TestCAt1:
 # F_0.5u metric
 # ---------------------------------------------------------------------------
 
+
 class TestF05u:
     def test_perfect_accuracy(self):
         """All correct predictions yield f05u = 1.0."""
@@ -278,6 +305,7 @@ class TestF05u:
 # ---------------------------------------------------------------------------
 # Brier score
 # ---------------------------------------------------------------------------
+
 
 class TestBrier:
     def test_perfect_with_high_confidence(self):
@@ -335,6 +363,7 @@ class TestBrier:
 # Leave-one-out
 # ---------------------------------------------------------------------------
 
+
 class TestLeaveOneOut:
     def test_basic_loo(self):
         docs = _make_docs()
@@ -356,7 +385,10 @@ class TestLeaveOneOut:
         assert all(0 <= a.f1 <= 1 for a in result.per_author)
 
     def test_loo_no_author_raises(self):
-        docs = [Document(text="hello", title="d1"), Document(text="world", author="A", title="d2")]
+        docs = [
+            Document(text="hello", title="d1"),
+            Document(text="world", author="A", title="d2"),
+        ]
         with pytest.raises(EvaluationError, match="author"):
             leave_one_out(docs, _simple_config())
 
@@ -376,7 +408,8 @@ class TestLeaveOneOut:
     def test_loo_progress_callback(self):
         progress_log = []
         leave_one_out(
-            _make_docs(), _simple_config(),
+            _make_docs(),
+            _simple_config(),
             progress_callback=lambda f, m: progress_log.append((f, m)),
         )
         assert len(progress_log) > 0
@@ -386,6 +419,7 @@ class TestLeaveOneOut:
 # ---------------------------------------------------------------------------
 # K-fold
 # ---------------------------------------------------------------------------
+
 
 class TestKFold:
     def test_basic_kfold(self):
@@ -400,8 +434,16 @@ class TestKFold:
         docs = _make_docs()
         r1 = k_fold(docs, _simple_config(), k=3, random_seed=42)
         r2 = k_fold(docs, _simple_config(), k=3, random_seed=42)
-        preds1 = [(p.document_title, p.predicted_author) for fr in r1.fold_results for p in fr.predictions]
-        preds2 = [(p.document_title, p.predicted_author) for fr in r2.fold_results for p in fr.predictions]
+        preds1 = [
+            (p.document_title, p.predicted_author)
+            for fr in r1.fold_results
+            for p in fr.predictions
+        ]
+        preds2 = [
+            (p.document_title, p.predicted_author)
+            for fr in r2.fold_results
+            for p in fr.predictions
+        ]
         assert preds1 == preds2
 
     def test_kfold_k_larger_than_n(self):
@@ -419,8 +461,16 @@ class TestKFold:
         docs = _make_docs()
         r1 = k_fold(docs, _simple_config(), k=2, shuffle=False)
         r2 = k_fold(docs, _simple_config(), k=2, shuffle=False)
-        preds1 = [(p.document_title, p.predicted_author) for fr in r1.fold_results for p in fr.predictions]
-        preds2 = [(p.document_title, p.predicted_author) for fr in r2.fold_results for p in fr.predictions]
+        preds1 = [
+            (p.document_title, p.predicted_author)
+            for fr in r1.fold_results
+            for p in fr.predictions
+        ]
+        preds2 = [
+            (p.document_title, p.predicted_author)
+            for fr in r2.fold_results
+            for p in fr.predictions
+        ]
         assert preds1 == preds2
 
     def test_kfold_returns_valid_metrics(self):
@@ -432,6 +482,7 @@ class TestKFold:
 # ---------------------------------------------------------------------------
 # CSV export
 # ---------------------------------------------------------------------------
+
 
 class TestWriteResultsCsv:
     def _make_result(self) -> EvaluationResult:
@@ -469,6 +520,7 @@ class TestWriteResultsCsv:
 # ---------------------------------------------------------------------------
 # Integration
 # ---------------------------------------------------------------------------
+
 
 class TestEvaluationIntegration:
     def test_loo_e2e(self):

@@ -34,7 +34,9 @@ class AnalysisMethod(ABC, Configurable):
     lower_is_better: bool = True
 
     _known_docs: list[tuple[Document, Histogram]] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
 
     def train(self, known_docs: list[tuple[Document, Histogram]]) -> None:
@@ -94,7 +96,9 @@ class CentroidAnalysisMethod(NeighborAnalysisMethod):
     """
 
     _centroids: dict[str, Histogram] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
 
     @staticmethod

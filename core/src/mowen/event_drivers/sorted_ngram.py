@@ -21,13 +21,20 @@ class SortedCharacterNGram(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=3, min_value=1, max_value=20),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=3,
+                min_value=1,
+                max_value=20,
+            ),
         ]
 
     def create_event_set(self, text: str) -> EventSet:
         n: int = self.get_param("n")
         return EventSet(
-            Event(data="".join(sorted(text[i:i + n])))
+            Event(data="".join(sorted(text[i : i + n])))
             for i in range(len(text) - n + 1)
         )
 
@@ -45,7 +52,14 @@ class SortedWordNGram(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=2,
+                min_value=1,
+                max_value=10,
+            ),
             TOKENIZER_PARAM,
         ]
 
@@ -54,6 +68,6 @@ class SortedWordNGram(EventDriver):
         tok: str = self.get_param("tokenizer")
         words = tokenize_text(text, tok)
         return EventSet(
-            Event(data=" ".join(sorted(words[i:i + n])))
+            Event(data=" ".join(sorted(words[i : i + n])))
             for i in range(len(words) - n + 1)
         )

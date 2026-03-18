@@ -24,6 +24,7 @@ class VowelInitialWords(EventDriver):
     def create_event_set(self, text: str) -> EventSet:
         tok: str = self.get_param("tokenizer")
         return EventSet(
-            Event(data=word) for word in tokenize_text(text, tok)
+            Event(data=word)
+            for word in tokenize_text(text, tok)
             if word and word[0] in _VOWELS
         )

@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict
 # Documents
 # ---------------------------------------------------------------------------
 
+
 class DocumentCreate(BaseModel):
     """Metadata submitted alongside a file upload."""
 
@@ -41,6 +42,7 @@ class DocumentResponse(BaseModel):
 # Corpora
 # ---------------------------------------------------------------------------
 
+
 class CorpusCreate(BaseModel):
     name: str
     description: str = ""
@@ -72,6 +74,7 @@ class CorpusDocumentsRequest(BaseModel):
 # Sample corpora
 # ---------------------------------------------------------------------------
 
+
 class SampleCorpusInfo(BaseModel):
     """Metadata for a bundled sample corpus."""
 
@@ -93,6 +96,7 @@ class SampleCorpusImportResponse(BaseModel):
 # ---------------------------------------------------------------------------
 # Pipeline components
 # ---------------------------------------------------------------------------
+
 
 class ParamInfo(BaseModel):
     """Describes a single tuneable parameter of a pipeline component."""
@@ -119,6 +123,7 @@ class ComponentInfo(BaseModel):
 # ---------------------------------------------------------------------------
 # Experiments
 # ---------------------------------------------------------------------------
+
 
 class ComponentSpec(BaseModel):
     """Reference to a pipeline component together with param overrides."""

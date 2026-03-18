@@ -8,27 +8,31 @@ from mowen.types import Document, Event, Histogram, NumericEventSet
 
 def _make_training_data():
     return [
-        (Document(text="", author="A", title="a1"),
-         Histogram({Event("a"): 5, Event("b"): 1})),
-        (Document(text="", author="A", title="a2"),
-         Histogram({Event("a"): 4, Event("b"): 2})),
-        (Document(text="", author="B", title="b1"),
-         Histogram({Event("a"): 1, Event("b"): 5})),
-        (Document(text="", author="B", title="b2"),
-         Histogram({Event("a"): 2, Event("b"): 4})),
+        (
+            Document(text="", author="A", title="a1"),
+            Histogram({Event("a"): 5, Event("b"): 1}),
+        ),
+        (
+            Document(text="", author="A", title="a2"),
+            Histogram({Event("a"): 4, Event("b"): 2}),
+        ),
+        (
+            Document(text="", author="B", title="b1"),
+            Histogram({Event("a"): 1, Event("b"): 5}),
+        ),
+        (
+            Document(text="", author="B", title="b2"),
+            Histogram({Event("a"): 2, Event("b"): 4}),
+        ),
     ]
 
 
 def _make_numeric_data():
     return [
-        (Document(text="", author="A", title="a1"),
-         NumericEventSet([1.0, 0.0, 0.5])),
-        (Document(text="", author="A", title="a2"),
-         NumericEventSet([0.9, 0.1, 0.6])),
-        (Document(text="", author="B", title="b1"),
-         NumericEventSet([0.0, 1.0, 0.5])),
-        (Document(text="", author="B", title="b2"),
-         NumericEventSet([0.1, 0.9, 0.4])),
+        (Document(text="", author="A", title="a1"), NumericEventSet([1.0, 0.0, 0.5])),
+        (Document(text="", author="A", title="a2"), NumericEventSet([0.9, 0.1, 0.6])),
+        (Document(text="", author="B", title="b1"), NumericEventSet([0.0, 1.0, 0.5])),
+        (Document(text="", author="B", title="b2"), NumericEventSet([0.1, 0.9, 0.4])),
     ]
 
 

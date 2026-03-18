@@ -71,13 +71,9 @@ class TestLLMPrompting:
         authors = {r.author for r in results}
         assert authors == {"A", "B"}
 
-    @patch(
-        "mowen.analysis_methods.llm_prompting.LLMPrompting._call_llm"
-    )
+    @patch("mowen.analysis_methods.llm_prompting.LLMPrompting._call_llm")
     def test_analyze_with_mocked_api(self, mock_call):
-        mock_call.return_value = (
-            '{"author": "A", "ranking": ["A", "B"]}'
-        )
+        mock_call.return_value = '{"author": "A", "ranking": ["A", "B"]}'
         method = analysis_method_registry.create("llm_prompting")
         method.train(_make_training_data())
 

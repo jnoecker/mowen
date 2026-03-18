@@ -42,7 +42,9 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
 
     _torch_model: Any = field(default=None, init=False, repr=False)
     _torch_classes: list[str] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
     _rdrop_active: bool = field(default=False, init=False, repr=False)
 
@@ -135,8 +137,7 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
 
         # Detect numeric mode and build feature matrix
         self._numeric_mode = any(
-            isinstance(hist, NumericEventSet)
-            for _, hist in self._known_docs
+            isinstance(hist, NumericEventSet) for _, hist in self._known_docs
         )
 
         x_list: list[list[float]] = []
@@ -197,10 +198,14 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
             p1 = torch.nn.functional.softmax(logits1, dim=-1)
             p2 = torch.nn.functional.softmax(logits2, dim=-1)
             kl_1 = torch.nn.functional.kl_div(
-                p1.log(), p2, reduction="batchmean",
+                p1.log(),
+                p2,
+                reduction="batchmean",
             )
             kl_2 = torch.nn.functional.kl_div(
-                p2.log(), p1, reduction="batchmean",
+                p2.log(),
+                p1,
+                reduction="batchmean",
             )
             kl_loss = (kl_1 + kl_2) / 2
 
@@ -221,9 +226,7 @@ class MultilayerPerceptron(SklearnAnalysisMethod):
         import torch
 
         if self._torch_model is None:
-            raise PipelineError(
-                "train() must be called before analyze()"
-            )
+            raise PipelineError("train() must be called before analyze()")
 
         if self._numeric_mode:
             vec = list(unknown_histogram)

@@ -12,8 +12,9 @@ import re
 
 runner = CliRunner()
 
+
 def _strip_ansi(s: str) -> str:
-    return re.sub(r'\x1b\[[0-9;]*m', '', s)
+    return re.sub(r"\x1b\[[0-9;]*m", "", s)
 
 
 class TestHelp:
@@ -84,24 +85,42 @@ class TestListComponents:
 class TestRun:
     def test_run_text_output(self, tmp_path):
         _write_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-a", "nearest_neighbor",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-a",
+                "nearest_neighbor",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
-        assert "Author A" in _strip_ansi(result.output) or "Author B" in _strip_ansi(result.output)
+        assert "Author A" in _strip_ansi(result.output) or "Author B" in _strip_ansi(
+            result.output
+        )
 
     def test_run_json_output(self, tmp_path):
         _write_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "word_events",
-            "--distance", "manhattan",
-            "-a", "knn:k=2",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "word_events",
+                "--distance",
+                "manhattan",
+                "-a",
+                "knn:k=2",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert len(data) == 1
@@ -110,47 +129,81 @@ class TestRun:
 
     def test_run_with_canonicizer_and_culler(self, tmp_path):
         _write_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=2",
-            "-c", "unify_case",
-            "-c", "normalize_whitespace",
-            "--culler", "most_common:n=20",
-            "--distance", "cosine",
-            "-a", "nearest_neighbor",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=2",
+                "-c",
+                "unify_case",
+                "-c",
+                "normalize_whitespace",
+                "--culler",
+                "most_common:n=20",
+                "--distance",
+                "cosine",
+                "-a",
+                "nearest_neighbor",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
 
     def test_run_multiple_event_drivers(self, tmp_path):
         _write_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "-e", "word_events",
-            "--distance", "cosine",
-            "-a", "nearest_neighbor",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "-e",
+                "word_events",
+                "--distance",
+                "cosine",
+                "-a",
+                "nearest_neighbor",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0
         data = json.loads(_strip_ansi(result.output))
         assert len(data) == 1
 
     def test_run_missing_csv(self):
-        result = runner.invoke(app, [
-            "run", "-d", "/nonexistent.csv",
-            "-e", "word_events",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                "/nonexistent.csv",
+                "-e",
+                "word_events",
+            ],
+        )
         assert result.exit_code == 1
 
     def test_run_verification_badges(self, tmp_path):
         """Verification methods should show VERIFIED/REJECTED badges."""
         _write_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-a", "imposters:n_iterations=10,random_seed=42",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-a",
+                "imposters:n_iterations=10,random_seed=42",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         output = _strip_ansi(result.output)
         assert "VERIFIED" in output or "REJECTED" in output
@@ -158,13 +211,21 @@ class TestRun:
     def test_run_verification_json(self, tmp_path):
         """JSON output should include verification_threshold and verified flag."""
         _write_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-a", "imposters:n_iterations=10,random_seed=42",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-a",
+                "imposters:n_iterations=10,random_seed=42",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert "verification_threshold" in data[0]
@@ -176,10 +237,16 @@ class TestRun:
         # CSV with only known docs (all have authors)
         (tmp_path / "a.txt").write_text("some text", encoding="utf-8")
         (tmp_path / "manifest.csv").write_text("a.txt,AuthorA\n", encoding="utf-8")
-        result = runner.invoke(app, [
-            "run", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "word_events",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "run",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "word_events",
+            ],
+        )
         assert result.exit_code == 1
         assert "unknown" in _strip_ansi(result.output).lower()
 
@@ -202,23 +269,35 @@ class TestConvertJgaap:
 class TestDetectChanges:
     def test_detect_changes_text_output(self, tmp_path):
         doc_path = _write_style_change_doc(tmp_path)
-        result = runner.invoke(app, [
-            "detect-changes", str(doc_path),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "detect-changes",
+                str(doc_path),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         output = _strip_ansi(result.output).lower()
         assert "change" in output or "same" in output
 
     def test_detect_changes_json_output(self, tmp_path):
         doc_path = _write_style_change_doc(tmp_path)
-        result = runner.invoke(app, [
-            "detect-changes", str(doc_path),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "detect-changes",
+                str(doc_path),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert "boundaries" in data
@@ -227,13 +306,20 @@ class TestDetectChanges:
     def test_detect_changes_threshold(self, tmp_path):
         doc_path = _write_style_change_doc(tmp_path)
         # threshold=0.0 means everything is a change
-        result = runner.invoke(app, [
-            "detect-changes", str(doc_path),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-t", "0.0",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "detect-changes",
+                str(doc_path),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-t",
+                "0.0",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert len(data["boundaries"]) > 0
@@ -249,12 +335,19 @@ class TestDetectChanges:
         )
         doc_path = tmp_path / "custom_sep.txt"
         doc_path.write_text(text, encoding="utf-8")
-        result = runner.invoke(app, [
-            "detect-changes", str(doc_path),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "--separator", "---",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "detect-changes",
+                str(doc_path),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "--separator",
+                "---",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         output = _strip_ansi(result.output)
         assert "2 paragraphs" in output
@@ -265,20 +358,31 @@ class TestDetectChanges:
             "This is a single paragraph with no breaks at all.",
             encoding="utf-8",
         )
-        result = runner.invoke(app, [
-            "detect-changes", str(doc_path),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "detect-changes",
+                str(doc_path),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         output = _strip_ansi(result.output)
         assert "0 change" in output
 
     def test_detect_changes_missing_file(self):
-        result = runner.invoke(app, [
-            "detect-changes", "/nonexistent_file.txt",
-            "-e", "character_ngram:n=3",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "detect-changes",
+                "/nonexistent_file.txt",
+                "-e",
+                "character_ngram:n=3",
+            ],
+        )
         assert result.exit_code == 1
 
 
@@ -291,29 +395,49 @@ class TestEvaluate:
 
     def test_evaluate_loo_text(self, tmp_path):
         _write_eval_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "evaluate", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-a", "nearest_neighbor",
-            "--mode", "loo",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "evaluate",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-a",
+                "nearest_neighbor",
+                "--mode",
+                "loo",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         assert "Accuracy" in _strip_ansi(result.output)
         assert "Confusion matrix" in _strip_ansi(result.output)
 
     def test_evaluate_kfold_json(self, tmp_path):
         _write_eval_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "evaluate", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "word_events",
-            "--distance", "manhattan",
-            "-a", "nearest_neighbor",
-            "--mode", "kfold",
-            "-k", "2",
-            "--seed", "42",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "evaluate",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "word_events",
+                "--distance",
+                "manhattan",
+                "-a",
+                "nearest_neighbor",
+                "--mode",
+                "kfold",
+                "-k",
+                "2",
+                "--seed",
+                "42",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert "accuracy" in data
@@ -323,14 +447,24 @@ class TestEvaluate:
     def test_evaluate_csv_export(self, tmp_path):
         _write_eval_corpus(tmp_path)
         csv_path = tmp_path / "results.csv"
-        result = runner.invoke(app, [
-            "evaluate", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-a", "nearest_neighbor",
-            "--mode", "loo",
-            "-o", str(csv_path),
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "evaluate",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-a",
+                "nearest_neighbor",
+                "--mode",
+                "loo",
+                "-o",
+                str(csv_path),
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         assert csv_path.exists()
         content = csv_path.read_text()
@@ -339,14 +473,23 @@ class TestEvaluate:
     def test_evaluate_json_has_verification_metrics(self, tmp_path):
         """JSON output should include eer and c_at_1 metrics."""
         _write_eval_corpus(tmp_path)
-        result = runner.invoke(app, [
-            "evaluate", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "character_ngram:n=3",
-            "--distance", "cosine",
-            "-a", "nearest_neighbor",
-            "--mode", "loo",
-            "--json",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "evaluate",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "character_ngram:n=3",
+                "--distance",
+                "cosine",
+                "-a",
+                "nearest_neighbor",
+                "--mode",
+                "loo",
+                "--json",
+            ],
+        )
         assert result.exit_code == 0, _strip_ansi(result.output)
         data = json.loads(_strip_ansi(result.output))
         assert "eer" in data
@@ -358,11 +501,18 @@ class TestEvaluate:
         (tmp_path / "manifest.csv").write_text(
             "a1.txt,SameAuthor\na2.txt,SameAuthor\n", encoding="utf-8"
         )
-        result = runner.invoke(app, [
-            "evaluate", "-d", str(tmp_path / "manifest.csv"),
-            "-e", "word_events",
-            "--mode", "loo",
-        ])
+        result = runner.invoke(
+            app,
+            [
+                "evaluate",
+                "-d",
+                str(tmp_path / "manifest.csv"),
+                "-e",
+                "word_events",
+                "--mode",
+                "loo",
+            ],
+        )
         assert result.exit_code == 1
         assert "author" in _strip_ansi(result.output).lower()
 
@@ -374,8 +524,14 @@ def _write_eval_corpus(tmp_path):
         "ham2.txt": ("Federal power requires the authority of taxation.", "Hamilton"),
         "ham3.txt": ("A strong union ensures national defense and order.", "Hamilton"),
         "mad1.txt": ("Separation of powers prevents tyranny in republics.", "Madison"),
-        "mad2.txt": ("Factions are controlled by the diversity of interests.", "Madison"),
-        "mad3.txt": ("A large republic guards against the danger of faction.", "Madison"),
+        "mad2.txt": (
+            "Factions are controlled by the diversity of interests.",
+            "Madison",
+        ),
+        "mad3.txt": (
+            "A large republic guards against the danger of faction.",
+            "Madison",
+        ),
     }
     lines = []
     for fname, (text, author) in texts.items():

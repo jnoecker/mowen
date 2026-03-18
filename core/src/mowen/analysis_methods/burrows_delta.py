@@ -35,19 +35,29 @@ class BurrowsDelta(AnalysisMethod):
     )
 
     _event_mean: dict[Event, float] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _event_std: dict[Event, float] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _features: list[Event] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
     _author_profiles: dict[str, dict[Event, float]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _author_z_profiles: dict[str, dict[Event, float]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
 
     @classmethod
@@ -130,7 +140,8 @@ class BurrowsDelta(AnalysisMethod):
         self._author_z_profiles = {}
         for author, profile in self._author_profiles.items():
             self._author_z_profiles[author] = {
-                event: (profile[event] - self._event_mean[event]) / self._event_std[event]
+                event: (profile[event] - self._event_mean[event])
+                / self._event_std[event]
                 for event in self._features
             }
 

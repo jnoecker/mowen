@@ -9,13 +9,24 @@ from typing import Any
 
 logger = logging.getLogger("mowen.pipeline")
 
-from mowen.analysis_methods import AnalysisMethod, NeighborAnalysisMethod, analysis_method_registry
+from mowen.analysis_methods import (
+    AnalysisMethod,
+    NeighborAnalysisMethod,
+    analysis_method_registry,
+)
 from mowen.canonicizers import canonicizer_registry
 from mowen.distance_functions import distance_function_registry
 from mowen.event_cullers import event_culler_registry
 from mowen.event_drivers import event_driver_registry
 from mowen.exceptions import PipelineError
-from mowen.types import Attribution, Document, EventSet, Histogram, NumericEventSet, PipelineResult
+from mowen.types import (
+    Attribution,
+    Document,
+    EventSet,
+    Histogram,
+    NumericEventSet,
+    PipelineResult,
+)
 
 
 @dataclass
@@ -119,7 +130,9 @@ class Pipeline:
         distance_fn = None
         if self.config.distance_function is not None:
             df_spec = self.config.distance_function
-            distance_fn = distance_function_registry.create(df_spec.name, df_spec.params)
+            distance_fn = distance_function_registry.create(
+                df_spec.name, df_spec.params
+            )
 
         if isinstance(analysis_method, NeighborAnalysisMethod):
             if distance_fn is None:
@@ -204,13 +217,15 @@ class Pipeline:
             for i, doc in enumerate(unknown_documents):
                 idx = n_known + i
                 rankings = analysis_method.analyze(doc_features[idx])  # type: ignore[arg-type]
-                vt = getattr(analysis_method, 'verification_threshold', None)
-                results.append(PipelineResult(
-                    unknown_document=doc,
-                    rankings=rankings,
-                    lower_is_better=analysis_method.lower_is_better,
-                    verification_threshold=vt,
-                ))
+                vt = getattr(analysis_method, "verification_threshold", None)
+                results.append(
+                    PipelineResult(
+                        unknown_document=doc,
+                        rankings=rankings,
+                        lower_is_better=analysis_method.lower_is_better,
+                        verification_threshold=vt,
+                    )
+                )
                 progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
                 self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")
 
@@ -249,13 +264,15 @@ class Pipeline:
         for i, doc in enumerate(unknown_documents):
             idx = n_known + i
             rankings: list[Attribution] = analysis_method.analyze(doc_histograms[idx])
-            vt = getattr(analysis_method, 'verification_threshold', None)
-            results.append(PipelineResult(
-                unknown_document=doc,
-                rankings=rankings,
-                lower_is_better=analysis_method.lower_is_better,
-                verification_threshold=vt,
-            ))
+            vt = getattr(analysis_method, "verification_threshold", None)
+            results.append(
+                PipelineResult(
+                    unknown_document=doc,
+                    rankings=rankings,
+                    lower_is_better=analysis_method.lower_is_better,
+                    verification_threshold=vt,
+                )
+            )
             progress = 0.8 + 0.2 * (i + 1) / len(unknown_documents)
             self._report(progress, f"Analyzed {i + 1}/{len(unknown_documents)}")
 

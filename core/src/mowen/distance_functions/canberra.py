@@ -22,9 +22,7 @@ class CanberraDistance(DistanceFunction):
     """
 
     display_name: str = "Canberra Distance"
-    description: str = (
-        "Canberra distance over relative frequencies."
-    )
+    description: str = "Canberra distance over relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Canberra distance between *h1* and *h2*."""

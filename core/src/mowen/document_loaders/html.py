@@ -21,7 +21,9 @@ class HTMLLoader(DocumentLoader):
     def supported_extensions() -> list[str]:
         return [".html", ".htm"]
 
-    def load(self, path: Path, author: str | None = None, title: str | None = None) -> Document:
+    def load(
+        self, path: Path, author: str | None = None, title: str | None = None
+    ) -> Document:
         path = Path(path)
         if not path.exists():
             raise DocumentLoadError(f"File not found: {path}")

@@ -9,7 +9,6 @@ from mowen.parameters import ParamDef
 from mowen.tokenizers import TOKENIZER_PARAM, tokenize_text
 from mowen.types import Event, EventSet
 
-
 _PLACEHOLDER = "_"
 
 
@@ -44,8 +43,22 @@ class LeaveKOutCharacterNGram(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=3, min_value=2, max_value=10),
-            ParamDef(name="k", description="Positions to leave out.", param_type=int, default=1, min_value=1, max_value=5),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=3,
+                min_value=2,
+                max_value=10,
+            ),
+            ParamDef(
+                name="k",
+                description="Positions to leave out.",
+                param_type=int,
+                default=1,
+                min_value=1,
+                max_value=5,
+            ),
         ]
 
     def create_event_set(self, text: str) -> EventSet:
@@ -55,7 +68,7 @@ class LeaveKOutCharacterNGram(EventDriver):
             return EventSet()
         events: list[Event] = []
         for i in range(len(text) - n + 1):
-            chars = list(text[i:i + n])
+            chars = list(text[i : i + n])
             for masked in _leave_k_out(chars, k):
                 events.append(Event(data=masked))
         return EventSet(events)
@@ -76,8 +89,22 @@ class LeaveKOutWordNGram(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=3, min_value=2, max_value=10),
-            ParamDef(name="k", description="Positions to leave out.", param_type=int, default=1, min_value=1, max_value=5),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=3,
+                min_value=2,
+                max_value=10,
+            ),
+            ParamDef(
+                name="k",
+                description="Positions to leave out.",
+                param_type=int,
+                default=1,
+                min_value=1,
+                max_value=5,
+            ),
             TOKENIZER_PARAM,
         ]
 
@@ -90,7 +117,7 @@ class LeaveKOutWordNGram(EventDriver):
         words = tokenize_text(text, tok)
         events: list[Event] = []
         for i in range(len(words) - n + 1):
-            gram = list(words[i:i + n])
+            gram = list(words[i : i + n])
             for masked in _leave_k_out(gram, k):
                 events.append(Event(data=masked))
         return EventSet(events)

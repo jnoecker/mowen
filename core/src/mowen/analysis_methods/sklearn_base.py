@@ -31,11 +31,15 @@ class SklearnAnalysisMethod(AnalysisMethod):
     lower_is_better: bool = False
 
     _vocabulary: list[Event] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
     _model: Any = field(default=None, init=False, repr=False)
     _classes: list[str] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
     _numeric_mode: bool = field(default=False, init=False, repr=False)
 
@@ -45,7 +49,8 @@ class SklearnAnalysisMethod(AnalysisMethod):
 
     @staticmethod
     def _vectorize(
-        histogram: Histogram, vocabulary: list[Event],
+        histogram: Histogram,
+        vocabulary: list[Event],
     ) -> list[float]:
         """Convert a histogram into a feature vector of relative frequencies."""
         return [histogram.relative_frequency(event) for event in vocabulary]

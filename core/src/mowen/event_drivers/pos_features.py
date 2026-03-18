@@ -17,21 +17,31 @@ from mowen.types import Event, EventSet
 # Compatible with spaCy's Universal POS tagset.
 _COARSE_MAP: dict[str, str] = {
     # Nouns
-    "NOUN": "N", "PROPN": "N",
+    "NOUN": "N",
+    "PROPN": "N",
     # Verbs
-    "VERB": "V", "AUX": "V",
+    "VERB": "V",
+    "AUX": "V",
     # Adjectives
     "ADJ": "J",
     # Adverbs
     "ADV": "R",
     # Pronouns / Determiners
-    "PRON": "D", "DET": "D",
+    "PRON": "D",
+    "DET": "D",
     # Prepositions / Conjunctions
-    "ADP": "P", "CCONJ": "C", "SCONJ": "C",
+    "ADP": "P",
+    "CCONJ": "C",
+    "SCONJ": "C",
     # Particles / Interjections / Other
-    "PART": "T", "INTJ": "I", "NUM": "M",
+    "PART": "T",
+    "INTJ": "I",
+    "NUM": "M",
     # Punctuation / Symbols / Other
-    "PUNCT": ".", "SYM": ".", "X": "X", "SPACE": "_",
+    "PUNCT": ".",
+    "SYM": ".",
+    "X": "X",
+    "SPACE": "_",
 }
 
 
@@ -51,9 +61,7 @@ class CoarsePOSTags(SpacyEventDriver):
 
     def create_event_set(self, text: str) -> EventSet:
         doc = self._get_nlp()(text)
-        return EventSet(
-            Event(data=_COARSE_MAP.get(token.pos_, "X")) for token in doc
-        )
+        return EventSet(Event(data=_COARSE_MAP.get(token.pos_, "X")) for token in doc)
 
 
 @event_driver_registry.register("pos_ngram")
@@ -73,7 +81,14 @@ class POSNGram(SpacyEventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=2,
+                min_value=1,
+                max_value=10,
+            ),
             _SPACY_MODEL_PARAM,
         ]
 

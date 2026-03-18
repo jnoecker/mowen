@@ -95,6 +95,7 @@ EVENT_CULLERS = {
 
 # ── experiment definitions ───────────────────────────────────────────────────
 
+
 @dataclass
 class Experiment:
     id: str
@@ -125,95 +126,140 @@ def build_experiments() -> list[Experiment]:
         "rare_words",
         "first_word_in_sentence",
     ]:
-        experiments.append(Experiment(
-            id=f"ed_{ed}_cosine_nn",
-            event_driver=ed,
-        ))
+        experiments.append(
+            Experiment(
+                id=f"ed_{ed}_cosine_nn",
+                event_driver=ed,
+            )
+        )
 
     # ── Group 2: N-gram variants ─────────────────────────────────────────
     for n in [2, 3, 4]:
-        experiments.append(Experiment(
-            id=f"ed_charngram_n{n}_cosine_nn",
-            event_driver="character_ngram",
-            event_driver_params={"n": n},
-        ))
+        experiments.append(
+            Experiment(
+                id=f"ed_charngram_n{n}_cosine_nn",
+                event_driver="character_ngram",
+                event_driver_params={"n": n},
+            )
+        )
     for n in [2, 3]:
-        experiments.append(Experiment(
-            id=f"ed_wordngram_n{n}_cosine_nn",
-            event_driver="word_ngram",
-            event_driver_params={"n": n},
-        ))
+        experiments.append(
+            Experiment(
+                id=f"ed_wordngram_n{n}_cosine_nn",
+                event_driver="word_ngram",
+                event_driver_params={"n": n},
+            )
+        )
     for n in [2, 3]:
-        experiments.append(Experiment(
-            id=f"ed_sorted_charngram_n{n}_cosine_nn",
-            event_driver="sorted_character_ngram",
-            event_driver_params={"n": n},
-        ))
-    experiments.append(Experiment(
-        id="ed_sorted_wordngram_n2_cosine_nn",
-        event_driver="sorted_word_ngram",
-        event_driver_params={"n": 2},
-    ))
-    experiments.append(Experiment(
-        id="ed_punctngram_n2_cosine_nn",
-        event_driver="punctuation_ngram",
-        event_driver_params={"n": 2},
-    ))
+        experiments.append(
+            Experiment(
+                id=f"ed_sorted_charngram_n{n}_cosine_nn",
+                event_driver="sorted_character_ngram",
+                event_driver_params={"n": n},
+            )
+        )
+    experiments.append(
+        Experiment(
+            id="ed_sorted_wordngram_n2_cosine_nn",
+            event_driver="sorted_word_ngram",
+            event_driver_params={"n": 2},
+        )
+    )
+    experiments.append(
+        Experiment(
+            id="ed_punctngram_n2_cosine_nn",
+            event_driver="punctuation_ngram",
+            event_driver_params={"n": 2},
+        )
+    )
 
     # ── Group 3: Distance function sweep with word events + nearest neighbor
     for df in [
-        "cosine", "manhattan", "euclidean", "chi_square", "canberra",
-        "angular_separation", "bhattacharyya", "bray_curtis", "chord",
-        "hellinger", "histogram_intersection", "intersection",
-        "nominal_ks", "kendall_correlation", "keselj_weighted",
-        "kl_divergence", "matusita", "pearson_correlation",
-        "cross_entropy", "soergel", "wave_hedges", "wed",
+        "cosine",
+        "manhattan",
+        "euclidean",
+        "chi_square",
+        "canberra",
+        "angular_separation",
+        "bhattacharyya",
+        "bray_curtis",
+        "chord",
+        "hellinger",
+        "histogram_intersection",
+        "intersection",
+        "nominal_ks",
+        "kendall_correlation",
+        "keselj_weighted",
+        "kl_divergence",
+        "matusita",
+        "pearson_correlation",
+        "cross_entropy",
+        "soergel",
+        "wave_hedges",
+        "wed",
     ]:
-        experiments.append(Experiment(
-            id=f"ed_words_df_{df}_nn",
-            event_driver="word_events",
-            distance_function=df,
-        ))
+        experiments.append(
+            Experiment(
+                id=f"ed_words_df_{df}_nn",
+                event_driver="word_events",
+                distance_function=df,
+            )
+        )
 
     # ── Group 4: Analysis method sweep with word events + cosine ─────────
     for am in ["nearest_neighbor", "centroid", "absolute_centroid", "burrows_delta"]:
-        experiments.append(Experiment(
-            id=f"ed_words_cosine_am_{am}",
-            event_driver="word_events",
-            analysis_method=am,
-        ))
+        experiments.append(
+            Experiment(
+                id=f"ed_words_cosine_am_{am}",
+                event_driver="word_events",
+                analysis_method=am,
+            )
+        )
 
     # ── Group 5: Canonicizer combinations ────────────────────────────────
-    for canon in ["unify_case", "strip_punctuation", "strip_numbers", "normalize_whitespace"]:
-        experiments.append(Experiment(
-            id=f"canon_{canon}_words_cosine_nn",
+    for canon in [
+        "unify_case",
+        "strip_punctuation",
+        "strip_numbers",
+        "normalize_whitespace",
+    ]:
+        experiments.append(
+            Experiment(
+                id=f"canon_{canon}_words_cosine_nn",
+                event_driver="word_events",
+                canonicizers=[canon],
+            )
+        )
+    experiments.append(
+        Experiment(
+            id="canon_multi_words_cosine_nn",
             event_driver="word_events",
-            canonicizers=[canon],
-        ))
-    experiments.append(Experiment(
-        id="canon_multi_words_cosine_nn",
-        event_driver="word_events",
-        canonicizers=["unify_case", "strip_punctuation"],
-    ))
+            canonicizers=["unify_case", "strip_punctuation"],
+        )
+    )
 
     # ── Group 6: Combined sweeps (char ngram + various distances) ────────
     for df in ["manhattan", "chi_square", "hellinger", "cosine"]:
-        experiments.append(Experiment(
-            id=f"ed_charngram3_df_{df}_nn",
-            event_driver="character_ngram",
-            event_driver_params={"n": 3},
-            distance_function=df,
-        ))
+        experiments.append(
+            Experiment(
+                id=f"ed_charngram3_df_{df}_nn",
+                event_driver="character_ngram",
+                event_driver_params={"n": 3},
+                distance_function=df,
+            )
+        )
 
     # ── Group 7: Analysis methods × distance functions ───────────────────
     for am in ["centroid", "absolute_centroid"]:
         for df in ["cosine", "manhattan", "euclidean"]:
-            experiments.append(Experiment(
-                id=f"ed_words_{df}_{am}",
-                event_driver="word_events",
-                distance_function=df,
-                analysis_method=am,
-            ))
+            experiments.append(
+                Experiment(
+                    id=f"ed_words_{df}_{am}",
+                    event_driver="word_events",
+                    distance_function=df,
+                    analysis_method=am,
+                )
+            )
 
     # ── Group 8: Full pipeline combos on AAAC problem A ──────────────────
     for ed, df, am in [
@@ -228,20 +274,27 @@ def build_experiments() -> list[Experiment]:
         ("word_length", "manhattan", "nearest_neighbor"),
         ("character_ngram", "cosine", "absolute_centroid"),
     ]:
-        ed_params = {"n": 3} if ed == "character_ngram" else {"n": 2} if ed == "word_ngram" else {}
-        experiments.append(Experiment(
-            id=f"aaac_{ed}_{df}_{am}",
-            event_driver=ed,
-            event_driver_params=ed_params,
-            distance_function=df,
-            analysis_method=am,
-            corpus="aaac_a",
-        ))
+        ed_params = (
+            {"n": 3}
+            if ed == "character_ngram"
+            else {"n": 2} if ed == "word_ngram" else {}
+        )
+        experiments.append(
+            Experiment(
+                id=f"aaac_{ed}_{df}_{am}",
+                event_driver=ed,
+                event_driver_params=ed_params,
+                distance_function=df,
+                analysis_method=am,
+                corpus="aaac_a",
+            )
+        )
 
     return experiments
 
 
 # ── corpus loading ───────────────────────────────────────────────────────────
+
 
 def load_fixtures_corpus():
     """Load the Hamilton/Madison test fixtures."""
@@ -249,8 +302,10 @@ def load_fixtures_corpus():
 
     known, unknown = [], []
     for name, author in [
-        ("hamilton1.txt", "Hamilton"), ("hamilton2.txt", "Hamilton"),
-        ("madison1.txt", "Madison"), ("madison2.txt", "Madison"),
+        ("hamilton1.txt", "Hamilton"),
+        ("hamilton2.txt", "Hamilton"),
+        ("madison1.txt", "Madison"),
+        ("madison2.txt", "Madison"),
     ]:
         text = (FIXTURES_DIR / name).read_text(encoding="utf-8")
         known.append(Document(text=text, author=author, title=name))
@@ -282,19 +337,23 @@ def load_aaac_a_corpus():
     for entry in problem_a["known"]:
         fpath = SAMPLE_CORPORA_DIR / entry["file"]
         text = fpath.read_text(encoding="utf-8", errors="replace")
-        known.append(Document(
-            text=text,
-            author=entry["author"],
-            title=Path(entry["file"]).name,
-        ))
+        known.append(
+            Document(
+                text=text,
+                author=entry["author"],
+                title=Path(entry["file"]).name,
+            )
+        )
 
     for entry in problem_a.get("unknown", []):
         fpath = SAMPLE_CORPORA_DIR / entry["file"]
         text = fpath.read_text(encoding="utf-8", errors="replace")
-        unknown.append(Document(
-            text=text,
-            title=Path(entry["file"]).name,
-        ))
+        unknown.append(
+            Document(
+                text=text,
+                title=Path(entry["file"]).name,
+            )
+        )
 
     return known, unknown
 
@@ -323,7 +382,9 @@ def prepare_corpus_files(known, unknown, tmpdir: Path):
         fpath = corpus_dir / f"{doc.author}_{doc.title}"
         fpath.write_text(doc.text, encoding="utf-8")
         new_doc = Document(
-            text=doc.text, author=doc.author, title=doc.title,
+            text=doc.text,
+            author=doc.author,
+            title=doc.title,
             metadata={"_filepath": str(fpath).replace("\\", "/")},
         )
         new_known.append(new_doc)
@@ -332,7 +393,8 @@ def prepare_corpus_files(known, unknown, tmpdir: Path):
         fpath = corpus_dir / doc.title
         fpath.write_text(doc.text, encoding="utf-8")
         new_doc = Document(
-            text=doc.text, title=doc.title,
+            text=doc.text,
+            title=doc.title,
             metadata={"_filepath": str(fpath).replace("\\", "/")},
         )
         new_unknown.append(new_doc)
@@ -341,6 +403,7 @@ def prepare_corpus_files(known, unknown, tmpdir: Path):
 
 
 # ── mowen execution ─────────────────────────────────────────────────────────
+
 
 @dataclass
 class Result:
@@ -379,16 +442,19 @@ def run_mowen(exp: Experiment, known, unknown) -> list[Result]:
     results = []
     for pr in pipeline_results:
         for attr in pr.rankings:
-            results.append(Result(
-                document=pr.unknown_document.title,
-                author=attr.author,
-                score=attr.score,
-            ))
+            results.append(
+                Result(
+                    document=pr.unknown_document.title,
+                    author=attr.author,
+                    score=attr.score,
+                )
+            )
 
     return results
 
 
 # ── JGAAP execution ─────────────────────────────────────────────────────────
+
 
 def format_jgaap_ed(ed_name: str, params: dict) -> str:
     """Format event driver name with parameters for JGAAP."""
@@ -423,16 +489,22 @@ def run_jgaap_batch(
             jgaap_ed = format_jgaap_ed(exp.event_driver, exp.event_driver_params)
             jgaap_df = DISTANCE_FUNCTIONS.get(exp.distance_function, "")
             jgaap_am = ANALYSIS_METHODS.get(exp.analysis_method, "")
-            jgaap_canons = "|".join(
-                CANONICIZERS[c] for c in exp.canonicizers
-            ) if exp.canonicizers else ""
+            jgaap_canons = (
+                "|".join(CANONICIZERS[c] for c in exp.canonicizers)
+                if exp.canonicizers
+                else ""
+            )
 
             csv_path_str = str(csv_path).replace("\\", "/")
-            f.write(f"{exp.id}\t{csv_path_str}\t{jgaap_ed}\t{jgaap_df}\t{jgaap_am}\t{jgaap_canons}\n")
+            f.write(
+                f"{exp.id}\t{csv_path_str}\t{jgaap_ed}\t{jgaap_df}\t{jgaap_am}\t{jgaap_canons}\n"
+            )
 
     # Run JGAAP
     cmd = [
-        "java", "-cp", JGAAP_CLASSPATH,
+        "java",
+        "-cp",
+        JGAAP_CLASSPATH,
         "com.jgaap.backend.BatchRunner",
         str(config_path).replace("\\", "/"),
         str(output_path).replace("\\", "/"),
@@ -472,16 +544,19 @@ def run_jgaap_batch(
                 else:
                     author = author_field.strip()
 
-                results_by_exp[exp_id].append(Result(
-                    document=doc_title,
-                    author=author,
-                    score=score,
-                ))
+                results_by_exp[exp_id].append(
+                    Result(
+                        document=doc_title,
+                        author=author,
+                        score=score,
+                    )
+                )
 
     return dict(results_by_exp)
 
 
 # ── comparison ───────────────────────────────────────────────────────────────
+
 
 def aggregate_nn_results(results: list[Result]) -> dict[str, list[Result]]:
     """Aggregate per-document results to per-author best scores.
@@ -550,7 +625,8 @@ def compare_results(
 
         if not j_results:
             return ComparisonResult(
-                exp.id, "MISSING",
+                exp.id,
+                "MISSING",
                 f"No JGAAP results for document {doc}",
             )
 
@@ -559,9 +635,7 @@ def compare_results(
         j_ranking = [r.author for r in j_results]
 
         if m_ranking != j_ranking:
-            rank_mismatches.append(
-                f"{doc}: mowen={m_ranking} vs jgaap={j_ranking}"
-            )
+            rank_mismatches.append(f"{doc}: mowen={m_ranking} vs jgaap={j_ranking}")
 
         # Compare scores
         m_scores = {r.author: r.score for r in m_results}
@@ -579,14 +653,16 @@ def compare_results(
 
     if rank_mismatches:
         return ComparisonResult(
-            exp.id, "RANK_MISMATCH",
+            exp.id,
+            "RANK_MISMATCH",
             "; ".join(rank_mismatches),
             max_diff,
         )
 
     if score_mismatches and max_diff > 1e-6:
         return ComparisonResult(
-            exp.id, "SCORE_MISMATCH",
+            exp.id,
+            "SCORE_MISMATCH",
             "; ".join(score_mismatches[:3]),  # truncate
             max_diff,
         )
@@ -595,6 +671,7 @@ def compare_results(
 
 
 # ── main ─────────────────────────────────────────────────────────────────────
+
 
 def main():
     import time
@@ -607,7 +684,9 @@ def main():
     experiments = build_experiments()
     print(f"Designed {len(experiments)} experiments across:")
     print(f"  - {len(set(e.event_driver for e in experiments))} event drivers")
-    print(f"  - {len(set(e.distance_function for e in experiments))} distance functions")
+    print(
+        f"  - {len(set(e.distance_function for e in experiments))} distance functions"
+    )
     print(f"  - {len(set(e.analysis_method for e in experiments))} analysis methods")
     print()
 
@@ -657,9 +736,9 @@ def main():
             try:
                 mowen_res = run_mowen(exp, known, unknown)
             except Exception as e:
-                comparisons.append(ComparisonResult(
-                    exp.id, "ERROR", f"mowen error: {e}"
-                ))
+                comparisons.append(
+                    ComparisonResult(exp.id, "ERROR", f"mowen error: {e}")
+                )
                 continue
 
             jgaap_res = jgaap_results.get(exp.id, [])

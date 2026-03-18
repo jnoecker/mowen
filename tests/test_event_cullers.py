@@ -20,7 +20,9 @@ class TestMostCommon:
 
     def test_preserves_order(self):
         c = event_culler_registry.create("most_common", {"n": 1})
-        es = EventSet([Event("rare"), Event("common"), Event("common"), Event("common")])
+        es = EventSet(
+            [Event("rare"), Event("common"), Event("common"), Event("common")]
+        )
         c.init([es])
         culled = c.cull(es)
         assert all(e.data == "common" for e in culled)
@@ -47,7 +49,9 @@ class TestLeastCommon:
 
     def test_preserves_all_occurrences(self):
         c = event_culler_registry.create("least_common", {"n": 1})
-        es = EventSet([Event("rare"), Event("common"), Event("common"), Event("common")])
+        es = EventSet(
+            [Event("rare"), Event("common"), Event("common"), Event("common")]
+        )
         c.init([es])
         culled = c.cull(es)
         assert all(e.data == "rare" for e in culled)
@@ -95,11 +99,11 @@ class TestRangeCuller:
 
 class TestPercentageRange:
     def test_filters_by_relative_frequency(self):
-        c = event_culler_registry.create("percentage_range", {"min_percent": 0.0, "max_percent": 25.0})
-        # 10 events total: a=5 (50%), b=3 (30%), c=2 (20%)
-        es = EventSet(
-            [Event("a")] * 5 + [Event("b")] * 3 + [Event("c")] * 2
+        c = event_culler_registry.create(
+            "percentage_range", {"min_percent": 0.0, "max_percent": 25.0}
         )
+        # 10 events total: a=5 (50%), b=3 (30%), c=2 (20%)
+        es = EventSet([Event("a")] * 5 + [Event("b")] * 3 + [Event("c")] * 2)
         c.init([es])
         culled = c.cull(es)
         # only c (20%) falls within [0%, 25%]
@@ -107,14 +111,18 @@ class TestPercentageRange:
         assert events_data == {"c"}
 
     def test_full_range_keeps_all(self):
-        c = event_culler_registry.create("percentage_range", {"min_percent": 0.0, "max_percent": 100.0})
+        c = event_culler_registry.create(
+            "percentage_range", {"min_percent": 0.0, "max_percent": 100.0}
+        )
         es = EventSet([Event("a"), Event("b"), Event("c")])
         c.init([es])
         culled = c.cull(es)
         assert len(culled) == 3
 
     def test_empty_event_set(self):
-        c = event_culler_registry.create("percentage_range", {"min_percent": 0.0, "max_percent": 100.0})
+        c = event_culler_registry.create(
+            "percentage_range", {"min_percent": 0.0, "max_percent": 100.0}
+        )
         es = EventSet([])
         c.init([es])
         culled = c.cull(es)
@@ -127,8 +135,10 @@ class TestStdDeviation:
         # frequencies: a=10, b=10, c=10, d=100
         # mean=32.5, d is a clear outlier
         es = EventSet(
-            [Event("a")] * 10 + [Event("b")] * 10
-            + [Event("c")] * 10 + [Event("d")] * 100
+            [Event("a")] * 10
+            + [Event("b")] * 10
+            + [Event("c")] * 10
+            + [Event("d")] * 100
         )
         c.init([es])
         culled = c.cull(es)
@@ -191,8 +201,11 @@ class TestIQR:
         # frequencies: a=1, b=2, c=3, d=4, e=100
         # e is a clear outlier above Q3 + 1.5*IQR
         es = EventSet(
-            [Event("a")] * 1 + [Event("b")] * 2 + [Event("c")] * 3
-            + [Event("d")] * 4 + [Event("e")] * 100
+            [Event("a")] * 1
+            + [Event("b")] * 2
+            + [Event("c")] * 3
+            + [Event("d")] * 4
+            + [Event("e")] * 100
         )
         c.init([es])
         culled = c.cull(es)

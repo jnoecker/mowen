@@ -23,9 +23,7 @@ class ChiSquareDistance(DistanceFunction):
     """
 
     display_name: str = "Chi-Square Distance"
-    description: str = (
-        "Chi-square distance over relative frequencies."
-    )
+    description: str = "Chi-square distance over relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Chi-square distance between *h1* and *h2*."""

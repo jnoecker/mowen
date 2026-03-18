@@ -16,10 +16,19 @@ def _make_histogram(items: dict[str, int]) -> Histogram:
 
 # Symmetric distance functions (KL divergence and chi-square are asymmetric)
 SYMMETRIC_DISTANCES = [
-    "cosine", "euclidean", "manhattan",
-    "bhattacharyya", "hellinger", "intersection", "histogram_intersection",
-    "bray_curtis", "canberra", "chord", "angular_separation",
-    "kendall_correlation", "pearson_correlation",
+    "cosine",
+    "euclidean",
+    "manhattan",
+    "bhattacharyya",
+    "hellinger",
+    "intersection",
+    "histogram_intersection",
+    "bray_curtis",
+    "canberra",
+    "chord",
+    "angular_separation",
+    "kendall_correlation",
+    "pearson_correlation",
 ]
 
 ALL_DISTANCES = SYMMETRIC_DISTANCES + ["kl_divergence", "chi_square"]
@@ -27,9 +36,15 @@ ALL_DISTANCES = SYMMETRIC_DISTANCES + ["kl_divergence", "chi_square"]
 # Correlation-based distances don't satisfy d(x,x)=0 for uniform distributions
 # (all-tied ranks -> tau=0 -> distance=0.5). They are rank-correlation distances,
 # not true metrics.
-IDENTITY_DISTANCES = [d for d in ALL_DISTANCES if d not in (
-    "kendall_correlation", "pearson_correlation",
-)]
+IDENTITY_DISTANCES = [
+    d
+    for d in ALL_DISTANCES
+    if d
+    not in (
+        "kendall_correlation",
+        "pearson_correlation",
+    )
+]
 
 
 # Sample histograms for property tests
@@ -61,14 +76,14 @@ class TestSymmetry:
     def test_symmetric_pairs(self, name):
         d = distance_function_registry.create(name)
         for i, h1 in enumerate(HISTOGRAMS):
-            for h2 in HISTOGRAMS[i + 1:]:
+            for h2 in HISTOGRAMS[i + 1 :]:
                 d12 = d.distance(h1, h2)
                 d21 = d.distance(h2, h1)
                 if math.isinf(d12) and math.isinf(d21):
                     continue  # both inf is symmetric
-                assert abs(d12 - d21) < 1e-6, (
-                    f"{name}: d(h1,h2)={d12} != d(h2,h1)={d21}"
-                )
+                assert (
+                    abs(d12 - d21) < 1e-6
+                ), f"{name}: d(h1,h2)={d12} != d(h2,h1)={d21}"
 
 
 class TestNonNegativity:

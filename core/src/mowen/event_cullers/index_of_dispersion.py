@@ -31,7 +31,13 @@ class IndexOfDispersion(EventCuller):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="Number of events to keep.", param_type=int, default=50, min_value=1),
+            ParamDef(
+                name="n",
+                description="Number of events to keep.",
+                param_type=int,
+                default=50,
+                min_value=1,
+            ),
         ]
 
     def init(self, event_sets: list[EventSet]) -> None:

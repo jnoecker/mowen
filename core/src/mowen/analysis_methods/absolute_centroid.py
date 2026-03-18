@@ -39,7 +39,6 @@ class AbsoluteCentroid(CentroidAnalysisMethod):
         for author, event_sums in author_event_sums.items():
             n_docs = author_doc_counts[author]
             mean_counts: dict[Event, int] = {
-                event: round(total / n_docs)
-                for event, total in event_sums.items()
+                event: round(total / n_docs) for event, total in event_sums.items()
             }
             self._centroids[author] = Histogram(mean_counts)

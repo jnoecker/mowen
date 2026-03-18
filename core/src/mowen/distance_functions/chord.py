@@ -24,9 +24,7 @@ class ChordDistance(DistanceFunction):
     """
 
     display_name: str = "Chord Distance"
-    description: str = (
-        "Chord distance: sqrt(2 * (1 - cosine similarity))."
-    )
+    description: str = "Chord distance: sqrt(2 * (1 - cosine similarity))."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the chord distance between *h1* and *h2*."""

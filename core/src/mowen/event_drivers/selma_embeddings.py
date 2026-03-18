@@ -46,9 +46,7 @@ class SELMAEmbeddingDriver(EventDriver):
         return [
             ParamDef(
                 name="model_name",
-                description=(
-                    "HuggingFace instruction-tuned embedding model."
-                ),
+                description=("HuggingFace instruction-tuned embedding model."),
                 param_type=str,
                 default="intfloat/e5-mistral-7b-instruct",
             ),
@@ -86,8 +84,7 @@ class SELMAEmbeddingDriver(EventDriver):
             import torch  # noqa: F401
         except ImportError as exc:
             raise ImportError(
-                "SELMA embeddings require PyTorch. "
-                "Install with: pip install torch"
+                "SELMA embeddings require PyTorch. " "Install with: pip install torch"
             ) from exc
 
         self._tokenizer = AutoTokenizer.from_pretrained(model_name)

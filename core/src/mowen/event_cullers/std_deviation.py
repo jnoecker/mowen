@@ -60,7 +60,5 @@ class StdDeviation(EventCuller):
         lower = mean - n * std_dev
         upper = mean + n * std_dev
         self._kept_events = {
-            event
-            for event, freq in combined.items()
-            if lower <= freq <= upper
+            event for event, freq in combined.items() if lower <= freq <= upper
         }

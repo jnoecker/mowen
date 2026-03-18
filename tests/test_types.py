@@ -1,6 +1,13 @@
 """Tests for core data types."""
 
-from mowen.types import Attribution, Document, Event, EventSet, Histogram, PipelineResult
+from mowen.types import (
+    Attribution,
+    Document,
+    Event,
+    EventSet,
+    Histogram,
+    PipelineResult,
+)
 
 
 class TestEvent:

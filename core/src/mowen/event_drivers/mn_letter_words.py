@@ -22,8 +22,22 @@ class MNLetterWords(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="m", description="Minimum word length (inclusive).", param_type=int, default=1, min_value=1, max_value=50),
-            ParamDef(name="n", description="Maximum word length (inclusive).", param_type=int, default=3, min_value=1, max_value=50),
+            ParamDef(
+                name="m",
+                description="Minimum word length (inclusive).",
+                param_type=int,
+                default=1,
+                min_value=1,
+                max_value=50,
+            ),
+            ParamDef(
+                name="n",
+                description="Maximum word length (inclusive).",
+                param_type=int,
+                default=3,
+                min_value=1,
+                max_value=50,
+            ),
             TOKENIZER_PARAM,
         ]
 

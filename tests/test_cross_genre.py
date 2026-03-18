@@ -21,42 +21,50 @@ def _make_cross_genre_docs():
     return [
         Document(
             text="The government requires strong institutions.",
-            author="Hamilton", title="h_formal1",
+            author="Hamilton",
+            title="h_formal1",
             metadata={"genre": "formal"},
         ),
         Document(
             text="Federal power ensures national defense.",
-            author="Hamilton", title="h_formal2",
+            author="Hamilton",
+            title="h_formal2",
             metadata={"genre": "formal"},
         ),
         Document(
             text="Separation of powers prevents tyranny.",
-            author="Madison", title="m_formal1",
+            author="Madison",
+            title="m_formal1",
             metadata={"genre": "formal"},
         ),
         Document(
             text="A republic guards against faction dangers.",
-            author="Madison", title="m_formal2",
+            author="Madison",
+            title="m_formal2",
             metadata={"genre": "formal"},
         ),
         Document(
             text="gov needs to be strong, institutions matter!",
-            author="Hamilton", title="h_informal1",
+            author="Hamilton",
+            title="h_informal1",
             metadata={"genre": "informal"},
         ),
         Document(
             text="we need federal power for defense!",
-            author="Hamilton", title="h_informal2",
+            author="Hamilton",
+            title="h_informal2",
             metadata={"genre": "informal"},
         ),
         Document(
             text="separation of powers stops tyranny imo",
-            author="Madison", title="m_informal1",
+            author="Madison",
+            title="m_informal1",
             metadata={"genre": "informal"},
         ),
         Document(
             text="republic keeps factions in check tbh",
-            author="Madison", title="m_informal2",
+            author="Madison",
+            title="m_informal2",
             metadata={"genre": "informal"},
         ),
     ]
@@ -66,7 +74,10 @@ class TestCrossGenreEvaluation:
     def test_basic_cross_genre(self):
         docs = _make_cross_genre_docs()
         result = cross_genre_evaluate(
-            docs, _config(), "formal", "informal",
+            docs,
+            _config(),
+            "formal",
+            "informal",
         )
         assert result is not None
         assert 0.0 <= result.accuracy <= 1.0
@@ -76,37 +87,54 @@ class TestCrossGenreEvaluation:
         docs = _make_cross_genre_docs()
         with pytest.raises(EvaluationError, match="No documents"):
             cross_genre_evaluate(
-                docs, _config(), "formal", "nonexistent",
+                docs,
+                _config(),
+                "formal",
+                "nonexistent",
             )
 
     def test_no_shared_authors_raises(self):
         docs = [
             Document(
-                text="text", author="OnlyFormal", title="f1",
+                text="text",
+                author="OnlyFormal",
+                title="f1",
                 metadata={"genre": "formal"},
             ),
             Document(
-                text="text", author="OnlyFormal", title="f2",
+                text="text",
+                author="OnlyFormal",
+                title="f2",
                 metadata={"genre": "formal"},
             ),
             Document(
-                text="text", author="OnlyInformal", title="i1",
+                text="text",
+                author="OnlyInformal",
+                title="i1",
                 metadata={"genre": "informal"},
             ),
             Document(
-                text="text", author="OnlyInformal", title="i2",
+                text="text",
+                author="OnlyInformal",
+                title="i2",
                 metadata={"genre": "informal"},
             ),
         ]
         with pytest.raises(EvaluationError, match="shared authors"):
             cross_genre_evaluate(
-                docs, _config(), "formal", "informal",
+                docs,
+                _config(),
+                "formal",
+                "informal",
             )
 
     def test_all_authors_in_results(self):
         docs = _make_cross_genre_docs()
         result = cross_genre_evaluate(
-            docs, _config(), "formal", "informal",
+            docs,
+            _config(),
+            "formal",
+            "informal",
         )
         authors = {a.author for a in result.per_author}
         assert authors == {"Hamilton", "Madison"}

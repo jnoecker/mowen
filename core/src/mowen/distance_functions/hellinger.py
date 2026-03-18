@@ -25,9 +25,7 @@ class HellingerDistance(DistanceFunction):
     """
 
     display_name: str = "Hellinger Distance"
-    description: str = (
-        "Hellinger distance over relative frequencies."
-    )
+    description: str = "Hellinger distance over relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Hellinger distance between *h1* and *h2*."""

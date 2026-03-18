@@ -21,42 +21,50 @@ def _make_topic_docs():
     return [
         Document(
             text="The government requires strong institutions.",
-            author="Hamilton", title="h_pol",
+            author="Hamilton",
+            title="h_pol",
             metadata={"topic": "politics"},
         ),
         Document(
             text="Federal power ensures defense.",
-            author="Hamilton", title="h_pol2",
+            author="Hamilton",
+            title="h_pol2",
             metadata={"topic": "politics"},
         ),
         Document(
             text="Separation of powers prevents tyranny.",
-            author="Madison", title="m_pol",
+            author="Madison",
+            title="m_pol",
             metadata={"topic": "politics"},
         ),
         Document(
             text="A republic guards against faction.",
-            author="Madison", title="m_pol2",
+            author="Madison",
+            title="m_pol2",
             metadata={"topic": "politics"},
         ),
         Document(
             text="Economics drives trade between nations.",
-            author="Hamilton", title="h_econ",
+            author="Hamilton",
+            title="h_econ",
             metadata={"topic": "economics"},
         ),
         Document(
             text="Banks and currency stabilize the economy.",
-            author="Hamilton", title="h_econ2",
+            author="Hamilton",
+            title="h_econ2",
             metadata={"topic": "economics"},
         ),
         Document(
             text="Agriculture is the foundation of wealth.",
-            author="Madison", title="m_econ",
+            author="Madison",
+            title="m_econ",
             metadata={"topic": "economics"},
         ),
         Document(
             text="Land ownership drives economic independence.",
-            author="Madison", title="m_econ2",
+            author="Madison",
+            title="m_econ2",
             metadata={"topic": "economics"},
         ),
     ]
@@ -75,6 +83,7 @@ class TestTopicControlledEvaluation:
     def test_overall_matches_loo(self):
         """Overall result should be same as standard LOO."""
         from mowen.evaluation import leave_one_out
+
         docs = _make_topic_docs()
         tc = topic_controlled_evaluate(docs, _config())
         loo = leave_one_out(docs, _config())

@@ -45,10 +45,14 @@ class GeneralImposters(NeighborAnalysisMethod):
     )
 
     _author_histograms: dict[str, list[Histogram]] = field(
-        default_factory=dict, init=False, repr=False,
+        default_factory=dict,
+        init=False,
+        repr=False,
     )
     _all_events: set[Event] = field(
-        default_factory=set, init=False, repr=False,
+        default_factory=set,
+        init=False,
+        repr=False,
     )
 
     @classmethod
@@ -155,7 +159,9 @@ class GeneralImposters(NeighborAnalysisMethod):
             wins = 0
             for _ in range(n_iterations):
                 # Sample feature subset
-                subset = set(rng.sample(all_events_list, min(n_features, len(all_events_list))))
+                subset = set(
+                    rng.sample(all_events_list, min(n_features, len(all_events_list)))
+                )
 
                 # Sample imposters (with replacement if needed)
                 n_sample = min(n_imposters, len(imposter_hists))

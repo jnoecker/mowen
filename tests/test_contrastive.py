@@ -9,18 +9,30 @@ from mowen.types import Document, Event, Histogram, NumericEventSet
 def _make_numeric_training_data():
     """Create training data with NumericEventSet inputs."""
     return [
-        (Document(text="", author="A", title="a1"),
-         NumericEventSet([1.0, 0.0, 0.5, 0.2])),
-        (Document(text="", author="A", title="a2"),
-         NumericEventSet([0.9, 0.1, 0.6, 0.1])),
-        (Document(text="", author="A", title="a3"),
-         NumericEventSet([0.8, 0.05, 0.55, 0.15])),
-        (Document(text="", author="B", title="b1"),
-         NumericEventSet([0.0, 1.0, 0.5, 0.8])),
-        (Document(text="", author="B", title="b2"),
-         NumericEventSet([0.1, 0.9, 0.4, 0.9])),
-        (Document(text="", author="B", title="b3"),
-         NumericEventSet([0.05, 0.95, 0.45, 0.85])),
+        (
+            Document(text="", author="A", title="a1"),
+            NumericEventSet([1.0, 0.0, 0.5, 0.2]),
+        ),
+        (
+            Document(text="", author="A", title="a2"),
+            NumericEventSet([0.9, 0.1, 0.6, 0.1]),
+        ),
+        (
+            Document(text="", author="A", title="a3"),
+            NumericEventSet([0.8, 0.05, 0.55, 0.15]),
+        ),
+        (
+            Document(text="", author="B", title="b1"),
+            NumericEventSet([0.0, 1.0, 0.5, 0.8]),
+        ),
+        (
+            Document(text="", author="B", title="b2"),
+            NumericEventSet([0.1, 0.9, 0.4, 0.9]),
+        ),
+        (
+            Document(text="", author="B", title="b3"),
+            NumericEventSet([0.05, 0.95, 0.45, 0.85]),
+        ),
     ]
 
 
@@ -81,9 +93,7 @@ class TestContrastive:
                 {"projection_dim": 2, "n_epochs": 10, "random_seed": 42},
             )
             method.train(_make_numeric_training_data())
-            results_list.append(
-                method.analyze(NumericEventSet([0.5, 0.5, 0.5, 0.5]))
-            )
+            results_list.append(method.analyze(NumericEventSet([0.5, 0.5, 0.5, 0.5])))
 
         for r1, r2 in zip(results_list[0], results_list[1]):
             assert r1.author == r2.author
@@ -92,14 +102,22 @@ class TestContrastive:
     def test_with_histograms(self):
         """Should work with discrete Histogram inputs (shared vocab)."""
         data = [
-            (Document(text="", author="A", title="a1"),
-             Histogram({Event("x"): 5, Event("y"): 1})),
-            (Document(text="", author="A", title="a2"),
-             Histogram({Event("x"): 4, Event("y"): 2})),
-            (Document(text="", author="B", title="b1"),
-             Histogram({Event("x"): 1, Event("y"): 5})),
-            (Document(text="", author="B", title="b2"),
-             Histogram({Event("x"): 2, Event("y"): 4})),
+            (
+                Document(text="", author="A", title="a1"),
+                Histogram({Event("x"): 5, Event("y"): 1}),
+            ),
+            (
+                Document(text="", author="A", title="a2"),
+                Histogram({Event("x"): 4, Event("y"): 2}),
+            ),
+            (
+                Document(text="", author="B", title="b1"),
+                Histogram({Event("x"): 1, Event("y"): 5}),
+            ),
+            (
+                Document(text="", author="B", title="b2"),
+                Histogram({Event("x"): 2, Event("y"): 4}),
+            ),
         ]
         method = analysis_method_registry.create("contrastive")
         method.train(data)

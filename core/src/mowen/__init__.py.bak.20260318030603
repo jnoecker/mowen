@@ -1,9 +1,6 @@
 """mowen — authorship attribution toolkit."""
 
 from importlib.metadata import PackageNotFoundError, version
-import json
-import logging
-import re
 
 try:
     __version__ = version("mowen")
@@ -54,34 +51,3 @@ __all__ = [
     "tokenizer_registry",
     "write_results_csv",
 ]
-
-
-def _parse_response(response):
-    """
-    Parse LLM response to extract attribution.
-
-    This function uses a regular expression to extract the attribution from the response.
-    If the regular expression fails, it falls back to searching for author names as substrings
-    in the raw response text. A warning is logged when falling back to text matching.
-
-    Args:
-        response (str): The LLM response.
-
-    Returns:
-        str: The attribution extracted from the response.
-    """
-    pattern = r'"author":\s*"([^"]*)"\s*}'
-    match = re.search(pattern, response)
-    if match:
-        return match.group(1)
-    else:
-        logging.warning("Failed to parse JSON response. Falling back to text matching.")
-        # Use a simple search for author names as substrings in the response text
-        author_names = ["John Doe", "Jane Doe"]  # Replace with actual author names
-        for author_name in author_names:
-            if author_name in response:
-                return author_name
-        return None
-
-
-# Rest of the code remains the same

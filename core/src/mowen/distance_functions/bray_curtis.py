@@ -23,9 +23,7 @@ class BrayCurtisDistance(DistanceFunction):
     """
 
     display_name: str = "Bray-Curtis Distance"
-    description: str = (
-        "Bray-Curtis dissimilarity over relative frequencies."
-    )
+    description: str = "Bray-Curtis dissimilarity over relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Bray-Curtis dissimilarity between *h1* and *h2*."""

@@ -39,8 +39,8 @@ from mowen.evaluation import (
 from mowen.pipeline import Pipeline, PipelineConfig
 from mowen.types import Document
 
-
 # ── corpus loading ──────────────────────────────────────────────────────────
+
 
 def load_corpus(corpus_id: str) -> tuple[list[Document], list[Document]]:
     """Load a bundled sample corpus as (known, unknown) documents."""
@@ -53,10 +53,13 @@ def load_corpus(corpus_id: str) -> tuple[list[Document], list[Document]]:
     for entry in data["known"]:
         fpath = data_dir / entry["file"]
         text = fpath.read_text(encoding="utf-8", errors="replace")
-        known.append(Document(
-            text=text, author=entry["author"],
-            title=Path(entry["file"]).name,
-        ))
+        known.append(
+            Document(
+                text=text,
+                author=entry["author"],
+                title=Path(entry["file"]).name,
+            )
+        )
 
     for entry in data.get("unknown", []):
         fpath = data_dir / entry["file"]
@@ -64,15 +67,19 @@ def load_corpus(corpus_id: str) -> tuple[list[Document], list[Document]]:
         true_author = entry.get("true_author")
         if true_author == "NONE":
             true_author = None
-        unknown.append(Document(
-            text=text, author=true_author,
-            title=Path(entry["file"]).name,
-        ))
+        unknown.append(
+            Document(
+                text=text,
+                author=true_author,
+                title=Path(entry["file"]).name,
+            )
+        )
 
     return known, unknown
 
 
 # ── experiment definitions ──────────────────────────────────────────────────
+
 
 @dataclass
 class BenchmarkExperiment:
@@ -91,164 +98,200 @@ def build_experiments() -> list[BenchmarkExperiment]:
     # ── Section 1: Classic presets on Federalist Papers (LOO) ────────────
     # These are regression baselines for the original presets.
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_burrows_delta_loo",
-        description="Burrows' Delta on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}, {"name": "normalize_whitespace"}],
-            "event_drivers": [{"name": "word_events", "params": {"tokenizer": "whitespace"}}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 150}}],
-            "distance_function": {"name": "manhattan"},
-            "analysis_method": {"name": "burrows_delta"},
-        },
-        mode="loo",
-        expected_min_accuracy=0.5,
-    ))
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_burrows_delta_loo",
+            description="Burrows' Delta on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [
+                    {"name": "unify_case"},
+                    {"name": "normalize_whitespace"},
+                ],
+                "event_drivers": [
+                    {"name": "word_events", "params": {"tokenizer": "whitespace"}}
+                ],
+                "event_cullers": [{"name": "most_common", "params": {"n": 150}}],
+                "distance_function": {"name": "manhattan"},
+                "analysis_method": {"name": "burrows_delta"},
+            },
+            mode="loo",
+            expected_min_accuracy=0.5,
+        )
+    )
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_cosine_delta_loo",
-        description="Cosine Delta on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}, {"name": "normalize_whitespace"}],
-            "event_drivers": [{"name": "word_events"}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 300}}],
-            "distance_function": {"name": "cosine"},
-            "analysis_method": {"name": "nearest_neighbor"},
-        },
-        mode="loo",
-        expected_min_accuracy=0.5,
-    ))
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_cosine_delta_loo",
+            description="Cosine Delta on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [
+                    {"name": "unify_case"},
+                    {"name": "normalize_whitespace"},
+                ],
+                "event_drivers": [{"name": "word_events"}],
+                "event_cullers": [{"name": "most_common", "params": {"n": 300}}],
+                "distance_function": {"name": "cosine"},
+                "analysis_method": {"name": "nearest_neighbor"},
+            },
+            mode="loo",
+            expected_min_accuracy=0.5,
+        )
+    )
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_char_ngram_loo",
-        description="Character 4-gram on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 2500}}],
-            "distance_function": {"name": "cosine"},
-            "analysis_method": {"name": "nearest_neighbor"},
-        },
-        mode="loo",
-        expected_min_accuracy=0.5,
-    ))
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_char_ngram_loo",
+            description="Character 4-gram on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [{"name": "unify_case"}],
+                "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
+                "event_cullers": [{"name": "most_common", "params": {"n": 2500}}],
+                "distance_function": {"name": "cosine"},
+                "analysis_method": {"name": "nearest_neighbor"},
+            },
+            mode="loo",
+            expected_min_accuracy=0.5,
+        )
+    )
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_function_words_loo",
-        description="Function Words on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}, {"name": "normalize_whitespace"}],
-            "event_drivers": [{"name": "function_words", "params": {"language": "english"}}],
-            "event_cullers": [],
-            "distance_function": {"name": "cosine"},
-            "analysis_method": {"name": "nearest_neighbor"},
-        },
-        mode="loo",
-        expected_min_accuracy=0.4,
-    ))
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_function_words_loo",
+            description="Function Words on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [
+                    {"name": "unify_case"},
+                    {"name": "normalize_whitespace"},
+                ],
+                "event_drivers": [
+                    {"name": "function_words", "params": {"language": "english"}}
+                ],
+                "event_cullers": [],
+                "distance_function": {"name": "cosine"},
+                "analysis_method": {"name": "nearest_neighbor"},
+            },
+            mode="loo",
+            expected_min_accuracy=0.4,
+        )
+    )
 
     # ── Section 2: New distance functions ────────────────────────────────
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_ppm_distance_loo",
-        description="PPM compression distance on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "word_events"}],
-            "event_cullers": [],
-            "distance_function": {"name": "ppm", "params": {"order": 5}},
-            "analysis_method": {"name": "nearest_neighbor"},
-        },
-        mode="loo",
-        expected_min_accuracy=0.3,
-    ))
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_ppm_distance_loo",
+            description="PPM compression distance on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [{"name": "unify_case"}],
+                "event_drivers": [{"name": "word_events"}],
+                "event_cullers": [],
+                "distance_function": {"name": "ppm", "params": {"order": 5}},
+                "analysis_method": {"name": "nearest_neighbor"},
+            },
+            mode="loo",
+            expected_min_accuracy=0.3,
+        )
+    )
 
     # ── Section 3: Verification methods ──────────────────────────────────
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_imposters_attribution",
-        description="General Imposters on Federalist Papers (attribution)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 1000}}],
-            "distance_function": {"name": "cosine"},
-            "analysis_method": {
-                "name": "imposters",
-                "params": {"n_iterations": 100, "random_seed": 42},
-            },
-        },
-        mode="attribution",
-        expected_min_accuracy=0.0,
-    ))
-
-    experiments.append(BenchmarkExperiment(
-        id="fed_imposters_loo",
-        description="General Imposters on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 500}}],
-            "distance_function": {"name": "cosine"},
-            "analysis_method": {
-                "name": "imposters",
-                "params": {"n_iterations": 50, "random_seed": 42},
-            },
-        },
-        mode="loo",
-        expected_min_accuracy=0.3,
-    ))
-
-    experiments.append(BenchmarkExperiment(
-        id="fed_unmasking_loo",
-        description="Unmasking on Federalist Papers (LOO)",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "word_events"}],
-            "event_cullers": [],
-            "distance_function": None,
-            "analysis_method": {
-                "name": "unmasking",
-                "params": {
-                    "n_features": 100, "n_eliminate": 4,
-                    "n_iterations": 5, "n_folds": 3, "random_seed": 42,
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_imposters_attribution",
+            description="General Imposters on Federalist Papers (attribution)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [{"name": "unify_case"}],
+                "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
+                "event_cullers": [{"name": "most_common", "params": {"n": 1000}}],
+                "distance_function": {"name": "cosine"},
+                "analysis_method": {
+                    "name": "imposters",
+                    "params": {"n_iterations": 100, "random_seed": 42},
                 },
             },
-        },
-        mode="loo",
-        expected_min_accuracy=0.2,
-    ))
+            mode="attribution",
+            expected_min_accuracy=0.0,
+        )
+    )
+
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_imposters_loo",
+            description="General Imposters on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [{"name": "unify_case"}],
+                "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
+                "event_cullers": [{"name": "most_common", "params": {"n": 500}}],
+                "distance_function": {"name": "cosine"},
+                "analysis_method": {
+                    "name": "imposters",
+                    "params": {"n_iterations": 50, "random_seed": 42},
+                },
+            },
+            mode="loo",
+            expected_min_accuracy=0.3,
+        )
+    )
+
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_unmasking_loo",
+            description="Unmasking on Federalist Papers (LOO)",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [{"name": "unify_case"}],
+                "event_drivers": [{"name": "word_events"}],
+                "event_cullers": [],
+                "distance_function": None,
+                "analysis_method": {
+                    "name": "unmasking",
+                    "params": {
+                        "n_features": 100,
+                        "n_eliminate": 4,
+                        "n_iterations": 5,
+                        "n_folds": 3,
+                        "random_seed": 42,
+                    },
+                },
+            },
+            mode="loo",
+            expected_min_accuracy=0.2,
+        )
+    )
 
     # ── Section 4: Verification with calibration ─────────────────────────
 
-    experiments.append(BenchmarkExperiment(
-        id="fed_imposters_calibrated",
-        description="Imposters with calibration on Federalist Papers",
-        corpus="federalist_papers",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 500}}],
-            "distance_function": {"name": "cosine"},
-            "analysis_method": {
-                "name": "imposters",
-                "params": {
-                    "n_iterations": 50, "random_seed": 42,
-                    "calibration_low": 0.35, "calibration_high": 0.65,
+    experiments.append(
+        BenchmarkExperiment(
+            id="fed_imposters_calibrated",
+            description="Imposters with calibration on Federalist Papers",
+            corpus="federalist_papers",
+            config={
+                "canonicizers": [{"name": "unify_case"}],
+                "event_drivers": [{"name": "character_ngram", "params": {"n": 4}}],
+                "event_cullers": [{"name": "most_common", "params": {"n": 500}}],
+                "distance_function": {"name": "cosine"},
+                "analysis_method": {
+                    "name": "imposters",
+                    "params": {
+                        "n_iterations": 50,
+                        "random_seed": 42,
+                        "calibration_low": 0.35,
+                        "calibration_high": 0.65,
+                    },
                 },
             },
-        },
-        mode="loo",
-        expected_min_accuracy=0.0,  # calibration may reduce accuracy
-    ))
+            mode="loo",
+            expected_min_accuracy=0.0,  # calibration may reduce accuracy
+        )
+    )
 
     # ── Section 5: AAAC Problem A with multiple methods ──────────────────
 
@@ -257,42 +300,49 @@ def build_experiments() -> list[BenchmarkExperiment]:
         ("knn", {"name": "knn", "params": {"k": 3}}),
         ("svm", {"name": "svm"}),
     ]:
-        experiments.append(BenchmarkExperiment(
-            id=f"aaac_a_char3_{method_id}_loo",
-            description=f"AAAC-A char-3-gram + {method_id} (LOO)",
+        experiments.append(
+            BenchmarkExperiment(
+                id=f"aaac_a_char3_{method_id}_loo",
+                description=f"AAAC-A char-3-gram + {method_id} (LOO)",
+                corpus="aaac_problem_a",
+                config={
+                    "canonicizers": [{"name": "unify_case"}],
+                    "event_drivers": [{"name": "character_ngram", "params": {"n": 3}}],
+                    "event_cullers": [{"name": "most_common", "params": {"n": 500}}],
+                    "distance_function": (
+                        {"name": "cosine"} if method_id != "svm" else None
+                    ),
+                    "analysis_method": method_config,
+                },
+                mode="loo",
+                expected_min_accuracy=0.08,  # 13 authors, random=7.7%
+            )
+        )
+
+    # ── Section 6: Contrastive learning (needs sklearn) ──────────────────
+
+    experiments.append(
+        BenchmarkExperiment(
+            id="aaac_a_contrastive_loo",
+            description="Contrastive learning (no projection) on AAAC-A (LOO)",
             corpus="aaac_problem_a",
             config={
                 "canonicizers": [{"name": "unify_case"}],
                 "event_drivers": [{"name": "character_ngram", "params": {"n": 3}}],
-                "event_cullers": [{"name": "most_common", "params": {"n": 500}}],
-                "distance_function": {"name": "cosine"} if method_id != "svm" else None,
-                "analysis_method": method_config,
+                "event_cullers": [{"name": "most_common", "params": {"n": 200}}],
+                "distance_function": None,
+                "analysis_method": {"name": "contrastive"},
             },
             mode="loo",
-            expected_min_accuracy=0.08,  # 13 authors, random=7.7%
-        ))
-
-    # ── Section 6: Contrastive learning (needs sklearn) ──────────────────
-
-    experiments.append(BenchmarkExperiment(
-        id="aaac_a_contrastive_loo",
-        description="Contrastive learning (no projection) on AAAC-A (LOO)",
-        corpus="aaac_problem_a",
-        config={
-            "canonicizers": [{"name": "unify_case"}],
-            "event_drivers": [{"name": "character_ngram", "params": {"n": 3}}],
-            "event_cullers": [{"name": "most_common", "params": {"n": 200}}],
-            "distance_function": None,
-            "analysis_method": {"name": "contrastive"},
-        },
-        mode="loo",
-        expected_min_accuracy=0.05,  # 13 authors, random=7.7%
-    ))
+            expected_min_accuracy=0.05,  # 13 authors, random=7.7%
+        )
+    )
 
     return experiments
 
 
 # ── experiment execution ────────────────────────────────────────────────────
+
 
 @dataclass
 class BenchmarkResult:
@@ -313,7 +363,9 @@ def run_experiment(exp: BenchmarkExperiment) -> BenchmarkResult:
         known, unknown = load_corpus(exp.corpus)
     except Exception as e:
         return BenchmarkResult(
-            exp.id, exp.description, "ERROR",
+            exp.id,
+            exp.description,
+            "ERROR",
             error=f"Corpus load failed: {e}",
         )
 
@@ -326,7 +378,9 @@ def run_experiment(exp: BenchmarkExperiment) -> BenchmarkResult:
         config = PipelineConfig(**config_kwargs)
     except Exception as e:
         return BenchmarkResult(
-            exp.id, exp.description, "ERROR",
+            exp.id,
+            exp.description,
+            "ERROR",
             error=f"Config error: {e}",
         )
 
@@ -350,14 +404,8 @@ def run_experiment(exp: BenchmarkExperiment) -> BenchmarkResult:
                 metrics["brier"] = eval_result.brier
 
             # Count non-answers
-            all_preds = [
-                p for fr in eval_result.fold_results
-                for p in fr.predictions
-            ]
-            nonanswers = sum(
-                1 for p in all_preds
-                if p.scores and p.scores[0][1] == 0.5
-            )
+            all_preds = [p for fr in eval_result.fold_results for p in fr.predictions]
+            nonanswers = sum(1 for p in all_preds if p.scores and p.scores[0][1] == 0.5)
             if nonanswers > 0:
                 metrics["nonanswers"] = nonanswers
 
@@ -365,7 +413,9 @@ def run_experiment(exp: BenchmarkExperiment) -> BenchmarkResult:
             # Run pipeline directly on known/unknown
             if not unknown:
                 return BenchmarkResult(
-                    exp.id, exp.description, "SKIP",
+                    exp.id,
+                    exp.description,
+                    "SKIP",
                     error="No unknown documents",
                 )
 
@@ -388,28 +438,29 @@ def run_experiment(exp: BenchmarkExperiment) -> BenchmarkResult:
 
             # Verification scores
             if results and results[0].verification_threshold is not None:
-                scores = [
-                    r.rankings[0].score for r in results if r.rankings
-                ]
+                scores = [r.rankings[0].score for r in results if r.rankings]
                 metrics["mean_score"] = sum(scores) / len(scores)
                 metrics["min_score"] = min(scores)
                 metrics["max_score"] = max(scores)
                 metrics["threshold"] = results[0].verification_threshold
                 verified = sum(
-                    1 for s in scores
-                    if s >= results[0].verification_threshold
+                    1 for s in scores if s >= results[0].verification_threshold
                 )
                 metrics["verified_count"] = verified
 
         else:
             return BenchmarkResult(
-                exp.id, exp.description, "ERROR",
+                exp.id,
+                exp.description,
+                "ERROR",
                 error=f"Unknown mode: {exp.mode}",
             )
 
     except Exception as e:
         return BenchmarkResult(
-            exp.id, exp.description, "ERROR",
+            exp.id,
+            exp.description,
+            "ERROR",
             error=str(e),
             elapsed_s=time.time() - t0,
         )
@@ -431,6 +482,7 @@ def run_experiment(exp: BenchmarkExperiment) -> BenchmarkResult:
 
 
 # ── style change detection validation ───────────────────────────────────────
+
 
 def validate_style_change() -> BenchmarkResult:
     """Validate style change detection on a constructed document."""
@@ -457,7 +509,8 @@ def validate_style_change() -> BenchmarkResult:
             return BenchmarkResult(
                 "style_change_detection",
                 "Style change on Hamilton/Madison splice",
-                "ERROR", error="Corpus loading failed",
+                "ERROR",
+                error="Corpus loading failed",
             )
 
         # Construct a spliced document
@@ -476,15 +529,11 @@ def validate_style_change() -> BenchmarkResult:
         metrics = {
             "paragraphs": len(result.paragraphs),
             "boundaries": len(result.predictions),
-            "changes_detected": sum(
-                1 for p in result.predictions if p.is_change
-            ),
+            "changes_detected": sum(1 for p in result.predictions if p.is_change),
         }
 
         if result.predictions:
-            metrics["scores"] = [
-                round(p.score, 3) for p in result.predictions
-            ]
+            metrics["scores"] = [round(p.score, 3) for p in result.predictions]
 
         # At least one boundary should exist
         status = "PASS" if len(result.predictions) > 0 else "FAIL"
@@ -501,12 +550,14 @@ def validate_style_change() -> BenchmarkResult:
         return BenchmarkResult(
             "style_change_detection",
             "Style change on Hamilton/Madison splice",
-            "ERROR", error=str(e),
+            "ERROR",
+            error=str(e),
             elapsed_s=time.time() - t0,
         )
 
 
 # ── metric computation validation ───────────────────────────────────────────
+
 
 def validate_metrics() -> list[BenchmarkResult]:
     """Validate metric computation against hand-computed expected values."""
@@ -545,13 +596,15 @@ def validate_metrics() -> list[BenchmarkResult]:
         if not ok:
             all_pass = False
 
-    results.append(BenchmarkResult(
-        "metrics_perfect_predictions",
-        "Perfect predictions -> metrics near 1.0",
-        "PASS" if all_pass else "FAIL",
-        accuracy=er.accuracy,
-        metrics=details,
-    ))
+    results.append(
+        BenchmarkResult(
+            "metrics_perfect_predictions",
+            "Perfect predictions -> metrics near 1.0",
+            "PASS" if all_pass else "FAIL",
+            accuracy=er.accuracy,
+            metrics=details,
+        )
+    )
 
     # Test 2: Non-answer predictions -> c@1 bonus
     preds2 = [
@@ -566,31 +619,36 @@ def validate_metrics() -> list[BenchmarkResult]:
     expected_c1 = (2 + 1 * 2 / 3) / 3
     c1_ok = c1 is not None and abs(c1 - expected_c1) < 0.001
 
-    results.append(BenchmarkResult(
-        "metrics_nonanswer_c_at_1",
-        f"Non-answer c@1 bonus (expected {expected_c1:.4f})",
-        "PASS" if c1_ok else "FAIL",
-        metrics={
-            "c_at_1": f"{c1:.4f}" if c1 else "None",
-            "expected": f"{expected_c1:.4f}",
-        },
-    ))
+    results.append(
+        BenchmarkResult(
+            "metrics_nonanswer_c_at_1",
+            f"Non-answer c@1 bonus (expected {expected_c1:.4f})",
+            "PASS" if c1_ok else "FAIL",
+            metrics={
+                "c_at_1": f"{c1:.4f}" if c1 else "None",
+                "expected": f"{expected_c1:.4f}",
+            },
+        )
+    )
 
     # Test 3: EER should be low for well-separated scores
     eer = _compute_eer(preds)
     eer_ok = eer is not None and eer < 0.3
 
-    results.append(BenchmarkResult(
-        "metrics_eer_well_separated",
-        "EER low for well-separated scores",
-        "PASS" if eer_ok else "FAIL",
-        metrics={"eer": f"{eer:.4f}" if eer else "None"},
-    ))
+    results.append(
+        BenchmarkResult(
+            "metrics_eer_well_separated",
+            "EER low for well-separated scores",
+            "PASS" if eer_ok else "FAIL",
+            metrics={"eer": f"{eer:.4f}" if eer else "None"},
+        )
+    )
 
     return results
 
 
 # ── PPM vs NCD correlation ──────────────────────────────────────────────────
+
 
 def validate_ppm_ncd_correlation() -> BenchmarkResult:
     """Verify PPM and NCD agree on relative distances."""
@@ -636,12 +694,14 @@ def validate_ppm_ncd_correlation() -> BenchmarkResult:
         return BenchmarkResult(
             "ppm_ncd_correlation",
             "PPM and NCD agree on relative distances",
-            "ERROR", error=str(e),
+            "ERROR",
+            error=str(e),
             elapsed_s=time.time() - t0,
         )
 
 
 # ── main ────────────────────────────────────────────────────────────────────
+
 
 def main():
     print("=" * 78)
@@ -690,7 +750,10 @@ def main():
         all_results.append(result)
 
         char = {
-            "PASS": ".", "FAIL": "X", "ERROR": "!", "SKIP": "S",
+            "PASS": ".",
+            "FAIL": "X",
+            "ERROR": "!",
+            "SKIP": "S",
         }.get(result.status, "?")
         print(char, end="", flush=True)
         if (i + 1) % 40 == 0:
@@ -727,9 +790,17 @@ def main():
         print(f"  {r.experiment_id:<45} {r.status:>6}  {acc_str:>6}  {time_str:>6}")
 
         # Show key metrics inline
-        for key in ["macro_f1", "eer", "c_at_1", "f05u", "brier",
-                     "nonanswers", "verified_count", "mean_score",
-                     "changes_detected"]:
+        for key in [
+            "macro_f1",
+            "eer",
+            "c_at_1",
+            "f05u",
+            "brier",
+            "nonanswers",
+            "verified_count",
+            "mean_score",
+            "changes_detected",
+        ]:
             if key in r.metrics:
                 val = r.metrics[key]
                 if isinstance(val, float):

@@ -23,8 +23,22 @@ class VowelMNLetterWords(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="m", description="Minimum word length.", param_type=int, default=1, min_value=1, max_value=50),
-            ParamDef(name="n", description="Maximum word length.", param_type=int, default=5, min_value=1, max_value=50),
+            ParamDef(
+                name="m",
+                description="Minimum word length.",
+                param_type=int,
+                default=1,
+                min_value=1,
+                max_value=50,
+            ),
+            ParamDef(
+                name="n",
+                description="Maximum word length.",
+                param_type=int,
+                default=5,
+                min_value=1,
+                max_value=50,
+            ),
             TOKENIZER_PARAM,
         ]
 

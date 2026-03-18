@@ -137,7 +137,9 @@ def _compute_eer(predictions: list[Prediction]) -> float | None:
             fnr = 1.0 - tp / positives  # false negative rate
             fpr = fp / negatives  # false positive rate
             # EER is approximately where FPR == FNR
-            best_eer = min(best_eer, max(fpr, fnr) if abs(fpr - fnr) < 0.5 else best_eer)
+            best_eer = min(
+                best_eer, max(fpr, fnr) if abs(fpr - fnr) < 0.5 else best_eer
+            )
             if fpr >= fnr:
                 # Interpolate
                 best_eer = min(best_eer, (fpr + fnr) / 2)
@@ -167,10 +169,7 @@ def _compute_c_at_1(predictions: list[Prediction]) -> float | None:
     # Count non-answers: top score is exactly 0.5 (verification abstention)
     nu = 0
     if predictions[0].scores:
-        nu = sum(
-            1 for p in predictions
-            if p.scores and p.scores[0][1] == 0.5
-        )
+        nu = sum(1 for p in predictions if p.scores and p.scores[0][1] == 0.5)
     return (nc + nu * nc / n) / n if n > 0 else None
 
 
@@ -195,9 +194,7 @@ def _compute_f05u(predictions: list[Prediction]) -> float | None:
     if predictions[0].scores:
         nu = sum(1 for p in predictions if p.scores and p.scores[0][1] == 0.5)
 
-    nc = sum(
-        1 for p in predictions if p.true_author == p.predicted_author
-    )
+    nc = sum(1 for p in predictions if p.true_author == p.predicted_author)
     # Answered predictions only
     n_answered = n - nu
     if n_answered == 0:
@@ -266,7 +263,9 @@ def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
     accuracy = correct / total if total > 0 else 0.0
 
     # Confusion matrix
-    authors = sorted({p.true_author for p in all_preds} | {p.predicted_author for p in all_preds})
+    authors = sorted(
+        {p.true_author for p in all_preds} | {p.predicted_author for p in all_preds}
+    )
     cm: dict[str, dict[str, int]] = {a: {b: 0 for b in authors} for a in authors}
     for p in all_preds:
         cm[p.true_author][p.predicted_author] += 1
@@ -279,11 +278,20 @@ def _compute_metrics(fold_results: list[FoldResult]) -> EvaluationResult:
         fn = sum(cm[author][other] for other in authors if other != author)
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
-        per_author.append(AuthorMetrics(
-            author=author, precision=precision, recall=recall,
-            f1=f1, support=tp + fn,
-        ))
+        f1 = (
+            2 * precision * recall / (precision + recall)
+            if (precision + recall) > 0
+            else 0.0
+        )
+        per_author.append(
+            AuthorMetrics(
+                author=author,
+                precision=precision,
+                recall=recall,
+                f1=f1,
+                support=tp + fn,
+            )
+        )
 
     n_authors = len(per_author)
     macro_p = sum(a.precision for a in per_author) / n_authors if n_authors else 0.0
@@ -321,7 +329,9 @@ def _validate_documents(documents: list[Document], min_docs: int = 2) -> None:
         raise EvaluationError(
             f"At least {min_docs} documents are required, got {len(documents)}"
         )
-    missing = [d.title or f"(index {i})" for i, d in enumerate(documents) if not d.author]
+    missing = [
+        d.title or f"(index {i})" for i, d in enumerate(documents) if not d.author
+    ]
     if missing:
         raise EvaluationError(
             f"All documents must have an author. Missing author on: {', '.join(missing[:5])}"
@@ -378,13 +388,14 @@ def leave_one_out(
     n = len(documents)
 
     for i, held_out in enumerate(documents):
-        train = documents[:i] + documents[i + 1:]
+        train = documents[:i] + documents[i + 1 :]
         # Skip fold if training set has < 2 authors
         train_authors = {d.author for d in train}
         if len(train_authors) < 2:
             logger.warning(
                 "Fold %d skipped: training set has only 1 author (%s)",
-                i, train_authors,
+                i,
+                train_authors,
             )
             continue
 
@@ -465,7 +476,8 @@ def k_fold(
         train_authors = {d.author for d in train}
         if len(train_authors) < 2:
             logger.warning(
-                "Fold %d skipped: training set has only 1 author", i,
+                "Fold %d skipped: training set has only 1 author",
+                i,
             )
             continue
 
@@ -521,28 +533,18 @@ def cross_genre_evaluate(
     EvaluationResult
         Single-fold result from cross-genre evaluation.
     """
-    train_docs = [
-        d for d in documents if d.metadata.get("genre") == train_genre
-    ]
-    test_docs = [
-        d for d in documents if d.metadata.get("genre") == test_genre
-    ]
+    train_docs = [d for d in documents if d.metadata.get("genre") == train_genre]
+    test_docs = [d for d in documents if d.metadata.get("genre") == test_genre]
 
     if not train_docs:
-        raise EvaluationError(
-            f"No documents found with genre {train_genre!r}"
-        )
+        raise EvaluationError(f"No documents found with genre {train_genre!r}")
     if not test_docs:
-        raise EvaluationError(
-            f"No documents found with genre {test_genre!r}"
-        )
+        raise EvaluationError(f"No documents found with genre {test_genre!r}")
 
     # Validate all docs have authors
     for doc in train_docs + test_docs:
         if not doc.author:
-            raise EvaluationError(
-                f"Document {doc.title!r} has no author"
-            )
+            raise EvaluationError(f"Document {doc.title!r} has no author")
 
     train_authors = {d.author for d in train_docs}
     test_authors = {d.author for d in test_docs}
@@ -550,8 +552,7 @@ def cross_genre_evaluate(
 
     if len(shared) < 2:
         raise EvaluationError(
-            f"Need >= 2 shared authors across genres, "
-            f"found {len(shared)}: {shared}"
+            f"Need >= 2 shared authors across genres, " f"found {len(shared)}: {shared}"
         )
 
     # Filter to shared authors only
@@ -564,8 +565,7 @@ def cross_genre_evaluate(
     results = Pipeline(config).execute(train_docs, test_docs)
 
     preds = [
-        _make_prediction(r, test_docs[i].author or "")
-        for i, r in enumerate(results)
+        _make_prediction(r, test_docs[i].author or "") for i, r in enumerate(results)
     ]
 
     if progress_callback:
@@ -620,13 +620,10 @@ def topic_controlled_evaluate(
     for doc in documents:
         if topic_key not in doc.metadata:
             raise EvaluationError(
-                f"Document {doc.title!r} missing metadata key "
-                f"{topic_key!r}"
+                f"Document {doc.title!r} missing metadata key " f"{topic_key!r}"
             )
         if not doc.author:
-            raise EvaluationError(
-                f"Document {doc.title!r} has no author"
-            )
+            raise EvaluationError(f"Document {doc.title!r} has no author")
 
     # Group by topic
     by_topic: dict[str, list[Document]] = {}
@@ -657,15 +654,11 @@ def topic_controlled_evaluate(
     across_folds: list[FoldResult] = []
     for i, topic in enumerate(topics):
         test_docs = by_topic[topic]
-        train_docs = [
-            d for t, docs in by_topic.items()
-            for d in docs if t != topic
-        ]
+        train_docs = [d for t, docs in by_topic.items() for d in docs if t != topic]
         train_authors = {d.author for d in train_docs}
         if len(train_authors) < 2:
             logger.warning(
-                "Topic %r skipped for across-topic: "
-                "training set has < 2 authors",
+                "Topic %r skipped for across-topic: " "training set has < 2 authors",
                 topic,
             )
             continue
@@ -680,10 +673,18 @@ def topic_controlled_evaluate(
         ]
         across_folds.append(FoldResult(fold_index=i, predictions=preds))
 
-    across = _compute_metrics(across_folds) if across_folds else EvaluationResult(
-        fold_results=[], accuracy=0.0, per_author=[],
-        macro_precision=0.0, macro_recall=0.0, macro_f1=0.0,
-        confusion_matrix={},
+    across = (
+        _compute_metrics(across_folds)
+        if across_folds
+        else EvaluationResult(
+            fold_results=[],
+            accuracy=0.0,
+            per_author=[],
+            macro_precision=0.0,
+            macro_recall=0.0,
+            macro_f1=0.0,
+            confusion_matrix={},
+        )
     )
 
     # Overall: standard LOO
@@ -741,11 +742,16 @@ def write_results_csv(
         # Per-author
         w.writerow(["section", "author", "precision", "recall", "f1", "support"])
         for am in result.per_author:
-            w.writerow([
-                "author", am.author,
-                f"{am.precision:.6f}", f"{am.recall:.6f}",
-                f"{am.f1:.6f}", am.support,
-            ])
+            w.writerow(
+                [
+                    "author",
+                    am.author,
+                    f"{am.precision:.6f}",
+                    f"{am.recall:.6f}",
+                    f"{am.f1:.6f}",
+                    am.support,
+                ]
+            )
         w.writerow([])
 
         # Confusion matrix
@@ -760,8 +766,15 @@ def write_results_csv(
         w.writerow(["section", "fold", "document", "true_author", "predicted_author"])
         for fr in result.fold_results:
             for p in fr.predictions:
-                w.writerow(["prediction", fr.fold_index, p.document_title,
-                            p.true_author, p.predicted_author])
+                w.writerow(
+                    [
+                        "prediction",
+                        fr.fold_index,
+                        p.document_title,
+                        p.true_author,
+                        p.predicted_author,
+                    ]
+                )
     finally:
         if should_close:
             output.close()

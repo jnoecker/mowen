@@ -28,12 +28,12 @@ class BaggingNearestNeighbor(NeighborAnalysisMethod):
     lower_is_better: bool = False
 
     display_name: str = "Bagging Nearest Neighbor"
-    description: str = (
-        "Bootstrap-aggregated nearest neighbor classification."
-    )
+    description: str = "Bootstrap-aggregated nearest neighbor classification."
 
     _samples: list[tuple[str, Histogram]] = field(
-        default_factory=list, init=False, repr=False,
+        default_factory=list,
+        init=False,
+        repr=False,
     )
 
     @classmethod

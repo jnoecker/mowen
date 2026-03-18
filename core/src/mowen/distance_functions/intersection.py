@@ -22,9 +22,7 @@ class IntersectionDistance(DistanceFunction):
     """
 
     display_name: str = "Intersection Distance"
-    description: str = (
-        "One minus the sum of per-event minimum relative frequencies."
-    )
+    description: str = "One minus the sum of per-event minimum relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the intersection distance between *h1* and *h2*."""

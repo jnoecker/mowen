@@ -20,9 +20,7 @@ class PearsonCorrelationDistance(DistanceFunction):
     """
 
     display_name: str = "Pearson Correlation Distance"
-    description: str = (
-        "Pearson correlation distance: 1 - r over relative frequencies."
-    )
+    description: str = "Pearson correlation distance: 1 - r over relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Pearson correlation distance between *h1* and *h2*."""

@@ -9,9 +9,7 @@ from dataclasses import dataclass
 from mowen.canonicizers.base import Canonicizer, canonicizer_registry
 
 # Build a pattern that matches any single punctuation character.
-_PUNCTUATION_PATTERN = re.compile(
-    "([" + re.escape(string.punctuation) + "])"
-)
+_PUNCTUATION_PATTERN = re.compile("([" + re.escape(string.punctuation) + "])")
 
 
 @canonicizer_registry.register("punctuation_separator")
@@ -21,8 +19,7 @@ class PunctuationSeparator(Canonicizer):
 
     display_name: str = "Punctuation Separator"
     description: str = (
-        "Adds spaces around punctuation characters so they become "
-        "separate tokens."
+        "Adds spaces around punctuation characters so they become " "separate tokens."
     )
 
     def process(self, text: str) -> str:

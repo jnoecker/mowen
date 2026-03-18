@@ -64,7 +64,9 @@ class EdersDelta(AnalysisMethod):
 
         # Select top-N features by total frequency.
         if top_n > 0 and len(event_freq) > top_n:
-            sorted_events = sorted(event_freq, key=lambda e: event_freq[e], reverse=True)
+            sorted_events = sorted(
+                event_freq, key=lambda e: event_freq[e], reverse=True
+            )
             features = sorted_events[:top_n]
         else:
             features = sorted(event_freq, key=str)

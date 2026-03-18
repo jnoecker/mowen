@@ -9,13 +9,13 @@ from mowen.canonicizers.base import Canonicizer, canonicizer_registry
 
 # Mapping of common Unicode characters to ASCII equivalents.
 _UNICODE_TO_ASCII: dict[str, str] = {
-    "\u2018": "'",   # left single quotation mark
-    "\u2019": "'",   # right single quotation mark
-    "\u201c": '"',   # left double quotation mark
-    "\u201d": '"',   # right double quotation mark
-    "\u2014": "-",   # em dash
-    "\u2013": "-",   # en dash
-    "\u2026": "...", # horizontal ellipsis
+    "\u2018": "'",  # left single quotation mark
+    "\u2019": "'",  # right single quotation mark
+    "\u201c": '"',  # left double quotation mark
+    "\u201d": '"',  # right double quotation mark
+    "\u2014": "-",  # em dash
+    "\u2013": "-",  # en dash
+    "\u2026": "...",  # horizontal ellipsis
 }
 
 _UNICODE_TABLE = str.maketrans(_UNICODE_TO_ASCII)

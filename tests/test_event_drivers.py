@@ -422,7 +422,9 @@ class TestPorterStemmer:
         ]
         for word, expected in cases:
             es = d.create_event_set(word)
-            assert es[0].data == expected, f"stem({word!r}) = {es[0].data!r}, expected {expected!r}"
+            assert (
+                es[0].data == expected
+            ), f"stem({word!r}) = {es[0].data!r}, expected {expected!r}"
 
 
 class TestMWFunctionWords:

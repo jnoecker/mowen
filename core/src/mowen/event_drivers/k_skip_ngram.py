@@ -26,8 +26,22 @@ class KSkipCharacterNGram(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
-            ParamDef(name="k", description="Characters to skip.", param_type=int, default=1, min_value=0, max_value=10),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=2,
+                min_value=1,
+                max_value=10,
+            ),
+            ParamDef(
+                name="k",
+                description="Characters to skip.",
+                param_type=int,
+                default=1,
+                min_value=0,
+                max_value=10,
+            ),
         ]
 
     def create_event_set(self, text: str) -> EventSet:
@@ -46,8 +60,22 @@ class KSkipWordNGram(EventDriver):
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
         return [
-            ParamDef(name="n", description="N-gram size.", param_type=int, default=2, min_value=1, max_value=10),
-            ParamDef(name="k", description="Words to skip.", param_type=int, default=1, min_value=0, max_value=10),
+            ParamDef(
+                name="n",
+                description="N-gram size.",
+                param_type=int,
+                default=2,
+                min_value=1,
+                max_value=10,
+            ),
+            ParamDef(
+                name="k",
+                description="Words to skip.",
+                param_type=int,
+                default=1,
+                min_value=0,
+                max_value=10,
+            ),
             TOKENIZER_PARAM,
         ]
 

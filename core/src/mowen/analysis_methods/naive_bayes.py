@@ -26,13 +26,13 @@ class NaiveBayes(SklearnAnalysisMethod):
 
     display_name: str = "Naive Bayes"
     description: str = (
-        "Assigns authorship using Multinomial Naive Bayes "
-        "(requires scikit-learn)."
+        "Assigns authorship using Multinomial Naive Bayes " "(requires scikit-learn)."
     )
 
     @staticmethod
     def _vectorize(
-        histogram: Histogram, vocabulary: list[Event],
+        histogram: Histogram,
+        vocabulary: list[Event],
     ) -> list[int]:
         """Convert a histogram into a feature vector of absolute counts."""
         return [histogram.absolute_frequency(event) for event in vocabulary]

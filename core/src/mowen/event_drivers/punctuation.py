@@ -24,6 +24,4 @@ class Punctuation(EventDriver):
     description = "Extract punctuation characters as events."
 
     def create_event_set(self, text: str) -> EventSet:
-        return EventSet(
-            Event(data=ch) for ch in text if _is_punctuation(ch)
-        )
+        return EventSet(Event(data=ch) for ch in text if _is_punctuation(ch))

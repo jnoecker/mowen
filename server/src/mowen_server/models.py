@@ -28,7 +28,10 @@ class Document(Base):
     char_count = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
     updated_at = Column(
-        DateTime, nullable=False, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+        DateTime,
+        nullable=False,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
     corpora = relationship(
@@ -44,15 +47,20 @@ class Corpus(Base):
     description = Column(String, nullable=False, default="")
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
     updated_at = Column(
-        DateTime, nullable=False, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
+        DateTime,
+        nullable=False,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
     documents = relationship(
         "Document", secondary="corpus_documents", back_populates="corpora"
     )
     experiments = relationship(
-        "ExperimentCorpus", back_populates="corpus",
-        cascade="all, delete-orphan", passive_deletes=True,
+        "ExperimentCorpus",
+        back_populates="corpus",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
     )
 
 
@@ -77,7 +85,9 @@ class Experiment(Base):
     progress = Column(Float, nullable=False, default=0.0)
     error_message = Column(String, nullable=True)
     lower_is_better = Column(Integer, nullable=False, default=1)  # boolean as int
-    verification_threshold = Column(Float, nullable=True)  # null for non-verification methods
+    verification_threshold = Column(
+        Float, nullable=True
+    )  # null for non-verification methods
     created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)

@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from mowen.event_cullers.base import EventCuller, _aggregate_counts, event_culler_registry
+from mowen.event_cullers.base import (
+    EventCuller,
+    _aggregate_counts,
+    event_culler_registry,
+)
 from mowen.parameters import ParamDef
 from mowen.types import EventSet
 
@@ -20,9 +24,7 @@ class LeastCommon(EventCuller):
     """
 
     display_name: str = "Least Common Events"
-    description: str = (
-        "Retains only the N least frequent events across all documents."
-    )
+    description: str = "Retains only the N least frequent events across all documents."
 
     @classmethod
     def param_defs(cls) -> list[ParamDef]:

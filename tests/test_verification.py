@@ -32,8 +32,12 @@ def _make_training_data():
     hist_b3 = Histogram({Event("a"): 1, Event("b"): 11, Event("c"): 2, Event("d"): 9})
 
     return [
-        (doc_a1, hist_a1), (doc_a2, hist_a2), (doc_a3, hist_a3),
-        (doc_b1, hist_b1), (doc_b2, hist_b2), (doc_b3, hist_b3),
+        (doc_a1, hist_a1),
+        (doc_a2, hist_a2),
+        (doc_a3, hist_a3),
+        (doc_b1, hist_b1),
+        (doc_b2, hist_b2),
+        (doc_b3, hist_b3),
     ]
 
 
@@ -48,8 +52,11 @@ def _unknown_like_b():
 
 
 _UNMASKING_PARAMS = {
-    "n_features": 4, "n_eliminate": 1,
-    "n_iterations": 3, "n_folds": 2, "random_seed": 42,
+    "n_features": 4,
+    "n_eliminate": 1,
+    "n_iterations": 3,
+    "n_folds": 2,
+    "random_seed": 42,
 }
 
 
@@ -138,8 +145,12 @@ class TestGeneralImposters:
         """Scores in calibration band should become 0.5."""
         method = analysis_method_registry.create(
             "imposters",
-            {"n_iterations": 50, "random_seed": 42,
-             "calibration_low": 0.3, "calibration_high": 0.7},
+            {
+                "n_iterations": 50,
+                "random_seed": 42,
+                "calibration_low": 0.3,
+                "calibration_high": 0.7,
+            },
         )
         method.distance_function = distance_function_registry.create("cosine")
         method.train(_make_training_data())

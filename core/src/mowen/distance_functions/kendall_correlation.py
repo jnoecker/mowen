@@ -20,15 +20,11 @@ class KendallCorrelationDistance(DistanceFunction):
     """
 
     display_name: str = "Kendall Correlation Distance"
-    description: str = (
-        "Kendall tau distance: (1 - tau) / 2 over relative frequencies."
-    )
+    description: str = "Kendall tau distance: (1 - tau) / 2 over relative frequencies."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Kendall tau distance between *h1* and *h2*."""
-        all_events = sorted(
-            h1.unique_events() | h2.unique_events(), key=str
-        )
+        all_events = sorted(h1.unique_events() | h2.unique_events(), key=str)
         n = len(all_events)
         if n < 2:
             return 0.0

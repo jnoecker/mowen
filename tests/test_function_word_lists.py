@@ -7,10 +7,17 @@ import pytest
 from mowen.data import available_languages, load_function_words
 from mowen.event_drivers import event_driver_registry
 
-
 EXPECTED_LANGUAGES = [
-    "arabic", "chinese", "english", "french", "german",
-    "italian", "japanese", "portuguese", "russian", "spanish",
+    "arabic",
+    "chinese",
+    "english",
+    "french",
+    "german",
+    "italian",
+    "japanese",
+    "portuguese",
+    "russian",
+    "spanish",
 ]
 
 

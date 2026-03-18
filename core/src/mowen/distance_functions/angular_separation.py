@@ -24,9 +24,7 @@ class AngularSeparationDistance(DistanceFunction):
     """
 
     display_name: str = "Angular Separation Distance"
-    description: str = (
-        "Angular separation: arccos(cosine similarity) / pi."
-    )
+    description: str = "Angular separation: arccos(cosine similarity) / pi."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the angular separation distance between *h1* and *h2*."""

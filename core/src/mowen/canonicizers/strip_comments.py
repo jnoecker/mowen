@@ -49,9 +49,7 @@ class StripComments(Canonicizer):
     """Remove common code comment patterns from the text."""
 
     display_name: str = "Strip Comments"
-    description: str = (
-        "Removes code comments in C, Python, and/or HTML style."
-    )
+    description: str = "Removes code comments in C, Python, and/or HTML style."
 
     @classmethod
     def param_defs(cls) -> list[ParamDef]:

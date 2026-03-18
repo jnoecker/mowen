@@ -33,6 +33,5 @@ class Centroid(CentroidAnalysisMethod):
         author_event_sums, _ = self._accumulate_author_events(self._known_docs)
 
         self._centroids = {
-            author: Histogram(counts)
-            for author, counts in author_event_sums.items()
+            author: Histogram(counts) for author, counts in author_event_sums.items()
         }

@@ -66,6 +66,7 @@ def list_event_drivers() -> list[ComponentInfo]:
         is_numeric = False
         try:
             from typing import get_type_hints
+
             hints = get_type_hints(cls.create_event_set)
             ret = hints.get("return")
             if ret is NumericEventSet:

@@ -24,9 +24,7 @@ class KeseljWeightedDistance(DistanceFunction):
     """
 
     display_name: str = "Keselj Weighted Distance"
-    description: str = (
-        "Keselj weighted distance — the AAAC 2004 winning metric."
-    )
+    description: str = "Keselj weighted distance — the AAAC 2004 winning metric."
 
     def distance(self, h1: Histogram, h2: Histogram) -> float:
         """Return the Keselj weighted distance between *h1* and *h2*."""
