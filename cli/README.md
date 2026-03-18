@@ -22,6 +22,15 @@ mowen evaluate -d corpus.csv -e character_ngram:n=3 --distance cosine --mode loo
 # Evaluate with k-fold and export results
 mowen evaluate -d corpus.csv -e word_events --mode kfold -k 10 --output-csv results.csv
 
+# Cross-genre evaluation (CSV needs genre column: filepath,author,genre)
+mowen evaluate -d corpus.csv -e character_ngram:n=3 --distance cosine --train-genre formal --test-genre informal
+
+# Topic-controlled evaluation (requires topic metadata)
+mowen evaluate -d corpus.csv -e word_events --distance cosine --topic-controlled
+
+# Detect style changes within a document
+mowen detect-changes document.txt -e character_ngram:n=3 --distance cosine --threshold 0.5
+
 # List all available pipeline components
 mowen list-components
 mowen list-components event-drivers --json

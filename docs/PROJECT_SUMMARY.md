@@ -10,10 +10,10 @@ Published on PyPI as three packages: `mowen` (core library), `mowen-cli`, and `m
 
 ## By the Numbers
 
-- **95 pipeline components** across 5 stages: 34 event drivers, 22 distance functions, 15 analysis methods, 14 event cullers, 10 canonicizers
-- **658 tests** (pytest), plus a 70-experiment parallel validation suite against the original JGAAP
+- **113 pipeline components** across 5 stages: 41 event drivers, 26 distance functions, 21 analysis methods, 15 event cullers, 10 canonicizers
+- **790+ tests** (pytest), plus a 70-experiment parallel validation suite against the original JGAAP
 - **20 bundled sample corpora** including the Federalist Papers, Shakespeare, Brontë Sisters, Pauline Epistles, Homer (Iliad vs. Odyssey), Russian literature, and 13 AAAC benchmark problems
-- **6 stylometry presets** based on published research: Burrows' Delta, Cosine Delta, Character N-gram Profile, Function Words, Multi-Feature SVM, and Transformer Embeddings
+- **10 stylometry presets** based on published research: Burrows' Delta, Cosine Delta, Character N-grams, Function Words, Multi-Feature SVM, Transformer Embeddings, SELMA, General Imposters, Unmasking
 - **~13,000 lines** of Python and TypeScript/CSS
 - **10 natural languages** supported via pluggable tokenizers and function word lists
 - **4 document formats**: plain text, PDF, DOCX, HTML
@@ -24,11 +24,14 @@ Published on PyPI as three packages: `mowen` (core library), `mowen-cli`, and `m
 - **Python 3.12+**, zero required dependencies
 - Generic `Registry[T]` pattern with decorator-based component registration
 - Optional extras gated behind pip extras: spaCy (POS/NER), HuggingFace Transformers (embeddings), jieba (Chinese segmentation), NLTK (WordNet), pdfplumber, python-docx, BeautifulSoup
-- Two execution paths: discrete (EventSet → Histogram → distance → classifier) and numeric (transformer embeddings → sklearn classifier directly)
-- Cross-validation via `leave_one_out()` and `k_fold()` with per-author precision/recall/F1, confusion matrix, AUROC, and MRR
+- Two execution paths: discrete (EventSet → Histogram → distance → classifier) and numeric (transformer/SELMA/perplexity/GNN embeddings → sklearn classifier directly)
+- Authorship verification via General Imposters Method and Unmasking with calibrated non-answer support
+- Style change detection for identifying authorship boundaries within documents
+- Cross-validation via `leave_one_out()`, `k_fold()`, `cross_genre_evaluate()`, and `topic_controlled_evaluate()`
+- PAN-standard metrics: accuracy, F1, EER, c@1, F_0.5u, Brier score, AUROC, MRR
 
 ### CLI (`mowen-cli`)
-- Typer-based CLI with commands: `run`, `evaluate`, `list-components`, `convert-jgaap`
+- Typer-based CLI with commands: `run`, `evaluate`, `list-components`, `convert-jgaap`, `detect-changes`
 - JGAAP CSV compatibility for importing existing experiment files
 
 ### Server (`mowen-server`)

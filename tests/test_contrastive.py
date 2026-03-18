@@ -3,7 +3,7 @@
 import pytest
 
 from mowen.analysis_methods import analysis_method_registry
-from mowen.types import Document, NumericEventSet
+from mowen.types import Document, Event, Histogram, NumericEventSet
 
 
 def _make_numeric_training_data():
@@ -88,3 +88,22 @@ class TestContrastive:
         for r1, r2 in zip(results_list[0], results_list[1]):
             assert r1.author == r2.author
             assert r1.score == pytest.approx(r2.score)
+
+    def test_with_histograms(self):
+        """Should work with discrete Histogram inputs (shared vocab)."""
+        data = [
+            (Document(text="", author="A", title="a1"),
+             Histogram({Event("x"): 5, Event("y"): 1})),
+            (Document(text="", author="A", title="a2"),
+             Histogram({Event("x"): 4, Event("y"): 2})),
+            (Document(text="", author="B", title="b1"),
+             Histogram({Event("x"): 1, Event("y"): 5})),
+            (Document(text="", author="B", title="b2"),
+             Histogram({Event("x"): 2, Event("y"): 4})),
+        ]
+        method = analysis_method_registry.create("contrastive")
+        method.train(data)
+        unknown = Histogram({Event("x"): 6, Event("y"): 1})
+        results = method.analyze(unknown)
+        assert results[0].author == "A"
+        assert len(results) == 2

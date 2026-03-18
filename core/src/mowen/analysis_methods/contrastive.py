@@ -55,6 +55,10 @@ class ContrastiveLearning(AnalysisMethod):
     )
     _projection: Any = field(default=None, init=False, repr=False)
     _dim: int = field(default=0, init=False, repr=False)
+    _vocabulary: list[Any] = field(
+        default_factory=list, init=False, repr=False,
+    )
+    _numeric_mode: bool = field(default=False, init=False, repr=False)
 
     @classmethod
     def param_defs(cls) -> list[ParamDef]:
@@ -102,17 +106,28 @@ class ContrastiveLearning(AnalysisMethod):
         super().train(known_docs)
 
         # Group vectors by author
+        self._numeric_mode = any(
+            isinstance(h, NumericEventSet) for _, h in self._known_docs
+        )
+
         author_vecs: dict[str, list[list[float]]] = defaultdict(list)
-        for doc, hist_or_vec in self._known_docs:
-            author = doc.author or ""
-            if isinstance(hist_or_vec, NumericEventSet):
+
+        if self._numeric_mode:
+            for doc, hist_or_vec in self._known_docs:
+                author = doc.author or ""
                 author_vecs[author].append(list(hist_or_vec))
-            else:
-                # Fallback for discrete histograms: use relative freqs
-                events = sorted(hist_or_vec.unique_events(),
-                                key=lambda e: e.data)
+        else:
+            # Build shared vocabulary from all histograms
+            from mowen.types import Event
+            vocab_set: set[Event] = set()
+            for _, hist in self._known_docs:
+                vocab_set.update(hist.unique_events())
+            self._vocabulary = sorted(vocab_set, key=lambda e: e.data)
+
+            for doc, hist in self._known_docs:
+                author = doc.author or ""
                 author_vecs[author].append([
-                    hist_or_vec.relative_frequency(e) for e in events
+                    hist.relative_frequency(e) for e in self._vocabulary
                 ])
 
         if not author_vecs:
@@ -231,10 +246,9 @@ class ContrastiveLearning(AnalysisMethod):
         if isinstance(unknown_histogram, NumericEventSet):
             vec = list(unknown_histogram)
         else:
-            events = sorted(unknown_histogram.unique_events(),
-                            key=lambda e: e.data)
             vec = [
-                unknown_histogram.relative_frequency(e) for e in events
+                unknown_histogram.relative_frequency(e)
+                for e in self._vocabulary
             ]
 
         if self._projection is not None:

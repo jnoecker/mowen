@@ -18,14 +18,16 @@ Attribution Program.
 
 ## Features
 
-- **95 pipeline components** across 5 stages, all pluggable via a registry system
-- **34 event drivers** — character/word n-grams, skip-grams, sorted n-grams, POS tags, NER, Porter stemmer, syllables, function words, WordNet definitions, transformer embeddings, and more
-- **22 distance functions** — cosine, Manhattan, KL divergence, chi-square, Keselj weighted, cross-entropy, Hellinger, and more
-- **15 analysis methods** — nearest neighbor, KNN, SVM, Random Forest, Logistic Regression, MLP, Burrows' Delta, Markov Chain, Bagging NN, Thin Cross-Entropy, and more
-- **14 event cullers** and **10 canonicizers** for feature selection and text normalization
+- **113 pipeline components** across 5 stages, all pluggable via a registry system
+- **41 event drivers** — character/word n-grams, skip-grams, sorted n-grams, POS tags, NER, function words, transformer embeddings, SELMA instruction-tuned embeddings, perplexity/surprisal features, GNN syntactic embeddings, and more
+- **26 distance functions** — cosine, Manhattan, KL divergence, chi-square, PPM compression, NCD, cross-entropy, Hellinger, and more
+- **21 analysis methods** — nearest neighbor, KNN, SVM, MLP (with R-Drop), Burrows' Delta, General Imposters, Unmasking, contrastive learning, LLM zero-shot prompting, and more
+- **15 event cullers** and **10 canonicizers** for feature selection and text normalization
+- **Authorship verification** — General Imposters Method (Koppel & Winter 2014) and Unmasking (Koppel & Schler 2004) with calibrated non-answer support
+- **Style change detection** — detect authorship boundaries within multi-author documents
+- **PAN-standard evaluation** — accuracy, F1, EER, c@1, F_0.5u, Brier score, AUROC, MRR, cross-genre and topic-controlled evaluation
 - **20 bundled sample corpora** — Federalist Papers, Shakespeare, Brontë Sisters, Pauline Epistles, Homer, Russian Literature, State of the Union, and 13 AAAC benchmark problems
-- **6 stylometry presets** — Burrows' Delta, Cosine Delta, Character N-gram Profile, Function Words, Multi-Feature SVM, and Transformer Embeddings
-- **Leave-one-out and k-fold cross-validation** with precision, recall, F1, and confusion matrix
+- **10 stylometry presets** — Burrows' Delta, Cosine Delta, Character N-grams, Function Words, Multi-Feature SVM, Transformer Embeddings, SELMA, General Imposters, Unmasking
 - **Multi-language support** — pluggable tokenizer framework with Chinese segmentation (jieba) and function word lists for 10 languages
 - **4 document loaders** — plain text, PDF, DOCX, HTML
 - JGAAP CSV compatibility for existing experiment files
@@ -127,10 +129,10 @@ core/       Python library (mowen)
     evaluation.py        Cross-validation and metrics
     types.py             Core data types (Document, Event, Histogram, ...)
     canonicizers/        10 text preprocessors
-    event_drivers/       34 feature extractors
-    event_cullers/       14 feature selectors
-    distance_functions/  22 distance/similarity metrics
-    analysis_methods/    15 classifiers
+    event_drivers/       41 feature extractors
+    event_cullers/       15 feature selectors
+    distance_functions/  26 distance/similarity metrics
+    analysis_methods/    21 classifiers + verification methods
     tokenizers/          Pluggable word segmentation (whitespace, jieba)
     document_loaders/    File format readers (txt, pdf, docx, html)
     data/                Function word lists + 20 sample corpora
@@ -139,7 +141,7 @@ core/       Python library (mowen)
 cli/        Command-line interface (mowen-cli)
 server/     FastAPI backend + static frontend serving (mowen-server)
 web/        React/TypeScript frontend
-tests/      658 tests (pytest)
+tests/      790+ tests (pytest)
 scripts/    Corpus build scripts
 ```
 
