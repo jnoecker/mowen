@@ -58,4 +58,9 @@ try:
 except ImportError:
     pass  # transformers/torch not installed
 
+try:
+    from mowen.event_drivers import gnn_embeddings as gnn_embeddings  # noqa: F401
+except ImportError:
+    pass  # spacy not installed
+
 __all__ = ["EventDriver", "event_driver_registry"]
