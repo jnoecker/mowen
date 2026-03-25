@@ -1,32 +1,11 @@
-.formRow {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
 .field {
   display: flex;
   flex-direction: column;
   flex: 1 1 180px;
 }
 
-.submitWrap {
-  display: flex;
-  align-items: flex-end;
-}
-
-.actionsCell {
-  display: flex;
-  gap: 0.4rem;
-}
-
 .editInput {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  padding: 0.3rem 0.5rem;
+  padding: 0.35rem 0.55rem;
   font-size: 0.85rem;
   width: 100%;
 }

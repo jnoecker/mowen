@@ -1,11 +1,69 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useRef } from 'react';
 import { experimentsApi } from '../api/experiments';
 import { computeAuthorStats, computeAUROC, computeMRR, computeF05u, computeBrier } from '../metrics';
 import type { ExperimentResultResponse, ExperimentResponse } from '../types';
 import s from './ResultsPage.module.css';
 import StatusBadge from '../components/StatusBadge';
 import ProgressBar from '../components/ProgressBar';
+
+// ---------------------------------------------------------------------------
+// Counting animation hook — animates a number from 0 to target
+// ---------------------------------------------------------------------------
+
+function useCountUp(target: number, duration = 600): string {
+  const [display, setDisplay] = useState('0');
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const isPercent = target <= 1 && target >= 0;
+    const start = performance.now();
+
+    function tick(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out quad
+      const eased = 1 - (1 - progress) * (1 - progress);
+      const current = target * eased;
+
+      if (isPercent) {
+        setDisplay(`${(current * 100).toFixed(1)}%`);
+      } else if (Number.isInteger(target)) {
+        setDisplay(String(Math.round(current)));
+      } else {
+        setDisplay(current.toFixed(3));
+      }
+
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    }
+
+    // Respect reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (isPercent) setDisplay(`${(target * 100).toFixed(1)}%`);
+      else if (Number.isInteger(target)) setDisplay(String(target));
+      else setDisplay(target.toFixed(3));
+      return;
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [target, duration]);
+
+  return display;
+}
+
+function CountingMetric({ value, color, label }: { value: number; color?: string; label: string }) {
+  const display = useCountUp(value);
+  return (
+    <div className={s.metricCell}>
+      <div className={s.metricValue} style={color ? { color } : undefined}>{display}</div>
+      <div className={s.metricLabel}>{label}</div>
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Config Summary
@@ -103,50 +161,16 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
     <div className="card" style={{ marginBottom: '1.5rem' }}>
       <h2 style={{ marginBottom: '1rem' }}>Performance</h2>
 
-      {/* Top-level metrics */}
+      {/* Top-level metrics — counting animation on mount */}
       <div className={s.metricsGrid}>
-        <div className={s.metricCell}>
-          <div className={s.metricValue} style={{ color: accuracy >= 0.5 ? 'var(--success)' : 'var(--danger)' }}>
-            {fmtPct(accuracy)}
-          </div>
-          <div className={s.metricLabel}>Accuracy</div>
-        </div>
-        <div className={s.metricCell}>
-          <div className={s.metricValue} style={{ color: 'var(--text)' }}>{fmtPct(macroPrecision)}</div>
-          <div className={s.metricLabel}>Precision</div>
-        </div>
-        <div className={s.metricCell}>
-          <div className={s.metricValue} style={{ color: 'var(--text)' }}>{fmtPct(macroRecall)}</div>
-          <div className={s.metricLabel}>Recall</div>
-        </div>
-        <div className={s.metricCell}>
-          <div className={s.metricValue} style={{ color: 'var(--text)' }}>{fmtPct(macroF1)}</div>
-          <div className={s.metricLabel}>F1</div>
-        </div>
-        {auroc != null && (
-          <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--text)' }}>{auroc.toFixed(3)}</div>
-            <div className={s.metricLabel}>AUROC</div>
-          </div>
-        )}
-        {mrr != null && (
-          <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--text)' }}>{mrr.toFixed(3)}</div>
-            <div className={s.metricLabel}>MRR</div>
-          </div>
-        )}
-        {f05u != null && (
-          <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--text)' }}>{f05u.toFixed(3)}</div>
-            <div className={s.metricLabel}>F0.5u</div>
-          </div>
-        )}
-        {brier != null && (
-          <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--text)' }}>{brier.toFixed(3)}</div>
-            <div className={s.metricLabel}>Brier</div>
-          </div>
-        )}
+        <CountingMetric value={accuracy} color={accuracy >= 0.5 ? 'var(--success)' : 'var(--danger)'} label="Accuracy" />
+        <CountingMetric value={macroPrecision} label="Precision" />
+        <CountingMetric value={macroRecall} label="Recall" />
+        <CountingMetric value={macroF1} label="F1" />
+        {auroc != null && <CountingMetric value={auroc} label="AUROC" />}
+        {mrr != null && <CountingMetric value={mrr} label="MRR" />}
+        {f05u != null && <CountingMetric value={f05u} label="F0.5u" />}
+        {brier != null && <CountingMetric value={brier} label="Brier" />}
         <div className={s.metricCell}>
           <div className={s.metricValue} style={{ color: 'var(--success)' }}>{correct.length}/{evaluated.length}</div>
           <div className={s.metricLabel}>Correct</div>
@@ -179,7 +203,8 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
       </div>
 
       {/* Per-author table */}
-      <table style={{ fontSize: '0.85rem' }}>
+      <table className="text-sm">
+        <caption className="sr-only">Per-author performance metrics</caption>
         <thead>
           <tr>
             <th>Author</th>
@@ -257,9 +282,12 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
       </h3>
 
       {rankings.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No rankings available.</p>
+        <p className="muted text-sm">No rankings available.</p>
       ) : (
         <table>
+          <caption className="sr-only">
+            Author attribution rankings for {unknown_document.title}
+          </caption>
           <thead>
             <tr>
               <th style={{ width: '40px' }}>Rank</th>
@@ -452,11 +480,21 @@ export default function ResultsPage() {
 
           {experiment.status === 'running' && (
             <div>
-              <p style={{ color: 'var(--text)', fontSize: '0.9rem' }}>
-                Experiment is running...
+              <p className="text-base">
+                {experiment.progress < 10
+                  ? 'Preparing pipeline\u2026'
+                  : experiment.progress < 25
+                    ? 'Canonicizing documents\u2026'
+                    : experiment.progress < 50
+                      ? 'Extracting stylometric features\u2026'
+                      : experiment.progress < 70
+                        ? 'Computing distance matrices\u2026'
+                        : experiment.progress < 90
+                          ? 'Running attribution analysis\u2026'
+                          : 'Finalizing results\u2026'}
               </p>
               <ProgressBar progress={experiment.progress} />
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.75rem' }}>
+              <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.75rem' }}>
                 This page updates automatically every 2 seconds.
               </p>
             </div>
@@ -521,8 +559,21 @@ export default function ResultsPage() {
       )}
 
       {results.map((result, idx) => (
-        <AttributionTable key={result.unknown_document.id ?? idx} result={result} />
+        <div
+          key={result.unknown_document.id ?? idx}
+          className={s.attrReveal}
+          style={{ animationDelay: `${idx * 60}ms` }}
+        >
+          <AttributionTable result={result} />
+        </div>
       ))}
+
+      {/* Direction C: Scroll progress indicator (scroll-driven, progressive enhancement) */}
+      {results.length > 2 && (
+        <div className={s.scrollProgress}>
+          <div className={s.scrollProgressFill} />
+        </div>
+      )}
     </div>
   );
 }

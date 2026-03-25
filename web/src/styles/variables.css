@@ -14,13 +14,16 @@
   /* Text — moonlit cloud tones */
   --text:       #dbe3f8;
   --text-muted: #aebada;
-  --text-faint: #7f89a8;
+  --text-faint: #9ba5be;  /* lightened from #7f89a8 — passes 4.5:1 on all surfaces */
 
   /* Accent — Lavender (enchanted) */
-  --accent:        #a897d2;
-  --accent-hover:  #9585c4;
-  --accent-subtle: rgba(168, 151, 210, 0.12);
-  --accent-glow:   rgba(168, 151, 210, 0.30);
+  --accent:             #a897d2;          /* text on dark backgrounds — 5.9:1 */
+  --accent-hover:       #9585c4;
+  --accent-solid:       #6f5f9e;          /* button backgrounds — 5.5:1 with white */
+  --accent-solid-hover: #635590;          /* button hover — 6.4:1 with white */
+  --accent-subtle:      rgba(168, 151, 210, 0.12);
+  --accent-glow:        rgba(168, 151, 210, 0.30);
+  --accent-light:       #beaee0;          /* gradient endpoints */
 
   /* Secondary — Soft Gold (luminous warmth) */
   --gold:        #bea873;
@@ -30,14 +33,18 @@
   --success:        #8da97b;
   --success-bg:     rgba(141, 169, 123, 0.12);
   --success-border: rgba(141, 169, 123, 0.40);
+  --success-light:  #a3c096;             /* gradient endpoints */
 
   --warning:        #bea873;
   --warning-bg:     rgba(190, 168, 115, 0.12);
   --warning-border: rgba(190, 168, 115, 0.40);
 
-  --danger:        #c5a8a8;
-  --danger-bg:     rgba(197, 168, 168, 0.12);
-  --danger-border: rgba(197, 168, 168, 0.40);
+  --danger:             #c5a8a8;          /* text on dark backgrounds — 6.9:1 */
+  --danger-solid:       #8f5555;          /* button backgrounds — 5.8:1 with white */
+  --danger-solid-hover: #804c4c;          /* button hover — 6.9:1 with white */
+  --danger-bg:          rgba(197, 168, 168, 0.12);
+  --danger-border:      rgba(197, 168, 168, 0.40);
+  --danger-light:       #d4bfbf;          /* gradient endpoints */
 
   --info:        #8caec9;
   --info-bg:     rgba(140, 174, 201, 0.12);

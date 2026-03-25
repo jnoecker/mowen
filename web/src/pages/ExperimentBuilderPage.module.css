@@ -101,6 +101,12 @@
   border-color: var(--border-strong);
 }
 
+.componentCard:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-glow);
+  border-color: var(--accent);
+}
+
 .componentCardSelected {
   border: 2px solid var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
@@ -125,10 +131,10 @@
 }
 
 .componentDesc {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   margin-top: 0.4rem;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .checkbox {
@@ -214,11 +220,7 @@
 
 .paramInput {
   width: 100%;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  padding: 0.4rem 0.6rem;
+  padding: 0.35rem 0.55rem;
   font-size: 0.85rem;
 }
 
@@ -304,6 +306,12 @@
   background: var(--bg-hover);
 }
 
+.presetCard:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-glow);
+  border-color: var(--accent);
+}
+
 .presetCardActive {
   border-color: var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
@@ -327,8 +335,14 @@
 
 .presetCitation {
   font-size: 0.7rem;
-  color: var(--text-faint);
+  color: var(--gold);
   font-style: italic;
+  opacity: 0.8;
+}
+
+/* Mobile step context (hidden on desktop where labels are visible) */
+.currentStepLabel {
+  display: none;
 }
 
 .presetDivider {
@@ -348,4 +362,58 @@
   flex: 1;
   height: 1px;
   background: var(--border);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 768px) {
+  .corporaGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .reviewGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .componentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .presetGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stepLabel {
+    display: none;
+  }
+
+  .currentStepLabel {
+    display: block;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .stepBtn {
+    padding: 0.3rem;
+  }
+
+  .stepIndicatorRow {
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+
+  .nameInput {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerRow {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }

@@ -75,7 +75,7 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
           </div>
         </div>
 
-        <div className={s.cardActions}>
+        <div className={`actions-row ${s.cardActions}`}>
           <button
             onClick={() => navigate(`/experiments/${experiment.id}/results`)}
             className={s.smallBtn}
@@ -91,6 +91,7 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
           <button
             onClick={handleDelete}
             onBlur={() => setConfirmDelete(false)}
+            onKeyDown={(e) => { if (e.key === 'Escape') setConfirmDelete(false); }}
             className={`${s.smallBtn}${confirmDelete ? ' danger' : ''}`}
           >
             {confirmDelete ? 'Confirm' : 'Delete'}
@@ -146,8 +147,9 @@ export default function ExperimentsListPage() {
       )}
 
       {!isLoading && !error && sorted.length === 0 && (
-        <p className="muted">
-          No experiments yet. Click "New Experiment" to get started.
+        <p className="muted text-sm">
+          No experiments yet. Click "New Experiment" to configure an authorship attribution pipeline,
+          or import a sample corpus first for benchmark data.
         </p>
       )}
 

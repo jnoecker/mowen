@@ -13,12 +13,16 @@ button {
   background-color: var(--bg-elevated);
   color: var(--text);
   cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
 }
 
 button:hover {
   background-color: var(--bg-hover);
   border-color: var(--border-strong);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 button:focus-visible {
@@ -40,12 +44,12 @@ button.primary {
       transparent 50%,
       rgba(0, 0, 0, 0.08) 100%
     ),
-    var(--accent);
-  border-color: var(--accent);
+    var(--accent-solid);
+  border-color: var(--accent-solid);
   color: #fff;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   box-shadow:
-    0 1px 3px rgba(168, 151, 210, 0.25),
+    0 1px 3px rgba(111, 95, 158, 0.30),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -57,22 +61,22 @@ button.primary:hover {
       transparent 50%,
       rgba(0, 0, 0, 0.1) 100%
     ),
-    var(--accent-hover);
-  border-color: var(--accent-hover);
+    var(--accent-solid-hover);
+  border-color: var(--accent-solid-hover);
   box-shadow:
-    0 2px 8px rgba(168, 151, 210, 0.35),
+    0 2px 8px rgba(111, 95, 158, 0.40),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 button.danger {
-  background-color: var(--danger);
-  border-color: var(--danger);
+  background-color: var(--danger-solid);
+  border-color: var(--danger-solid);
   color: #fff;
 }
 
 button.danger:hover {
-  background-color: #b89999;
-  border-color: #b89999;
+  background-color: var(--danger-solid-hover);
+  border-color: var(--danger-solid-hover);
 }
 
 /* ---- Forms ---- */
@@ -99,7 +103,7 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   box-shadow:
     0 0 0 2px var(--accent-glow),
-    0 0 12px rgba(168, 151, 210, 0.12);
+    0 0 12px var(--accent-subtle);
 }
 
 input::placeholder, textarea::placeholder {
@@ -166,7 +170,7 @@ tbody tr:last-child td {
   box-shadow:
     var(--shadow-sm),
     inset 0 1px 0 rgba(255, 255, 255, 0.02);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .card:hover {
@@ -174,6 +178,7 @@ tbody tr:last-child td {
   box-shadow:
     var(--shadow-md),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
 }
 
 /* ---- Badges — seal/hanko style ---- */
@@ -187,6 +192,7 @@ tbody tr:last-child td {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border: 1.5px solid;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
 .badge--pending {
@@ -242,33 +248,6 @@ tbody tr:last-child td {
   -webkit-mask-size: 100% 100%;
 }
 
-/* ---- Stat cards ---- */
-
-.stat-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  text-align: center;
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-card__value {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1.2;
-}
-
-.stat-card__label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 0.25rem;
-}
-
 /* ---- Score bars — ink wash ---- */
 
 .score-bar {
@@ -283,9 +262,26 @@ tbody tr:last-child td {
 .score-bar__fill {
   height: 100%;
   border-radius: 1px;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 2px;
   position: relative;
+  /* Ink-flow: paint the bar as a brush stroke */
+  animation: ink-flow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Sumi-ink edge texture — roughen the fill edges */
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14'%3E%3Cfilter id='e'%3E%3CfeTurbulence baseFrequency='0.02 0.35' numOctaves='3' seed='5'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 1 1 1 1 1 1 1 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='200' height='14' filter='url(%23e)'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='14'%3E%3Cfilter id='e'%3E%3CfeTurbulence baseFrequency='0.02 0.35' numOctaves='3' seed='5'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 1 1 1 1 1 1 1 1 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='200' height='14' filter='url(%23e)'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+}
+
+@keyframes ink-flow {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
 }
 
 /* Subtle paper-edge highlight on bar fill */
@@ -312,7 +308,7 @@ tbody tr:last-child td {
 
 .progress-bar__fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #beaee0);
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
   border-radius: 4px;
   transition: width 0.4s ease;
 }
@@ -346,4 +342,59 @@ tbody tr:last-child td {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.35rem;
+}
+
+/* ---- Shared layout patterns ---- */
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.submit-wrap {
+  display: flex;
+  align-items: flex-end;
+}
+
+.actions-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 768px) {
+  button {
+    padding: 0.55rem 1rem;
+    min-height: 44px;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  th, td {
+    padding: 0.6rem 0.65rem;
+  }
+
+  input, select, textarea {
+    padding: 0.55rem 0.75rem;
+    min-height: 44px;
+    font-size: 1rem; /* prevents zoom on iOS */
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 0.75rem;
+    border-radius: var(--radius);
+  }
+
+  th, td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
 }

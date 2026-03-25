@@ -173,15 +173,26 @@ function ComponentSelector({
     );
   };
 
+  const handleCardKeyDown = (e: React.KeyboardEvent, comp: ComponentInfo) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggle(comp);
+    }
+  };
+
   return (
-    <div className={s.componentGrid}>
+    <div className={s.componentGrid} role="group" aria-label={multiSelect ? 'Select components' : 'Select one component'}>
       {components.map((comp) => {
         const isSelected = selectedMap.has(comp.name);
         const spec = selectedMap.get(comp.name);
         return (
           <div
             key={comp.name}
+            role={multiSelect ? 'checkbox' : 'radio'}
+            aria-checked={isSelected}
+            tabIndex={0}
             onClick={() => toggle(comp)}
+            onKeyDown={(e) => handleCardKeyDown(e, comp)}
             className={`${s.componentCard} ${isSelected ? s.componentCardSelected : ''}`}
           >
             <div className={s.componentHeader}>
@@ -195,6 +206,7 @@ function ComponentSelector({
               </div>
               <div
                 className={`${multiSelect ? s.checkbox : s.radio} ${isSelected ? s.checkboxSelected : ''}`}
+                aria-hidden="true"
               >
                 {isSelected && (
                   <span className={s.checkmark}>
@@ -209,7 +221,7 @@ function ComponentSelector({
               </p>
             )}
             {isSelected && comp.params && comp.params.length > 0 && spec && (
-              <div onClick={(e) => e.stopPropagation()}>
+              <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                 <ParameterEditor
                   params={comp.params}
                   values={spec.params}
@@ -259,12 +271,16 @@ function StepNameCorpora({
       {/* Preset selector */}
       <div className={s.presetSection}>
         <div className={s.presetSectionLabel}>Start from a preset</div>
-        <div className={s.presetGrid}>
+        <div className={s.presetGrid} role="group" aria-label="Experiment presets">
           {PRESETS.map((preset) => (
             <div
               key={preset.id}
+              role="radio"
+              aria-checked={activePresetId === preset.id}
+              tabIndex={0}
               className={`${s.presetCard} ${activePresetId === preset.id ? s.presetCardActive : ''}`}
               onClick={() => onApplyPreset(preset)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onApplyPreset(preset); } }}
             >
               <div className={s.presetName}>{preset.name}</div>
               <div className={s.presetDesc}>{preset.description}</div>
@@ -405,7 +421,7 @@ function StepReview({
           ) : (
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {store.knownCorpusIds.map((id) => (
-                <li key={id} style={{ fontSize: '0.9rem' }}>
+                <li key={id} className="text-base">
                   {corporaMap.get(id)?.name ?? `Corpus #${id}`}
                 </li>
               ))}
@@ -419,7 +435,7 @@ function StepReview({
           ) : (
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {store.unknownCorpusIds.map((id) => (
-                <li key={id} style={{ fontSize: '0.9rem' }}>
+                <li key={id} className="text-base">
                   {corporaMap.get(id)?.name ?? `Corpus #${id}`}
                 </li>
               ))}
@@ -493,7 +509,7 @@ function StepReview({
             <span className={s.stepDesc}>N/A (embedding mode)</span>
           ) : (
             <>
-              <span style={{ fontSize: '0.9rem' }}>
+              <span className="text-base">
                 {store.distanceFunction
                   ? findDisplayName(allDistanceFunctions, store.distanceFunction.name)
                   : 'None'}
@@ -508,7 +524,7 @@ function StepReview({
         </div>
         <div className="section-panel">
           <div className="section-label">Analysis Method</div>
-          <span style={{ fontSize: '0.9rem' }}>
+          <span className="text-base">
             {findDisplayName(allAnalysisMethods, store.analysisMethod.name)}
           </span>
           {Object.keys(store.analysisMethod.params).length > 0 && (
@@ -530,6 +546,7 @@ export default function ExperimentBuilderPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
 
   const store = useExperimentStore();
@@ -636,7 +653,8 @@ export default function ExperimentBuilderPage() {
       },
       {
         onSuccess: (experiment) => {
-          navigate(`/experiments/${experiment.id}/results`);
+          setSubmitted(true);
+          setTimeout(() => navigate(`/experiments/${experiment.id}/results`), 800);
         },
         onError: (err: Error) => {
           setSubmitError(err.message || 'Failed to create experiment.');
@@ -663,7 +681,8 @@ export default function ExperimentBuilderPage() {
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Canonicizers</h2>
             <p className={s.stepDesc}>
-              Text preprocessing steps. Optional - select any that apply.
+              Text preprocessing steps applied before feature extraction — e.g., case normalization,
+              whitespace cleanup, punctuation stripping. Optional.
             </p>
             <ComponentSelector
               components={canonicizers}
@@ -679,7 +698,8 @@ export default function ExperimentBuilderPage() {
           <div>
             <h2 style={{ marginBottom: '0.25rem' }}>Event Drivers</h2>
             <p className={s.stepDesc}>
-              Methods for extracting features from text. At least one is required.
+              How to extract stylistic features from text — e.g., word frequencies, character n-grams,
+              part-of-speech patterns, or neural embeddings. At least one is required.
             </p>
             <ComponentSelector
               components={eventDrivers}
@@ -702,7 +722,8 @@ export default function ExperimentBuilderPage() {
             ) : (
               <>
                 <p className={s.stepDesc}>
-                  Filter extracted events. Optional.
+                  Filter extracted features — e.g., keep only the N most frequent, or remove
+                  features that appear in fewer than K documents. Optional.
                 </p>
                 <ComponentSelector
                   components={eventCullers}
@@ -727,7 +748,8 @@ export default function ExperimentBuilderPage() {
             ) : (
               <>
                 <p className={s.stepDesc}>
-                  How to measure distance between event distributions. Select one.
+                  How to measure stylistic distance between authors — e.g., cosine distance,
+                  Burrows' Delta, or chi-squared divergence. Select one.
                 </p>
                 <ComponentSelector
                   components={distanceFunctions}
@@ -777,11 +799,13 @@ export default function ExperimentBuilderPage() {
               allAnalysisMethods={analysisMethods}
               numericMode={numericMode}
             />
-            {submitError && (
-              <div className={s.errorBox}>
-                {submitError}
-              </div>
-            )}
+            <div aria-live="polite">
+              {submitError && (
+                <div className={s.errorBox} role="alert">
+                  {submitError}
+                </div>
+              )}
+            </div>
           </div>
         );
       default:
@@ -807,9 +831,9 @@ export default function ExperimentBuilderPage() {
           <button
             className="primary"
             onClick={handleSubmit}
-            disabled={createExperiment.isPending}
+            disabled={createExperiment.isPending || submitted}
           >
-            {createExperiment.isPending ? 'Submitting...' : 'Submit Experiment'}
+            {submitted ? '\u2713 Created \u2014 opening results\u2026' : createExperiment.isPending ? 'Submitting\u2026' : 'Submit Experiment'}
           </button>
         )}
       </div>
@@ -834,11 +858,14 @@ export default function ExperimentBuilderPage() {
               >
                 {isCompleted ? '\u2713' : i + 1}
               </span>
-              {label}
+              <span className={s.stepLabel}>{label}</span>
             </button>
           );
         })}
       </div>
+
+      {/* Current step label (visible on mobile when step labels are hidden) */}
+      <div className={s.currentStepLabel}>Step {step + 1}: {STEPS[step]}</div>
 
       {/* Step content */}
       <div className="card">{renderStep()}</div>
@@ -865,9 +892,9 @@ export default function ExperimentBuilderPage() {
           <button
             className="primary"
             onClick={handleSubmit}
-            disabled={createExperiment.isPending}
+            disabled={createExperiment.isPending || submitted}
           >
-            {createExperiment.isPending ? 'Submitting...' : 'Submit Experiment'}
+            {submitted ? '\u2713 Created \u2014 opening results\u2026' : createExperiment.isPending ? 'Submitting\u2026' : 'Submit Experiment'}
           </button>
         )}
       </div>

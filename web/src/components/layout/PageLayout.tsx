@@ -5,9 +5,12 @@ import s from './PageLayout.module.css';
 export default function PageLayout() {
   return (
     <div className={s.layout}>
+      <a href="#main-content" className="skip-to-content">
+        Skip to content
+      </a>
       <Navbar />
       <hr className="divider" />
-      <main className={s.main}>
+      <main id="main-content" className={s.main}>
         <Outlet />
       </main>
       <footer className={s.footer}>

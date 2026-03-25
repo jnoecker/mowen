@@ -56,10 +56,10 @@ function DocumentAssignment({
     <div className={s.assignPanel}>
       <h3 style={{ marginBottom: '0.5rem', fontSize: '0.95rem' }}>Documents in Corpus</h3>
 
-      {isLoading && <p className="muted" style={{ fontSize: '0.85rem' }}>Loading...</p>}
+      {isLoading && <p className="muted text-sm">Loading...</p>}
 
       {!isLoading && corpusDocuments.length === 0 && (
-        <p className="muted" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+        <p className="muted text-sm" style={{ marginBottom: '0.5rem' }}>
           No documents assigned yet.
         </p>
       )}
@@ -212,7 +212,7 @@ function CorpusCard({
         </div>
 
         {/* Action buttons */}
-        <div className={s.actionBtns}>
+        <div className={`actions-row ${s.headerActions}`}>
           {editing ? (
             <>
               <button className="primary" onClick={handleSave} disabled={!name.trim()}>
@@ -230,6 +230,7 @@ function CorpusCard({
                 className={confirmDelete ? 'danger' : undefined}
                 onClick={handleDelete}
                 onBlur={() => setConfirmDelete(false)}
+                onKeyDown={(e) => { if (e.key === 'Escape') setConfirmDelete(false); }}
               >
                 {confirmDelete ? 'Confirm' : 'Delete'}
               </button>
@@ -270,11 +271,11 @@ function SampleCorpusImporter() {
 
   return (
     <div className="card">
-      <h2 style={{ marginBottom: '0.75rem' }}>Import Sample Corpus</h2>
-      <p className="muted" style={{ fontSize: '0.85rem', marginBottom: '0.75rem' }}>
+      <h2>Import Sample Corpus</h2>
+      <p className="muted text-sm" style={{ marginBottom: '0.75rem' }}>
         Import a standard AAAC benchmark problem set with pre-labeled training and unknown documents.
       </p>
-      <div className={s.formRow}>
+      <div className="form-row">
         <div className={s.fieldSample}>
           <label>Sample Corpus</label>
           <select
@@ -293,7 +294,7 @@ function SampleCorpusImporter() {
             ))}
           </select>
         </div>
-        <div className={s.submitWrap}>
+        <div className="submit-wrap">
           <button
             className="primary"
             onClick={() => importMutation.mutate(selectedId)}
@@ -305,22 +306,24 @@ function SampleCorpusImporter() {
       </div>
 
       {selected && !importMutation.isPending && !importMutation.isSuccess && (
-        <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+        <p className="muted text-sm" style={{ marginTop: '0.5rem' }}>
           {selected.description}
         </p>
       )}
 
-      {importMutation.isSuccess && (
-        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--success)' }}>
-          Imported successfully! Created "{importMutation.data.known_corpus.name}" ({importMutation.data.known_corpus.document_count} docs) and "{importMutation.data.unknown_corpus.name}" ({importMutation.data.unknown_corpus.document_count} docs).
-        </p>
-      )}
+      <div aria-live="polite">
+        {importMutation.isSuccess && (
+          <p className="text-sm" style={{ marginTop: '0.75rem', color: 'var(--success)' }}>
+            Imported successfully! Created "{importMutation.data.known_corpus.name}" ({importMutation.data.known_corpus.document_count} docs) and "{importMutation.data.unknown_corpus.name}" ({importMutation.data.unknown_corpus.document_count} docs).
+          </p>
+        )}
 
-      {importMutation.isError && (
-        <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--danger)' }}>
-          {(importMutation.error as Error).message || 'Failed to import corpus.'}
-        </p>
-      )}
+        {importMutation.isError && (
+          <p className="text-sm" role="alert" style={{ marginTop: '0.75rem', color: 'var(--danger)' }}>
+            {(importMutation.error as Error).message || 'Failed to import corpus.'}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -381,9 +384,9 @@ export default function CorporaPage() {
 
       {/* Create corpus section */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ marginBottom: '0.75rem' }}>Create Corpus</h2>
+        <h2>Create Corpus</h2>
         <form onSubmit={handleCreate}>
-          <div className={s.formRow}>
+          <div className="form-row">
             <div className={s.fieldName}>
               <label>Name</label>
               <input
@@ -400,7 +403,7 @@ export default function CorporaPage() {
                 placeholder="Optional description"
               />
             </div>
-            <div className={s.submitWrap}>
+            <div className="submit-wrap">
               <button
                 className="primary"
                 type="submit"
@@ -412,11 +415,13 @@ export default function CorporaPage() {
           </div>
         </form>
 
-        {createMutation.isError && (
-          <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--danger)' }}>
-            {(createMutation.error as Error).message || 'Failed to create corpus.'}
-          </p>
-        )}
+        <div aria-live="polite">
+          {createMutation.isError && (
+            <p className="text-sm" role="alert" style={{ marginTop: '0.75rem', color: 'var(--danger)' }}>
+              {(createMutation.error as Error).message || 'Failed to create corpus.'}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Import sample corpus section */}

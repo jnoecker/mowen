@@ -49,23 +49,29 @@ function DocumentRow({
     <tr>
       <td>
         {editing ? (
-          <input
-            className={s.editInput}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+          <label>
+            <span className="sr-only">Title</span>
+            <input
+              className={s.editInput}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </label>
         ) : (
           doc.title
         )}
       </td>
       <td>
         {editing ? (
-          <input
-            className={s.editInput}
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            placeholder="Unknown"
-          />
+          <label>
+            <span className="sr-only">Author</span>
+            <input
+              className={s.editInput}
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Unknown"
+            />
+          </label>
         ) : (
           <span style={{ color: doc.author_name ? 'var(--text)' : 'var(--text-muted)' }}>
             {doc.author_name || 'Unknown'}
@@ -76,7 +82,7 @@ function DocumentRow({
       <td>{doc.char_count.toLocaleString()} chars</td>
       <td>{new Date(doc.created_at).toLocaleDateString()}</td>
       <td>
-        <div className={s.actionsCell}>
+        <div className="actions-row">
           {editing ? (
             <>
               <button className="primary" onClick={save}>
@@ -91,6 +97,7 @@ function DocumentRow({
                 className={confirmDelete ? 'danger' : undefined}
                 onClick={handleDelete}
                 onBlur={() => setConfirmDelete(false)}
+                onKeyDown={(e) => { if (e.key === 'Escape') setConfirmDelete(false); }}
               >
                 {confirmDelete ? 'Confirm' : 'Delete'}
               </button>
@@ -196,9 +203,9 @@ export default function DocumentsPage() {
 
       {/* Upload section */}
       <div className="card" style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ marginBottom: '0.75rem' }}>Upload Document</h2>
+        <h2>Upload Document</h2>
         <form onSubmit={handleUpload}>
-          <div className={s.formRow}>
+          <div className="form-row">
             <div className={s.field}>
               <label>File</label>
               <input ref={fileRef} type="file" onChange={handleFileChange} />
@@ -219,7 +226,7 @@ export default function DocumentsPage() {
                 placeholder="Author name"
               />
             </div>
-            <div className={s.submitWrap}>
+            <div className="submit-wrap">
               <button
                 className="primary"
                 type="submit"
@@ -231,24 +238,27 @@ export default function DocumentsPage() {
           </div>
         </form>
 
-        {feedback && (
-          <p
-            style={{
-              marginTop: '0.75rem',
-              fontSize: '0.85rem',
-              color: feedback.type === 'success' ? 'var(--success)' : 'var(--danger)',
-            }}
-          >
-            {feedback.message}
-          </p>
-        )}
+        <div aria-live="polite">
+          {feedback && (
+            <p
+              className="text-sm"
+              style={{
+                marginTop: '0.75rem',
+                color: feedback.type === 'success' ? 'var(--success)' : 'var(--danger)',
+              }}
+              role={feedback.type === 'error' ? 'alert' : undefined}
+            >
+              {feedback.message}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Documents table */}
       <div className="card">
-        <h2 style={{ marginBottom: '0.75rem' }}>All Documents</h2>
+        <h2>All Documents</h2>
 
-        {isLoading && <p className="muted">Loading documents...</p>}
+        {isLoading && <p className="muted text-sm">Loading documents...</p>}
 
         {fetchError && (
           <p style={{ color: 'var(--danger)' }}>
@@ -265,6 +275,7 @@ export default function DocumentsPage() {
         {!isLoading && documents.length > 0 && (
           <div style={{ overflowX: 'auto' }}>
             <table>
+              <caption className="sr-only">All documents</caption>
               <thead>
                 <tr>
                   <th>Title</th>

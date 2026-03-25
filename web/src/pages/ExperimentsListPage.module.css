@@ -38,13 +38,22 @@
 }
 
 .cardActions {
-  display: flex;
-  gap: 0.4rem;
-  flex-shrink: 0;
   margin-left: 1rem;
 }
 
 .smallBtn {
   font-size: 0.85rem;
   padding: 0.35rem 0.6rem;
+}
+
+@media (max-width: 768px) {
+  .cardRow {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cardActions {
+    margin-left: 0;
+    align-self: flex-start;
+  }
 }

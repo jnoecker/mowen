@@ -11,7 +11,7 @@ const navItems = [
 
 export default function Navbar() {
   return (
-    <nav className={s.nav}>
+    <nav className={s.nav} aria-label="Main navigation">
       <NavLink to="/dashboard" className={s.brand}>
         <img src={logoUrl} alt="mowen" className={s.logo} />
         mowen <span className={s.brandCjk}>(墨紋)</span>
