@@ -14,7 +14,14 @@ export default function ProgressBar({ progress }: { progress: number }) {
         <span>Progress</span>
         <span>{Math.round(pct)}%</span>
       </div>
-      <div className="progress-bar">
+      <div
+        className="progress-bar"
+        role="progressbar"
+        aria-valuenow={Math.round(pct)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Experiment progress"
+      >
         <div className="progress-bar__fill" style={{ width: `${pct}%` }} />
       </div>
     </div>

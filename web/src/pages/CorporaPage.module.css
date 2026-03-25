@@ -1,10 +1,3 @@
-.formRow {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -23,11 +16,6 @@
 .fieldSample {
   composes: field;
   flex: 1 1 300px;
-}
-
-.submitWrap {
-  display: flex;
-  align-items: flex-end;
 }
 
 .docList {
@@ -88,10 +76,7 @@
   margin-top: 0.35rem;
 }
 
-.actionBtns {
-  display: flex;
-  gap: 0.4rem;
-  flex-shrink: 0;
+.headerActions {
   margin-left: 1rem;
 }
 
@@ -108,11 +93,24 @@
 }
 
 .inputStyled {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  padding: 0.4rem 0.6rem;
+  padding: 0.35rem 0.55rem;
   font-size: 0.85rem;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .headerRow {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .headerActions {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
+  .meta {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
 }
