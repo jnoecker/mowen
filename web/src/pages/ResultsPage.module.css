@@ -23,6 +23,19 @@
   color: var(--text-muted);
 }
 
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.metricsTable {
+  min-width: 32rem;
+}
+
+.rankingsTable {
+  min-width: 34rem;
+}
+
 /* Performance metrics grid */
 .metricsGrid {
   display: grid;
@@ -42,8 +55,19 @@
   font-weight: 400;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
-  /* Counting animation: fade in from slightly below */
   animation: metric-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.metricValueSuccess {
+  color: var(--success);
+}
+
+.metricValueDanger {
+  color: var(--danger);
+}
+
+.metricValueMuted {
+  color: var(--text-muted);
 }
 
 @keyframes metric-enter {
@@ -70,18 +94,16 @@
 }
 
 .scrollProgressFill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-light));
-  transform-origin: left;
-  transform: scaleX(0);
-  /* Scroll-driven animation — progressive enhancement */
-  animation: scroll-fill linear both;
-  animation-timeline: scroll();
+  display: none;
 }
 
 @keyframes scroll-fill {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .metricLabel {
@@ -199,15 +221,16 @@
 
 .barCell {
   padding-left: 0.75rem;
+  min-width: 9rem;
 }
 
-/* Row states — use design token base colors */
+/* Row states */
 .rowCorrectTop {
-  background: rgba(141, 169, 123, 0.08);  /* --success base at 8% */
+  background: rgba(141, 169, 123, 0.08);
 }
 
 .rowIncorrectTop {
-  background: rgba(197, 168, 168, 0.08);  /* --danger base at 8% */
+  background: rgba(197, 168, 168, 0.08);
 }
 
 .rowAccentTop {
@@ -215,7 +238,7 @@
 }
 
 .rowTrueAuthor {
-  background: rgba(141, 169, 123, 0.05);  /* --success base at 5% */
+  background: rgba(141, 169, 123, 0.05);
 }
 
 /* Results heading */
@@ -231,7 +254,7 @@
   margin-left: 0.5rem;
 }
 
-/* Error message block */
+/* Error and status */
 .errorBlock {
   padding: 0.75rem 1rem;
   background: var(--danger-bg);
@@ -241,6 +264,28 @@
   color: var(--danger);
   font-family: var(--font-mono);
   white-space: pre-wrap;
+}
+
+.errorCard {
+  border-color: var(--danger);
+}
+
+.statusMessage {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.statusMessageSmall {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.failureTitle {
+  color: var(--danger);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 /* Score bar gradients */
@@ -258,6 +303,18 @@
 
 .barDanger {
   background: linear-gradient(90deg, var(--danger), var(--danger-light));
+}
+
+@supports (animation-timeline: scroll()) {
+  .scrollProgressFill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: scroll-fill linear both;
+    animation-timeline: scroll();
+  }
 }
 
 /* ---- Responsive ---- */
@@ -285,5 +342,13 @@
 @media (max-width: 480px) {
   .metricsGrid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .metricsTable {
+    min-width: 28rem;
+  }
+
+  .rankingsTable {
+    min-width: 30rem;
   }
 }

@@ -1,12 +1,23 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type CSSProperties } from 'react';
 import { experimentsApi } from '../api/experiments';
 import { computeAuthorStats, computeAUROC, computeMRR, computeF05u, computeBrier } from '../metrics';
 import type { ExperimentResultResponse, ExperimentResponse } from '../types';
 import s from './ResultsPage.module.css';
 import StatusBadge from '../components/StatusBadge';
 import ProgressBar from '../components/ProgressBar';
+
+function formatMetricDisplay(target: number): string {
+  const isPercent = target <= 1 && target >= 0;
+  if (isPercent) {
+    return `${(target * 100).toFixed(1)}%`;
+  }
+  if (Number.isInteger(target)) {
+    return String(target);
+  }
+  return target.toFixed(3);
+}
 
 // ---------------------------------------------------------------------------
 // Counting animation hook — animates a number from 0 to target
@@ -15,8 +26,13 @@ import ProgressBar from '../components/ProgressBar';
 function useCountUp(target: number, duration = 600): string {
   const [display, setDisplay] = useState('0');
   const rafRef = useRef<number>(0);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      return undefined;
+    }
+
     const isPercent = target <= 1 && target >= 0;
     const start = performance.now();
 
@@ -40,19 +56,11 @@ function useCountUp(target: number, duration = 600): string {
       }
     }
 
-    // Respect reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      if (isPercent) setDisplay(`${(target * 100).toFixed(1)}%`);
-      else if (Number.isInteger(target)) setDisplay(String(target));
-      else setDisplay(target.toFixed(3));
-      return;
-    }
-
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [target, duration]);
+  }, [target, duration, prefersReducedMotion]);
 
-  return display;
+  return prefersReducedMotion ? formatMetricDisplay(target) : display;
 }
 
 function CountingMetric({ value, color, label }: { value: number; color?: string; label: string }) {
@@ -172,24 +180,24 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
         {f05u != null && <CountingMetric value={f05u} label="F0.5u" />}
         {brier != null && <CountingMetric value={brier} label="Brier" />}
         <div className={s.metricCell}>
-          <div className={s.metricValue} style={{ color: 'var(--success)' }}>{correct.length}/{evaluated.length}</div>
+          <div className={`${s.metricValue} ${s.metricValueSuccess}`}>{correct.length}/{evaluated.length}</div>
           <div className={s.metricLabel}>Correct</div>
         </div>
         {verifiedCount != null && (
           <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--success)' }}>{verifiedCount}</div>
+            <div className={`${s.metricValue} ${s.metricValueSuccess}`}>{verifiedCount}</div>
             <div className={s.metricLabel}>Verified</div>
           </div>
         )}
         {rejectedCount != null && rejectedCount > 0 && (
           <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--danger)' }}>{rejectedCount}</div>
+            <div className={`${s.metricValue} ${s.metricValueDanger}`}>{rejectedCount}</div>
             <div className={s.metricLabel}>Rejected</div>
           </div>
         )}
         {inconclusiveCount != null && inconclusiveCount > 0 && (
           <div className={s.metricCell}>
-            <div className={s.metricValue} style={{ color: 'var(--text-muted)' }}>{inconclusiveCount}</div>
+            <div className={`${s.metricValue} ${s.metricValueMuted}`}>{inconclusiveCount}</div>
             <div className={s.metricLabel}>Inconclusive</div>
           </div>
         )}
@@ -203,33 +211,35 @@ function PerformanceSummary({ results }: { results: ExperimentResultResponse[] }
       </div>
 
       {/* Per-author table */}
-      <table className="text-sm">
-        <caption className="sr-only">Per-author performance metrics</caption>
-        <thead>
-          <tr>
-            <th>Author</th>
-            <th style={{ textAlign: 'center', width: '50px' }}>TP</th>
-            <th style={{ textAlign: 'center', width: '50px' }}>FP</th>
-            <th style={{ textAlign: 'center', width: '50px' }}>FN</th>
-            <th style={{ textAlign: 'right', width: '80px' }}>Precision</th>
-            <th style={{ textAlign: 'right', width: '80px' }}>Recall</th>
-            <th style={{ textAlign: 'right', width: '80px' }}>F1</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedAuthors.map(([author, stats]) => (
-            <tr key={author}>
-              <td>{author}</td>
-              <td style={{ textAlign: 'center', color: 'var(--success)' }}>{stats.tp}</td>
-              <td style={{ textAlign: 'center', color: stats.fp > 0 ? 'var(--danger)' : 'var(--text-muted)' }}>{stats.fp}</td>
-              <td style={{ textAlign: 'center', color: stats.fn > 0 ? 'var(--danger)' : 'var(--text-muted)' }}>{stats.fn}</td>
-              <td className={s.scoreCell}>{fmtPct(stats.precision)}</td>
-              <td className={s.scoreCell}>{fmtPct(stats.recall)}</td>
-              <td className={s.scoreCell}>{fmtPct(stats.f1)}</td>
+      <div className={s.tableWrap}>
+        <table className={`text-sm ${s.metricsTable}`}>
+          <caption className="sr-only">Per-author performance metrics</caption>
+          <thead>
+            <tr>
+              <th>Author</th>
+              <th className={s.scoreCell}>TP</th>
+              <th className={s.scoreCell}>FP</th>
+              <th className={s.scoreCell}>FN</th>
+              <th className={s.scoreCell}>Precision</th>
+              <th className={s.scoreCell}>Recall</th>
+              <th className={s.scoreCell}>F1</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedAuthors.map(([author, stats]) => (
+              <tr key={author}>
+                <td>{author}</td>
+                <td className={`${s.scoreCell} ${s.metricValueSuccess}`}>{stats.tp}</td>
+                <td className={`${s.scoreCell} ${stats.fp > 0 ? s.metricValueDanger : s.metricValueMuted}`}>{stats.fp}</td>
+                <td className={`${s.scoreCell} ${stats.fn > 0 ? s.metricValueDanger : s.metricValueMuted}`}>{stats.fn}</td>
+                <td className={s.scoreCell}>{fmtPct(stats.precision)}</td>
+                <td className={s.scoreCell}>{fmtPct(stats.recall)}</td>
+                <td className={s.scoreCell}>{fmtPct(stats.f1)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -284,20 +294,21 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
       {rankings.length === 0 ? (
         <p className="muted text-sm">No rankings available.</p>
       ) : (
-        <table>
-          <caption className="sr-only">
-            Author attribution rankings for {unknown_document.title}
-          </caption>
-          <thead>
-            <tr>
-              <th style={{ width: '40px' }}>Rank</th>
-              <th>Author</th>
-              <th style={{ width: '100px', textAlign: 'right' }}>Score</th>
-              <th>Distribution</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rankings.map((entry, idx) => {
+        <div className={s.tableWrap}>
+          <table className={s.rankingsTable}>
+            <caption className="sr-only">
+              Author attribution rankings for {unknown_document.title}
+            </caption>
+            <thead>
+              <tr>
+                <th className={s.scoreCell}>Rank</th>
+                <th>Author</th>
+                <th className={s.scoreCell}>Score</th>
+                <th>Distribution</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rankings.map((entry, idx) => {
               const isTop = entry.author === topAuthor;
               const isTrue = trueAuthor != null && entry.author === trueAuthor;
               const barWidth = maxScore > 0 ? (Math.abs(entry.score) / maxScore) * 100 : 0;
@@ -331,44 +342,42 @@ function AttributionTable({ result }: { result: ExperimentResultResponse }) {
                 barClass = s.barDefault;
               }
 
-              return (
-                <tr key={entry.author} className={rowClass}>
-                  <td
-                    style={{
-                      fontWeight: isTop || isTrue ? 700 : 400,
-                      color: rowColor,
-                      textAlign: 'center',
-                    }}
-                  >
-                    {idx + 1}
-                  </td>
-                  <td style={{ fontWeight: isTop || isTrue ? 600 : 400, color: rowColor }}>
-                    {entry.author}
-                    {isTrue && !isTop && (
-                      <span className={s.trueAuthorNote}>
-                        (true author)
-                      </span>
-                    )}
-                  </td>
-                  <td className={s.scoreCell} style={{ color: rowColor }}>
-                    {entry.score.toFixed(4)}
-                  </td>
-                  <td className={s.barCell}>
-                    <div className="score-bar">
-                      <div
-                        className={`score-bar__fill ${barClass}`}
-                        style={{
-                          width: `${barWidth}%`,
-                          minWidth: barWidth > 0 ? '2px' : '0',
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                return (
+                  <tr key={entry.author} className={rowClass}>
+                    <td
+                      className={s.scoreCell}
+                      style={{ fontWeight: isTop || isTrue ? 700 : 400, color: rowColor }}
+                    >
+                      {idx + 1}
+                    </td>
+                    <td style={{ fontWeight: isTop || isTrue ? 600 : 400, color: rowColor }}>
+                      {entry.author}
+                      {isTrue && !isTop && (
+                        <span className={s.trueAuthorNote}>
+                          (true author)
+                        </span>
+                      )}
+                    </td>
+                    <td className={s.scoreCell} style={{ color: rowColor }}>
+                      {entry.score.toFixed(4)}
+                    </td>
+                    <td className={s.barCell}>
+                      <div className="score-bar">
+                        <div
+                          className={`score-bar__fill ${barClass}`}
+                          style={{
+                            '--progress-scale': barWidth / 100,
+                            minWidth: barWidth > 0 ? '2px' : '0',
+                          } as CSSProperties}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
@@ -416,7 +425,7 @@ export default function ResultsPage() {
     return (
       <div>
         <h1>Results</h1>
-        <p style={{ color: 'var(--danger)' }}>Invalid experiment ID.</p>
+        <p className={s.failureTitle}>Invalid experiment ID.</p>
       </div>
     );
   }
@@ -425,7 +434,7 @@ export default function ResultsPage() {
     return (
       <div>
         <h1>Results</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Loading experiment...</p>
+        <p className={s.statusMessage}>Loading experiment...</p>
       </div>
     );
   }
@@ -434,8 +443,8 @@ export default function ResultsPage() {
     return (
       <div>
         <h1>Results</h1>
-        <div className="card" style={{ borderColor: 'var(--danger)' }}>
-          <p style={{ color: 'var(--danger)' }}>
+        <div className={`card ${s.errorCard}`}>
+          <p className={s.failureTitle}>
             Failed to load experiment: {(experimentError as Error).message}
           </p>
         </div>
@@ -447,7 +456,7 @@ export default function ResultsPage() {
     return (
       <div>
         <h1>Results</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Experiment not found.</p>
+        <p className={s.statusMessage}>Experiment not found.</p>
       </div>
     );
   }
@@ -469,10 +478,10 @@ export default function ResultsPage() {
         <div className="card">
           {experiment.status === 'pending' && (
             <div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              <p className={s.statusMessage}>
                 This experiment is queued and waiting to start.
               </p>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.5rem' }}>
+              <p className={s.statusMessageSmall}>
                 This page will update automatically when the experiment begins.
               </p>
             </div>
@@ -494,7 +503,7 @@ export default function ResultsPage() {
                           : 'Finalizing results\u2026'}
               </p>
               <ProgressBar progress={experiment.progress} />
-              <p className="muted" style={{ fontSize: '0.8rem', marginTop: '0.75rem' }}>
+              <p className={s.statusMessageSmall}>
                 This page updates automatically every 2 seconds.
               </p>
             </div>
@@ -502,7 +511,7 @@ export default function ResultsPage() {
 
           {experiment.status === 'failed' && (
             <div>
-              <p style={{ color: 'var(--danger)', fontSize: '0.95rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              <p className={s.failureTitle}>
                 Experiment Failed
               </p>
               {experiment.error_message && (
@@ -552,10 +561,10 @@ export default function ResultsPage() {
         </span>
       </h2>
 
-      {resultsLoading && <p style={{ color: 'var(--text-muted)' }}>Loading results...</p>}
+      {resultsLoading && <p className={s.statusMessage}>Loading results...</p>}
 
       {!resultsLoading && results.length === 0 && (
-        <p style={{ color: 'var(--text-muted)' }}>No results available.</p>
+        <p className={s.statusMessage}>No results available.</p>
       )}
 
       {results.map((result, idx) => (

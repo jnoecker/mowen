@@ -1,3 +1,5 @@
+export type ParamValue = string | number | boolean | null;
+
 // Documents
 export interface DocumentResponse {
   id: number;
@@ -39,11 +41,11 @@ export interface CorpusResponse {
 export interface ParamInfo {
   name: string;
   type: string;
-  default: any;
+  default: ParamValue;
   description: string;
   min_value: number | null;
   max_value: number | null;
-  choices: any[] | null;
+  choices: ParamValue[] | null;
 }
 
 export interface ComponentInfo {
@@ -57,7 +59,7 @@ export interface ComponentInfo {
 // Experiments
 export interface ComponentSpec {
   name: string;
-  params: Record<string, any>;
+  params: Record<string, ParamValue>;
 }
 
 export interface ExperimentConfig {

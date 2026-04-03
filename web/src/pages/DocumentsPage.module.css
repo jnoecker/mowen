@@ -4,8 +4,28 @@
   flex: 1 1 180px;
 }
 
+.sectionCard {
+  margin-bottom: 1.5rem;
+}
+
 .editInput {
   padding: 0.35rem 0.55rem;
   font-size: 0.85rem;
   width: 100%;
+}
+
+.feedback {
+  margin-top: 0.75rem;
+}
+
+.feedbackSuccess {
+  color: var(--success);
+}
+
+.feedbackError {
+  color: var(--danger);
+}
+
+.authorUnknown {
+  color: var(--text-muted);
 }

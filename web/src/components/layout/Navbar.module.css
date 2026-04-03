@@ -30,6 +30,12 @@
   transition: color 0.15s;
 }
 
+.brand:focus-visible,
+.link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
 .brand:hover {
   color: var(--text);
   text-decoration: none;
@@ -66,9 +72,13 @@
   color: var(--text-muted);
   text-decoration: none;
   padding: 0.5rem 0.75rem;
+  min-height: 2.75rem;
   border-radius: var(--radius);
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.15s, background-color 0.15s;
 }
 
@@ -108,18 +118,42 @@
   }
 
   .link {
-    padding: 0.4rem 0.5rem;
+    padding: 0.5rem 0.65rem;
     font-size: 0.8rem;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav {
+    height: auto;
+    padding: 0.65rem 0.75rem 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+    align-items: flex-start;
+  }
+
+  .links {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .link {
+    flex: 1 1 calc(50% - 0.1rem);
   }
 }
 
 @media (max-width: 480px) {
   .nav {
-    padding: 0 0.5rem;
+    padding: 0.65rem 0.5rem 0.75rem;
+  }
+
+  .brand {
+    font-size: 1.05rem;
   }
 
   .link {
-    padding: 0.35rem 0.4rem;
     font-size: 0.75rem;
   }
 }

@@ -1,160 +1,285 @@
-.headerRow {
+.pageShell {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.headerRow h1 {
-  margin-bottom: 0;
-}
-
-.stepIndicatorRow {
-  display: flex;
-  gap: 0.25rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.stepBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: default;
-  opacity: 0.5;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-}
-
-.stepBtnClickable {
-  cursor: pointer;
-  opacity: 1;
-}
-
-.stepBtnActive {
-  border-color: var(--accent);
-  background: var(--accent-subtle);
-  color: var(--accent);
-  font-weight: 600;
-  opacity: 1;
-}
-
-.stepBtnCompleted {
-  border-color: var(--success);
-  color: var(--success);
-  opacity: 1;
-}
-
-.stepNumber {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  font-weight: bold;
-  background: var(--border);
-  color: var(--text-muted);
-}
-
-.stepNumberActive {
-  background: var(--accent);
-  color: #fff;
-}
-
-.stepNumberCompleted {
-  background: var(--success);
-  color: #fff;
-}
-
-.navRow {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-}
-
-/* Component selector grid */
-.componentGrid {
+.pageIntro {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1.6rem;
+  background:
+    radial-gradient(circle at top left, rgba(190, 168, 115, 0.08), transparent 34%),
+    var(--bg-surface);
+}
+
+.pageEyebrow,
+.sectionLabel,
+.phaseEyebrow,
+.summaryLabel,
+.reviewLabel {
+  color: var(--gold);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+}
+
+.pageTitle,
+.phaseTitle {
+  margin-bottom: 0.55rem;
+}
+
+.pageLead,
+.phaseBody,
+.sectionLead,
+.helperText,
+.noteText,
+.corpusHelp {
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.summaryStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
-.componentCard {
-  background: var(--bg-surface);
+.summaryItem {
+  padding: 0.9rem 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 1rem;
-  cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  background: rgba(20, 24, 40, 0.1);
 }
 
-.componentCard:hover {
+.summaryValue {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--text);
+}
+
+.phaseRail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.phaseButton {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  text-align: left;
+  min-height: 100%;
+}
+
+.phaseButton:disabled {
+  opacity: 0.55;
+}
+
+.phaseButtonCurrent {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.phaseButtonDone {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+
+.phaseNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: var(--bg-inset);
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.phaseMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.phaseName {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.phaseCaption {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.workspaceCard {
+  margin-bottom: 0;
+}
+
+.stepStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sectionBlock {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+}
+
+.sectionTitle {
+  margin-bottom: 0.35rem;
+}
+
+.sectionDivider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-faint);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sectionDivider::before,
+.sectionDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.componentGrid,
+.presetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+.componentChoice {
+  min-width: 0;
+}
+
+.choiceInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.componentCard,
+.presetCard {
+  display: block;
+  min-height: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+}
+
+.componentCard:hover,
+.presetCard:hover {
   border-color: var(--border-strong);
 }
 
-.componentCard:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--accent-glow);
+.choiceInput:focus-visible + .componentCard,
+.choiceInput:focus-visible + .presetCard {
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-.componentCardSelected {
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
+.componentCardSelected,
+.presetCardActive {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 0 1px var(--accent-glow);
 }
 
 .componentHeader {
   display: flex;
   justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.componentNameRow {
+  display: flex;
   align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .componentName {
-  font-weight: 600;
   color: var(--text);
-  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.componentTag {
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  background: var(--gold-subtle);
+  color: var(--gold);
+  font-size: 0.72rem;
 }
 
 .componentSlug {
-  font-size: 0.75rem;
-  color: var(--text-muted);
   font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--text-faint);
+  margin-top: 0.25rem;
 }
 
-.componentDesc {
-  font-size: 0.8rem;
+.componentDesc,
+.presetDesc,
+.presetCitation {
+  margin-top: 0.55rem;
+}
+
+.componentDesc,
+.presetDesc {
   color: var(--text-muted);
-  margin-top: 0.4rem;
-  line-height: 1.45;
+  font-size: 0.84rem;
+  line-height: 1.55;
 }
 
-.checkbox {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+.presetName {
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+}
+
+.presetCitation {
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-style: italic;
+}
+
+.checkbox,
+.radio {
+  width: 1.2rem;
+  height: 1.2rem;
   border: 2px solid var(--border);
-  background: transparent;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.radio {
-  composes: checkbox;
-  border-radius: 50%;
+.checkbox {
+  border-radius: 0.25rem;
 }
 
-.checkboxSelected {
+.radio {
+  border-radius: 999px;
+}
+
+.choiceIndicatorSelected {
   border-color: var(--accent);
   background: var(--accent);
 }
@@ -162,258 +287,230 @@
 .checkmark {
   color: #fff;
   font-size: 0.7rem;
-  font-weight: bold;
 }
 
-/* Step 1: corpora */
-.corporaGrid {
+.paramShell {
+  margin-top: 0.7rem;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: rgba(20, 24, 40, 0.12);
+}
+
+.paramFields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.paramField {
+  min-width: 0;
+}
+
+.paramLabel {
+  margin-bottom: 0.25rem;
+}
+
+.paramHint,
+.booleanHint {
+  display: block;
+  color: var(--text-faint);
+  font-size: 0.76rem;
+  margin-top: 0.15rem;
+}
+
+.booleanField {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.booleanField input {
+  margin-top: 0.2rem;
+}
+
+.booleanLabel {
+  display: block;
+  color: var(--text);
+}
+
+.paramInput {
+  width: 100%;
+}
+
+.nameInput {
+  max-width: 40rem;
+}
+
+.fieldset,
+.presetFieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.corporaGrid,
+.reviewGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.corpusLegend {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .corporaList {
-  background: var(--bg-elevated);
+  margin-top: 0.6rem;
+  padding: 0.7rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 0.75rem;
-  max-height: 300px;
-  overflow-y: auto;
+  background: rgba(20, 24, 40, 0.12);
 }
 
 .corpusLabel {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.25rem;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  gap: 0.55rem;
+  padding: 0.45rem 0.2rem;
+}
+
+.corpusName {
   color: var(--text);
 }
 
 .corpusCount {
-  font-size: 0.75rem;
-  color: var(--text-muted);
   margin-left: auto;
+  color: var(--text-faint);
+  font-size: 0.8rem;
 }
 
-/* Parameters */
-.paramFields {
+.noteBlock,
+.reviewPanel {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.noteTitle {
+  margin-bottom: 0.35rem;
+}
+
+.reviewStack {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: 1rem;
 }
 
-.paramLabel {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 0.15rem;
+.reviewLabel {
+  margin-bottom: 0.35rem;
 }
 
-.paramHint {
-  margin-left: 0.5rem;
-  font-weight: normal;
-  opacity: 0.7;
+.reviewValue {
+  color: var(--text);
+  font-size: 1rem;
 }
 
-.paramInput {
-  width: 100%;
-  padding: 0.35rem 0.55rem;
-  font-size: 0.85rem;
+.reviewInlineMeta {
+  display: block;
+  color: var(--text-faint);
+  font-size: 0.82rem;
+  margin-top: 0.3rem;
 }
 
-/* Review step */
-.reviewGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+.reviewList {
+  list-style: none;
+  padding: 0;
+}
+
+.reviewList li + li {
+  margin-top: 0.3rem;
 }
 
 .reviewChips {
   display: flex;
-  gap: 0.5rem;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .reviewChip {
-  padding: 0.25rem 0.6rem;
-  background: var(--bg-surface);
-  border-radius: 4px;
-  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
   border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(20, 24, 40, 0.12);
+  color: var(--text);
+  font-size: 0.84rem;
 }
 
 .reviewChipParams {
-  color: var(--text-muted);
-  margin-left: 0.4rem;
-  font-size: 0.75rem;
+  display: block;
+  color: var(--text-faint);
+  font-size: 0.76rem;
+  margin-top: 0.15rem;
 }
 
-/* Error box */
 .errorBox {
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  background: var(--danger-bg);
+  padding: 0.85rem 1rem;
   border: 1px solid var(--danger-border);
   border-radius: var(--radius);
+  background: var(--danger-bg);
   color: var(--danger);
-  font-size: 0.9rem;
 }
 
-.stepDesc {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-}
-
-.nameInput {
-  width: 100%;
-  max-width: 500px;
-}
-
-/* Preset cards */
-.presetSection {
-  margin-bottom: 1.5rem;
-}
-
-.presetSectionLabel {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.75rem;
-}
-
-.presetGrid {
+.navRow {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.75rem;
-}
-
-.presetCard {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1rem 1.1rem;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-}
-
-.presetCard:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-hover);
-}
-
-.presetCard:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--accent-glow);
-  border-color: var(--accent);
-}
-
-.presetCardActive {
-  border-color: var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
-  background: var(--accent-subtle);
-}
-
-.presetName {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 0.3rem;
-}
-
-.presetDesc {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  line-height: 1.45;
-  margin-bottom: 0.4rem;
-}
-
-.presetCitation {
-  font-size: 0.7rem;
-  color: var(--gold);
-  font-style: italic;
-  opacity: 0.8;
-}
-
-/* Mobile step context (hidden on desktop where labels are visible) */
-.currentStepLabel {
-  display: none;
-}
-
-.presetDivider {
-  display: flex;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
   align-items: center;
-  gap: 0.75rem;
-  margin: 1.25rem 0;
-  color: var(--text-faint);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
 }
 
-.presetDivider::before,
-.presetDivider::after {
-  content: '';
-  flex: 1;
+.navMeta {
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.srOnlyLegend {
+  position: absolute;
+  width: 1px;
   height: 1px;
-  background: var(--border);
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* ---- Responsive ---- */
-
-@media (max-width: 768px) {
-  .corporaGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
+@media (max-width: 960px) {
+  .summaryStrip,
+  .phaseRail,
+  .corporaGrid,
   .reviewGrid {
     grid-template-columns: 1fr;
   }
-
-  .componentGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .presetGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .stepLabel {
-    display: none;
-  }
-
-  .currentStepLabel {
-    display: block;
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: -0.75rem;
-    margin-bottom: 1rem;
-  }
-
-  .stepBtn {
-    padding: 0.3rem;
-  }
-
-  .stepIndicatorRow {
-    gap: 0.35rem;
-    margin-bottom: 1rem;
-  }
-
-  .nameInput {
-    max-width: 100%;
-  }
 }
 
-@media (max-width: 480px) {
-  .headerRow {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+@media (max-width: 768px) {
+  .pageIntro,
+  .workspaceCard,
+  .sectionBlock,
+  .noteBlock,
+  .reviewPanel {
+    padding: 1rem;
+  }
+
+  .phaseButton {
+    padding: 0.85rem;
+  }
+
+  .navRow {
+    grid-template-columns: 1fr;
+  }
+
+  .navMeta {
+    order: -1;
   }
 }

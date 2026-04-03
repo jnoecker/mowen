@@ -3,7 +3,8 @@
    Sumi ink typography meets AmbonMUD's enchanted mist palette
    ============================================================ */
 
-:root {
+:root,
+:root[data-theme='dark'] {
   /* Backgrounds — deep mist blues */
   --bg:          #1e2538;
   --bg-surface:  #2a3149;
@@ -56,8 +57,8 @@
 
   /* Shadows — cool mist */
   --shadow-sm: 0 1px 3px rgba(20, 24, 40, 0.3);
-  --shadow-md: 0 4px 12px rgba(20, 24, 40, 0.4);
-  --shadow-lg: 0 8px 24px rgba(20, 24, 40, 0.5);
+  --shadow-md: 0 3px 10px rgba(20, 24, 40, 0.32);
+  --shadow-lg: 0 6px 18px rgba(20, 24, 40, 0.4);
 
   /* Radii — slightly softer */
   --radius:    8px;
@@ -66,7 +67,50 @@
 
   /* Typography — keep mowen's scholarly fonts */
   --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body:    'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-ui:      'Segoe UI', 'Aptos', Tahoma, sans-serif;
   --font-cjk:     'Noto Serif JP', serif;
   --font-mono:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+:root[data-theme='light'] {
+  --bg: #f3f1ed;
+  --bg-surface: #fbf8f3;
+  --bg-elevated: #f5efe7;
+  --bg-hover: #ece5db;
+  --bg-inset: #e7dfd4;
+  --text: #2c3448;
+  --text-muted: #5f6678;
+  --text-faint: #70788a;
+  --accent: #7f6db0;
+  --accent-hover: #705ea3;
+  --accent-solid: #6f5f9e;
+  --accent-solid-hover: #635590;
+  --accent-subtle: rgba(127, 109, 176, 0.12);
+  --accent-glow: rgba(127, 109, 176, 0.22);
+  --accent-light: #9f8dcb;
+  --gold: #9c8552;
+  --gold-subtle: rgba(156, 133, 82, 0.12);
+  --success: #587447;
+  --success-bg: rgba(88, 116, 71, 0.1);
+  --success-border: rgba(88, 116, 71, 0.3);
+  --success-light: #769365;
+  --warning: #9c8552;
+  --warning-bg: rgba(156, 133, 82, 0.12);
+  --warning-border: rgba(156, 133, 82, 0.3);
+  --danger: #995f5f;
+  --danger-solid: #995f5f;
+  --danger-solid-hover: #865353;
+  --danger-bg: rgba(153, 95, 95, 0.1);
+  --danger-border: rgba(153, 95, 95, 0.3);
+  --danger-light: #b78686;
+  --info: #6687a0;
+  --info-bg: rgba(102, 135, 160, 0.12);
+  --info-border: rgba(102, 135, 160, 0.3);
+  --border: rgba(87, 101, 130, 0.18);
+  --border-strong: rgba(87, 101, 130, 0.28);
+  --shadow-sm: 0 1px 2px rgba(58, 56, 66, 0.08);
+  --shadow-md: 0 4px 12px rgba(58, 56, 66, 0.12);
+  --shadow-lg: 0 10px 24px rgba(58, 56, 66, 0.16);
+  --font-ui: 'Segoe UI', 'Aptos', Tahoma, sans-serif;
 }

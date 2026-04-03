@@ -1,4 +1,4 @@
-import { useState, useRef, type FormEvent } from 'react';
+import { useId, useState, useRef, type FormEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { documentsApi } from '../api/documents';
 import type { DocumentResponse } from '../types';
@@ -73,7 +73,7 @@ function DocumentRow({
             />
           </label>
         ) : (
-          <span style={{ color: doc.author_name ? 'var(--text)' : 'var(--text-muted)' }}>
+          <span className={doc.author_name ? undefined : s.authorUnknown}>
             {doc.author_name || 'Unknown'}
           </span>
         )}
@@ -90,17 +90,18 @@ function DocumentRow({
               </button>
               <button onClick={cancel}>Cancel</button>
             </>
+          ) : confirmDelete ? (
+            <>
+              <span className="muted text-sm">Delete this document?</span>
+              <button className="danger" onClick={handleDelete}>
+                Confirm Delete
+              </button>
+              <button onClick={() => setConfirmDelete(false)}>Cancel</button>
+            </>
           ) : (
             <>
               <button onClick={() => setEditing(true)}>Edit</button>
-              <button
-                className={confirmDelete ? 'danger' : undefined}
-                onClick={handleDelete}
-                onBlur={() => setConfirmDelete(false)}
-                onKeyDown={(e) => { if (e.key === 'Escape') setConfirmDelete(false); }}
-              >
-                {confirmDelete ? 'Confirm' : 'Delete'}
-              </button>
+              <button onClick={handleDelete}>Delete</button>
             </>
           )}
         </div>
@@ -116,6 +117,9 @@ function DocumentRow({
 export default function DocumentsPage() {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const fileId = useId();
+  const titleId = useId();
+  const authorId = useId();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -202,25 +206,27 @@ export default function DocumentsPage() {
       <h1>Documents</h1>
 
       {/* Upload section */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
+      <div className={`card ${s.sectionCard}`}>
         <h2>Upload Document</h2>
         <form onSubmit={handleUpload}>
           <div className="form-row">
             <div className={s.field}>
-              <label>File</label>
-              <input ref={fileRef} type="file" onChange={handleFileChange} />
+              <label htmlFor={fileId}>File</label>
+              <input id={fileId} ref={fileRef} type="file" onChange={handleFileChange} />
             </div>
             <div className={s.field}>
-              <label>Title</label>
+              <label htmlFor={titleId}>Title</label>
               <input
+                id={titleId}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Document title"
               />
             </div>
             <div className={s.field}>
-              <label>Author (optional)</label>
+              <label htmlFor={authorId}>Author (optional)</label>
               <input
+                id={authorId}
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 placeholder="Author name"
@@ -241,11 +247,7 @@ export default function DocumentsPage() {
         <div aria-live="polite">
           {feedback && (
             <p
-              className="text-sm"
-              style={{
-                marginTop: '0.75rem',
-                color: feedback.type === 'success' ? 'var(--success)' : 'var(--danger)',
-              }}
+              className={`text-sm ${s.feedback} ${feedback.type === 'success' ? s.feedbackSuccess : s.feedbackError}`}
               role={feedback.type === 'error' ? 'alert' : undefined}
             >
               {feedback.message}
@@ -273,7 +275,7 @@ export default function DocumentsPage() {
         )}
 
         {!isLoading && documents.length > 0 && (
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-scroll">
             <table>
               <caption className="sr-only">All documents</caption>
               <thead>

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { corporaApi, sampleCorporaApi } from '../api/corpora';
 import { documentsApi } from '../api/documents';
@@ -54,12 +54,12 @@ function DocumentAssignment({
 
   return (
     <div className={s.assignPanel}>
-      <h3 style={{ marginBottom: '0.5rem', fontSize: '0.95rem' }}>Documents in Corpus</h3>
+      <h3 className={s.assignHeading}>Documents in Corpus</h3>
 
       {isLoading && <p className="muted text-sm">Loading...</p>}
 
       {!isLoading && corpusDocuments.length === 0 && (
-        <p className="muted text-sm" style={{ marginBottom: '0.5rem' }}>
+        <p className="muted text-sm">
           No documents assigned yet.
         </p>
       )}
@@ -130,6 +130,8 @@ function CorpusCard({
   allDocuments: DocumentResponse[];
 }) {
   const queryClient = useQueryClient();
+  const nameId = useId();
+  const descriptionId = useId();
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(corpus.name);
@@ -173,20 +175,22 @@ function CorpusCard({
     <div className="card">
       {/* Header */}
       <div className={s.headerRow}>
-        <div style={{ flex: 1 }}>
+        <div className={s.headingWrap}>
           {editing ? (
             <div className={s.editFields}>
               <div>
-                <label>Name</label>
+                <label htmlFor={nameId}>Name</label>
                 <input
+                  id={nameId}
                   className={s.inputStyled}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div>
-                <label>Description</label>
+                <label htmlFor={descriptionId}>Description</label>
                 <input
+                  id={descriptionId}
                   className={s.inputStyled}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -196,9 +200,9 @@ function CorpusCard({
             </div>
           ) : (
             <>
-              <h2 style={{ marginBottom: '0.25rem' }}>{corpus.name}</h2>
+              <h2 className={s.title}>{corpus.name}</h2>
               {corpus.description && (
-                <p className="muted" style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                <p className={`muted ${s.description}`}>
                   {corpus.description}
                 </p>
               )}
@@ -220,20 +224,21 @@ function CorpusCard({
               </button>
               <button onClick={handleCancel}>Cancel</button>
             </>
+          ) : confirmDelete ? (
+            <>
+              <span className="muted text-sm">Delete this corpus?</span>
+              <button className="danger" onClick={handleDelete}>
+                Confirm Delete
+              </button>
+              <button onClick={() => setConfirmDelete(false)}>Cancel</button>
+            </>
           ) : (
             <>
               <button onClick={() => setExpanded(!expanded)}>
                 {expanded ? 'Collapse' : 'Expand'}
               </button>
               <button onClick={() => setEditing(true)}>Edit</button>
-              <button
-                className={confirmDelete ? 'danger' : undefined}
-                onClick={handleDelete}
-                onBlur={() => setConfirmDelete(false)}
-                onKeyDown={(e) => { if (e.key === 'Escape') setConfirmDelete(false); }}
-              >
-                {confirmDelete ? 'Confirm' : 'Delete'}
-              </button>
+              <button onClick={handleDelete}>Delete</button>
             </>
           )}
         </div>
@@ -251,6 +256,7 @@ function CorpusCard({
 
 function SampleCorpusImporter() {
   const queryClient = useQueryClient();
+  const sampleId = useId();
   const [selectedId, setSelectedId] = useState('');
 
   const { data: sampleCorpora = [] } = useQuery({
@@ -272,13 +278,14 @@ function SampleCorpusImporter() {
   return (
     <div className="card">
       <h2>Import Sample Corpus</h2>
-      <p className="muted text-sm" style={{ marginBottom: '0.75rem' }}>
+      <p className="muted text-sm">
         Import a standard AAAC benchmark problem set with pre-labeled training and unknown documents.
       </p>
       <div className="form-row">
         <div className={s.fieldSample}>
-          <label>Sample Corpus</label>
+          <label htmlFor={sampleId}>Sample Corpus</label>
           <select
+            id={sampleId}
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
             className={s.inputStyled}
@@ -306,20 +313,20 @@ function SampleCorpusImporter() {
       </div>
 
       {selected && !importMutation.isPending && !importMutation.isSuccess && (
-        <p className="muted text-sm" style={{ marginTop: '0.5rem' }}>
+        <p className="muted text-sm">
           {selected.description}
         </p>
       )}
 
       <div aria-live="polite">
         {importMutation.isSuccess && (
-          <p className="text-sm" style={{ marginTop: '0.75rem', color: 'var(--success)' }}>
+          <p className={`text-sm ${s.feedback} ${s.feedbackSuccess}`}>
             Imported successfully! Created "{importMutation.data.known_corpus.name}" ({importMutation.data.known_corpus.document_count} docs) and "{importMutation.data.unknown_corpus.name}" ({importMutation.data.unknown_corpus.document_count} docs).
           </p>
         )}
 
         {importMutation.isError && (
-          <p className="text-sm" role="alert" style={{ marginTop: '0.75rem', color: 'var(--danger)' }}>
+          <p className={`text-sm ${s.feedback} ${s.feedbackError}`} role="alert">
             {(importMutation.error as Error).message || 'Failed to import corpus.'}
           </p>
         )}
@@ -334,6 +341,8 @@ function SampleCorpusImporter() {
 
 export default function CorporaPage() {
   const queryClient = useQueryClient();
+  const nameId = useId();
+  const descriptionId = useId();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -383,21 +392,23 @@ export default function CorporaPage() {
       <h1>Corpora</h1>
 
       {/* Create corpus section */}
-      <div className="card" style={{ marginBottom: '1.5rem' }}>
+      <div className={`card ${s.sectionCard}`}>
         <h2>Create Corpus</h2>
         <form onSubmit={handleCreate}>
           <div className="form-row">
             <div className={s.fieldName}>
-              <label>Name</label>
+              <label htmlFor={nameId}>Name</label>
               <input
+                id={nameId}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Corpus name"
               />
             </div>
             <div className={s.fieldDesc}>
-              <label>Description (optional)</label>
+              <label htmlFor={descriptionId}>Description (optional)</label>
               <input
+                id={descriptionId}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Optional description"
@@ -417,7 +428,7 @@ export default function CorporaPage() {
 
         <div aria-live="polite">
           {createMutation.isError && (
-            <p className="text-sm" role="alert" style={{ marginTop: '0.75rem', color: 'var(--danger)' }}>
+            <p className={`text-sm ${s.feedback} ${s.feedbackError}`} role="alert">
               {(createMutation.error as Error).message || 'Failed to create corpus.'}
             </p>
           )}

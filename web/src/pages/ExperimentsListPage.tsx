@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { experimentsApi } from '../api/experiments';
 import { useExperimentStore } from '../store/experimentStore';
@@ -54,11 +54,13 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
       <div className={s.cardRow}>
         <div className={s.cardContent}>
           <div className={s.cardTitle}>
-            <h2
-              className={s.cardName}
-              onClick={() => navigate(`/experiments/${experiment.id}/results`)}
-            >
-              {experiment.name}
+            <h2 className={s.cardName}>
+              <Link
+                to={`/experiments/${experiment.id}/results`}
+                className={s.cardNameLink}
+              >
+                {experiment.name}
+              </Link>
             </h2>
             <StatusBadge status={experiment.status} />
           </div>
@@ -76,26 +78,38 @@ function ExperimentCard({ experiment }: { experiment: ExperimentResponse }) {
         </div>
 
         <div className={`actions-row ${s.cardActions}`}>
-          <button
-            onClick={() => navigate(`/experiments/${experiment.id}/results`)}
-            className={s.smallBtn}
-          >
-            View
-          </button>
-          <button
-            onClick={handleClone}
-            className={s.smallBtn}
-          >
-            Clone
-          </button>
-          <button
-            onClick={handleDelete}
-            onBlur={() => setConfirmDelete(false)}
-            onKeyDown={(e) => { if (e.key === 'Escape') setConfirmDelete(false); }}
-            className={`${s.smallBtn}${confirmDelete ? ' danger' : ''}`}
-          >
-            {confirmDelete ? 'Confirm' : 'Delete'}
-          </button>
+          {confirmDelete ? (
+            <>
+              <span className="muted text-sm">Delete experiment?</span>
+              <button onClick={handleDelete} className={`danger ${s.smallBtn}`}>
+                Confirm Delete
+              </button>
+              <button onClick={() => setConfirmDelete(false)} className={s.smallBtn}>
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate(`/experiments/${experiment.id}/results`)}
+                className={s.smallBtn}
+              >
+                View
+              </button>
+              <button
+                onClick={handleClone}
+                className={s.smallBtn}
+              >
+                Clone
+              </button>
+              <button
+                onClick={handleDelete}
+                className={s.smallBtn}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

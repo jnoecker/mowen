@@ -21,11 +21,7 @@ export const corporaApi = {
     api.post<CorpusResponse>(`/corpora/${id}/documents`, { document_ids: documentIds }),
 
   removeDocuments: (id: number, documentIds: number[]) =>
-    fetch(`/api/v1/corpora/${id}/documents`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ document_ids: documentIds }),
-    }).then((r) => r.json()) as Promise<CorpusResponse>,
+    api.delete<CorpusResponse>(`/corpora/${id}/documents`, { document_ids: documentIds }),
 };
 
 export const sampleCorporaApi = {
