@@ -5,7 +5,7 @@ from importlib.metadata import PackageNotFoundError, version
 try:
     __version__ = version("mowen")
 except PackageNotFoundError:
-    __version__ = "2.0.1"  # fallback for editable installs
+    __version__ = "2.1.0"  # fallback for editable installs
 
 from mowen.document_loaders import load_document
 from mowen.evaluation import (
